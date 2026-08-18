@@ -1,0 +1,17 @@
+{
+  "name": "Chhath: The Pride of Bihar",
+  "short_name": "Chhath Puja",
+  "description": "A cultural and devotional tribute to Chhath Puja - the festival of Bihar.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#2D1B0D",
+  "theme_color": "#2D1B0D",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "64x64 128x128 256x256 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

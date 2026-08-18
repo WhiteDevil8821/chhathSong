@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap Index for Google, Bing & Yandex Search Crawlers
+Sitemap: https://chhathpuja.in/sitemap.xml
