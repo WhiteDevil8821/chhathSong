@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Sun,
@@ -27,9 +27,12 @@ import { FourDaysTimeline } from './components/FourDaysTimeline';
 import { CulturalArtifactsGrid } from './components/CulturalArtifactsGrid';
 import { NostalgicMemoriesBoard } from './components/NostalgicMemoriesBoard';
 import { NostalgicMusicPlayer } from './components/NostalgicMusicPlayer';
-import { InfoModals, ActiveModal } from './components/InfoModals';
+import { ActiveModal } from './components/InfoModals';
 import { soundSynth } from './utils/soundSynthesizer';
 import { Analytics } from '@vercel/analytics/react';
+
+// Lazy load InfoModals to drastically reduce initial bundle size and speed up first contentful paint
+const InfoModals = lazy(() => import('./components/InfoModals').then(m => ({ default: m.InfoModals })));
 
 export default function App() {
   const [atmosphere, setAtmosphere] = useState<GhatAtmosphere>('dawn');
@@ -440,12 +443,16 @@ export default function App() {
         onPlayPauseToggle={() => setIsPlaying(prev => !prev)}
       />
 
-      {/* Production Info & Contact Modals */}
-      <InfoModals
-        activeModal={activeModal}
-        onClose={() => setActiveModal(null)}
-        contactEmail={contactEmail}
-      />
+      {/* Production Info & Contact Modals - Deferred Lazy Loaded */}
+      <Suspense fallback={null}>
+        {activeModal && (
+          <InfoModals
+            activeModal={activeModal}
+            onClose={() => setActiveModal(null)}
+            contactEmail={contactEmail}
+          />
+        )}
+      </Suspense>
 
       {/* Vercel Web Analytics */}
       <Analytics />

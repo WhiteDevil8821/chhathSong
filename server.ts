@@ -1,10 +1,17 @@
 import express from 'express';
 import path from 'path';
+import compression from 'compression';
 import { createServer as createViteServer } from 'vite';
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
+
+  // Gzip compression middleware to drastically reduce payload sizes and increase loading speed
+  app.use(compression());
+
+  // Cache in-memory for playlist data (30 seconds TTL) to prevent repeated remote calls and provide instant responses
+  let playlistCache: { [key: string]: { timestamp: number; data: any } } = {};
 
   // Unescape XML entities helper
   function decodeXml(str: string): string {
@@ -116,33 +123,49 @@ async function startServer() {
 
   // API Route: Health Check
   app.get('/api/health', (req, res) => {
+    res.setHeader('Cache-Control', 'public, max-age=60');
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
-  // API Route: Always Dynamically Fetch YouTube Playlist
+  // API Route: Always Dynamically Fetch YouTube Playlist with Smart Short-lived Cache
   app.get('/api/playlist', async (req, res) => {
     const playlistId = (req.query.list as string) || 'PLenw-C64yBCo';
+    const forceRefresh = req.query.fresh === '1';
+    const now = Date.now();
+
+    // Return cached if fresh (30s TTL)
+    if (!forceRefresh && playlistCache[playlistId] && now - playlistCache[playlistId].timestamp < 30000) {
+      res.setHeader('Cache-Control', 'public, max-age=30');
+      return res.json(playlistCache[playlistId].data);
+    }
+
     try {
       // 1. Try official XML RSS Feed first (always succeeds on cloud and local without blocking)
       const feedSongs = await fetchYouTubeFeed(playlistId);
       if (feedSongs && feedSongs.length > 0) {
-        return res.json({
+        const payload = {
           source: 'youtube-feed',
           playlistId,
           count: feedSongs.length,
           songs: feedSongs
-        });
+        };
+        playlistCache[playlistId] = { timestamp: now, data: payload };
+        res.setHeader('Cache-Control', 'public, max-age=30');
+        return res.json(payload);
       }
 
       // 2. Try HTML page extraction
       const pageSongs = await fetchYouTubeWebPage(playlistId);
       if (pageSongs && pageSongs.length > 0) {
-        return res.json({
+        const payload = {
           source: 'youtube-web',
           playlistId,
           count: pageSongs.length,
           songs: pageSongs
-        });
+        };
+        playlistCache[playlistId] = { timestamp: now, data: payload };
+        res.setHeader('Cache-Control', 'public, max-age=30');
+        return res.json(payload);
       }
 
       return res.json({
@@ -160,7 +183,7 @@ async function startServer() {
     }
   });
 
-  // Vite Middleware / Static Serving
+  // Vite Middleware / Static Serving with High Performance Cache Headers
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -169,8 +192,21 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
+    app.use(
+      express.static(distPath, {
+        maxAge: '1y',
+        immutable: true,
+        setHeaders: (res, filePath) => {
+          if (filePath.endsWith('.html') || filePath.endsWith('sitemap.xml') || filePath.endsWith('robots.txt')) {
+            res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+          } else {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          }
+        }
+      })
+    );
     app.get('*all', (req, res) => {
+      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
