@@ -7,8 +7,20 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Gzip compression middleware to drastically reduce payload sizes and increase loading speed
-  app.use(compression());
+  // Gzip compression middleware (skip for SSE stream to avoid buffering)
+  app.use(
+    compression({
+      filter: (req, res) => {
+        if (req.path.startsWith('/api/presence/stream')) {
+          return false;
+        }
+        return compression.filter(req, res);
+      }
+    })
+  );
+
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
   // Cache in-memory for playlist data (30 seconds TTL) to prevent repeated remote calls and provide instant responses
   let playlistCache: { [key: string]: { timestamp: number; data: any } } = {};
@@ -143,23 +155,97 @@ async function startServer() {
     }
   }
 
-  // Exact real-time presence tracking for online devotees (no simulated offsets)
-  const activeSessions = new Map<string, { lastSeen: number; city?: string }>();
+  // Exact real-time presence tracking for online devotees
+  const activeSessions = new Map<string, { lastSeen: number; ip?: string }>();
+  const sseClients = new Map<string, express.Response>();
   let dailyPeakOnline = 1;
 
-  // Clean up stale sessions every 10 seconds (sessions silent for > 20s are removed)
-  setInterval(() => {
-    const now = Date.now();
-    for (const [id, session] of activeSessions.entries()) {
-      if (now - session.lastSeen > 20000) {
-        activeSessions.delete(id);
+  function broadcastPresence() {
+    const currentOnline = Math.max(1, activeSessions.size);
+    if (currentOnline > dailyPeakOnline) {
+      dailyPeakOnline = currentOnline;
+    }
+
+    const payload = JSON.stringify({
+      online: currentOnline,
+      exactLive: activeSessions.size,
+      peakToday: dailyPeakOnline,
+      timestamp: Date.now()
+    });
+
+    for (const [cid, clientRes] of sseClients.entries()) {
+      try {
+        clientRes.write(`data: ${payload}\n\n`);
+      } catch (err) {
+        sseClients.delete(cid);
       }
     }
-  }, 10000);
+  }
 
-  // API Route: Real-time Exact Online Users / Heartbeat
+  // Periodic cleanup of stale non-SSE sessions every 5 seconds
+  setInterval(() => {
+    const now = Date.now();
+    let changed = false;
+    for (const [id, session] of activeSessions.entries()) {
+      // If client doesn't have an active SSE connection and hasn't polled in > 18s, remove
+      if (!sseClients.has(id) && now - session.lastSeen > 18000) {
+        activeSessions.delete(id);
+        changed = true;
+      }
+    }
+    if (changed) {
+      broadcastPresence();
+    }
+  }, 5000);
+
+  // Real-time SSE Stream Endpoint: Immediate connection & instant push updates
+  app.get('/api/presence/stream', (req, res) => {
+    const clientId =
+      (req.query.cid as string) ||
+      `sse_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive',
+      'X-Accel-Buffering': 'no'
+    });
+
+    res.write(': connected\n\n');
+
+    activeSessions.set(clientId, { lastSeen: Date.now() });
+    sseClients.set(clientId, res);
+
+    // Broadcast instantly to all connected devices
+    broadcastPresence();
+
+    // Keep-alive ping every 12 seconds to prevent Cloud/Proxy idle connection drop
+    const pingInterval = setInterval(() => {
+      try {
+        res.write(': ping\n\n');
+        if (activeSessions.has(clientId)) {
+          activeSessions.get(clientId)!.lastSeen = Date.now();
+        }
+      } catch {
+        clearInterval(pingInterval);
+      }
+    }, 12000);
+
+    req.on('close', () => {
+      clearInterval(pingInterval);
+      sseClients.delete(clientId);
+      activeSessions.delete(clientId);
+      broadcastPresence();
+    });
+  });
+
+  // REST API Route: Real-time Exact Online Users / Heartbeat
   app.get('/api/presence', (req, res) => {
-    const clientId = (req.query.cid as string) || (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'guest';
+    const clientId =
+      (req.query.cid as string) ||
+      (req.headers['x-forwarded-for'] as string) ||
+      req.socket.remoteAddress ||
+      'guest';
     const now = Date.now();
     activeSessions.set(clientId, { lastSeen: now });
 
@@ -167,6 +253,9 @@ async function startServer() {
     if (exactCount > dailyPeakOnline) {
       dailyPeakOnline = exactCount;
     }
+
+    // Broadcast update to any listening SSE clients
+    broadcastPresence();
 
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.json({
@@ -179,17 +268,29 @@ async function startServer() {
 
   // Client Heartbeat Endpoint
   app.post('/api/presence/heartbeat', (req, res) => {
-    const clientId = (req.query.cid as string) || (req.body && req.body.cid) || (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'guest';
+    const clientId =
+      (req.query.cid as string) ||
+      (req.body && req.body.cid) ||
+      (req.headers['x-forwarded-for'] as string) ||
+      req.socket.remoteAddress ||
+      'guest';
     activeSessions.set(clientId, { lastSeen: Date.now() });
+    broadcastPresence();
     res.json({ status: 'ok', online: Math.max(1, activeSessions.size) });
   });
 
   // Client Leave / Beacon Endpoint (removes immediately upon tab close)
   app.post('/api/presence/leave', (req, res) => {
-    const clientId = (req.query.cid as string) || (req.body && req.body.cid) || (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress;
+    const clientId =
+      (req.query.cid as string) ||
+      (req.body && req.body.cid) ||
+      (req.headers['x-forwarded-for'] as string) ||
+      req.socket.remoteAddress;
     if (clientId) {
       activeSessions.delete(clientId);
+      sseClients.delete(clientId);
     }
+    broadcastPresence();
     res.json({ status: 'left', online: Math.max(1, activeSessions.size) });
   });
 

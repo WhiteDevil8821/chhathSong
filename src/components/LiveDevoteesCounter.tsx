@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, MapPin, Sparkles, ChevronDown } from 'lucide-react';
+import { Users, ChevronDown } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 interface PresenceData {
@@ -12,6 +12,21 @@ interface PresenceData {
 interface LiveDevoteesCounterProps {
   variant?: 'navbar' | 'hero' | 'card';
   className?: string;
+}
+
+// Generate guaranteed unique identifier per device / tab session
+function getUniqueSessionId(): string {
+  let id = '';
+  try {
+    id = sessionStorage.getItem('chhath_dev_sid') || '';
+    if (!id) {
+      id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      sessionStorage.setItem('chhath_dev_sid', id);
+    }
+  } catch {
+    id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+  }
+  return id;
 }
 
 export const LiveDevoteesCounter: React.FC<LiveDevoteesCounterProps> = ({
@@ -27,18 +42,9 @@ export const LiveDevoteesCounter: React.FC<LiveDevoteesCounterProps> = ({
   const [showInfoDropdown, setShowInfoDropdown] = useState(false);
 
   useEffect(() => {
-    // Generate or retrieve persistent client session ID
-    let cid = '';
-    try {
-      cid = localStorage.getItem('chhath_cid') || '';
-      if (!cid) {
-        cid = 'cid_' + Math.random().toString(36).substring(2, 12);
-        localStorage.setItem('chhath_cid', cid);
-      }
-    } catch {
-      cid = 'cid_guest';
-    }
+    const cid = getUniqueSessionId();
 
+    // 1. Immediate REST sync on mount
     const fetchPresence = async () => {
       try {
         const res = await fetch(`/api/presence?cid=${encodeURIComponent(cid)}`);
@@ -48,20 +54,70 @@ export const LiveDevoteesCounter: React.FC<LiveDevoteesCounterProps> = ({
             setPresence(data);
           }
         }
-      } catch (err) {
-        // In offline/standby mode keep exact minimum 1
+      } catch {
+        // Fallback
       }
     };
-
-    // Initial heartbeat
     fetchPresence();
 
-    // Heartbeat ping every 8 seconds to maintain 100% exact live tracking
-    const interval = setInterval(fetchPresence, 8000);
+    // 2. Real-time Server-Sent Events (SSE) stream for instant sub-second multi-device sync
+    let eventSource: EventSource | null = null;
+    try {
+      eventSource = new EventSource(`/api/presence/stream?cid=${encodeURIComponent(cid)}`);
 
-    // Instant leave tracking on page unload/tab close
+      eventSource.onmessage = (event) => {
+        try {
+          if (!event.data) return;
+          const data = JSON.parse(event.data);
+          if (data && typeof data.online === 'number') {
+            setPresence(data);
+          }
+        } catch {
+          // ignore non-json
+        }
+      };
+
+      eventSource.onerror = () => {
+        // EventSource will auto-reconnect if connection drops
+      };
+    } catch {
+      // EventSource fallback
+    }
+
+    // 3. Fallback Heartbeat ping every 6 seconds to ensure presence is never lost
+    const heartbeatInterval = setInterval(() => {
+      fetch(`/api/presence/heartbeat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cid })
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && typeof data.online === 'number') {
+            setPresence((prev) => ({
+              ...prev,
+              online: data.online,
+              peakToday: Math.max(prev.peakToday, data.online)
+            }));
+          }
+        })
+        .catch(() => {});
+    }, 6000);
+
+    // 4. Instant re-sync when tab becomes visible (e.g., waking from lockscreen on mobile)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchPresence();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // 5. Instant leave tracking on page unload/tab close
     const handleUnload = () => {
       try {
+        if (eventSource) {
+          eventSource.close();
+        }
         if (navigator.sendBeacon) {
           navigator.sendBeacon(`/api/presence/leave?cid=${encodeURIComponent(cid)}`);
         }
@@ -74,7 +130,11 @@ export const LiveDevoteesCounter: React.FC<LiveDevoteesCounterProps> = ({
     window.addEventListener('pagehide', handleUnload);
 
     return () => {
-      clearInterval(interval);
+      if (eventSource) {
+        eventSource.close();
+      }
+      clearInterval(heartbeatInterval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleUnload);
       window.removeEventListener('pagehide', handleUnload);
     };
@@ -101,7 +161,11 @@ export const LiveDevoteesCounter: React.FC<LiveDevoteesCounterProps> = ({
             <span className="sm:hidden">{isHindi ? 'लाइव' : 'Live'}</span>
           </span>
 
-          <ChevronDown className={`w-3 h-3 text-[#D4AF37]/70 transition-transform ${showInfoDropdown ? 'rotate-180' : ''}`} />
+          <ChevronDown
+            className={`w-3 h-3 text-[#D4AF37]/70 transition-transform ${
+              showInfoDropdown ? 'rotate-180' : ''
+            }`}
+          />
         </button>
 
         {/* Info Dropdown */}
@@ -122,9 +186,16 @@ export const LiveDevoteesCounter: React.FC<LiveDevoteesCounterProps> = ({
 
             <p className="text-[11px] text-[#FFF5E1]/80 leading-tight">
               {isHindi ? (
-                <>वर्तमान में इस पावन मंच पर ठीक <strong className="text-[#D4AF37]">{presence.online}</strong> श्रद्धालु सीधे जुड़े हुए हैं।</>
+                <>
+                  वर्तमान में इस पावन मंच पर ठीक{' '}
+                  <strong className="text-[#D4AF37]">{presence.online}</strong> श्रद्धालु सीधे जुड़े
+                  हुए हैं।
+                </>
               ) : (
-                <>Exactly <strong className="text-[#D4AF37]">{presence.online}</strong> active devotee{presence.online > 1 ? 's are' : ' is'} currently connected in real-time.</>
+                <>
+                  Exactly <strong className="text-[#D4AF37]">{presence.online}</strong> active devotee
+                  {presence.online > 1 ? 's are' : ' is'} currently connected in real-time.
+                </>
               )}
             </p>
 
