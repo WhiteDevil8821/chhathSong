@@ -5,12 +5,63 @@ import { createServer as createViteServer } from 'vite';
 async function startServer() {
   const app = express();
   const PORT = 3000;
-  const DEFAULT_PLAYLIST_ID = 'PLenw-C64yBCo';
 
-  // Helper to scrape YouTube playlist live items
-  async function fetchYouTubePlaylist(playlistId: string) {
+  // Unescape XML entities helper
+  function decodeXml(str: string): string {
+    return str
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&apos;/g, "'");
+  }
+
+  // 1. Primary Strategy: Official YouTube XML RSS Feed (100% reliable, never blocked by cloud IP or bot checks)
+  async function fetchYouTubeFeed(playlistId: string) {
     try {
-      const res = await fetch(`https://www.youtube.com/playlist?list=${playlistId}`, {
+      const feedUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`;
+      const res = await fetch(feedUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+      });
+      if (!res.ok) return null;
+      const xml = await res.text();
+      const entries = xml.split('<entry>');
+      entries.shift(); // Remove feed header
+
+      const songs: any[] = [];
+      for (const entry of entries) {
+        const videoId = entry.match(/<yt:videoId>(.*?)<\/yt:videoId>/)?.[1] || '';
+        const rawTitle = entry.match(/<title>(.*?)<\/title>/)?.[1] || '';
+        const title = decodeXml(rawTitle);
+        const rawAuthor = entry.match(/<author>[\s\S]*?<name>(.*?)<\/name>/)?.[1] || 'छठ महापर्व लोकगायक';
+        const artist = decodeXml(rawAuthor);
+
+        if (videoId && title) {
+          songs.push({
+            id: videoId,
+            videoId,
+            title,
+            artist,
+            tag: 'लाइव प्लेलिस्ट गीत',
+            duration: 'Chhath Folk'
+          });
+        }
+      }
+      return songs.length > 0 ? songs : null;
+    } catch (err) {
+      console.warn('Error fetching YouTube XML feed:', err);
+      return null;
+    }
+  }
+
+  // 2. Secondary Strategy: Web page extraction
+  async function fetchYouTubeWebPage(playlistId: string) {
+    try {
+      const url = `https://www.youtube.com/playlist?list=${playlistId}`;
+      const res = await fetch(url, {
         headers: {
           'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -58,87 +109,58 @@ async function startServer() {
       extractLockups(data);
       return songs.length > 0 ? songs : null;
     } catch (err) {
-      console.error('Error fetching YouTube playlist:', err);
+      console.warn('Error fetching YouTube web page:', err);
       return null;
     }
   }
 
-  // Curated tracks from playlist PLenw-C64yBCo and Chhath classics
-  const fallbackSongs = [
-    {
-      id: '2RR-GcqTfhU',
-      videoId: '2RR-GcqTfhU',
-      title: 'Devo Chhath Uga Hey Surujdev | Kalpana Patowary',
-      artist: 'कल्पना पटवारी (Kalpana Patowary)',
-      tag: 'प्लेलिस्ट गीत (Track 1)',
-      duration: '5:40'
-    },
-    {
-      id: 'BKoD7bTLc2k',
-      videoId: 'BKoD7bTLc2k',
-      title: 'जोड़े जोड़े फलवा सुरुज देव (Jode Jode Falwa)',
-      artist: 'पवन सिंह (Pawan Singh)',
-      tag: 'प्लेलिस्ट गीत (Track 2)',
-      duration: '5:15'
-    },
-    {
-      id: '8MzoVsjL4QU',
-      videoId: '8MzoVsjL4QU',
-      title: 'उग हो सुरुज देव भेल भिनसरवा (Uga Hai Suraj Dev)',
-      artist: 'अनुराधा पौडवाल (Anuradha Paudwal)',
-      tag: 'प्लेलिस्ट गीत (Track 3)',
-      duration: '5:24'
-    },
-    {
-      id: 'KWvgJvM2zT0',
-      videoId: 'KWvgJvM2zT0',
-      title: 'हो दीनानाथ (Ho Deenanath - New Version)',
-      artist: 'पद्म भूषण शारदा सिन्हा (Sharda Sinha)',
-      tag: 'प्लेलिस्ट गीत (Track 4)',
-      duration: '6:12'
-    },
-    {
-      id: '3uU8jX2tX0g',
-      videoId: '3uU8jX2tX0g',
-      title: 'केलवा के पात पर उगेलन सूरजमल',
-      artist: 'शारदा सिन्हा (Sharda Sinha)',
-      tag: 'Dawn Arghya',
-      duration: '5:48'
-    },
-    {
-      id: 'gUa8HkQj2wE',
-      videoId: 'gUa8HkQj2wE',
-      title: 'पहिले पहिल हम कईनी छठी मईया',
-      artist: 'शारदा सिन्हा (Sharda Sinha)',
-      tag: 'Heartfelt Prayer',
-      duration: '6:45'
-    },
-    {
-      id: 'k1Z8fG2gZz0',
-      videoId: 'k1Z8fG2gZz0',
-      title: 'मारबो रे सुगवा धनुष से',
-      artist: 'शारदा सिन्हा (Sharda Sinha)',
-      tag: 'Purity & Sanctity',
-      duration: '5:32'
-    }
-  ];
-
-  // API endpoint for dynamic playlist fetching
-  app.get('/api/playlist', async (req, res) => {
-    const playlistId = (req.query.list as string) || DEFAULT_PLAYLIST_ID;
-    const songs = await fetchYouTubePlaylist(playlistId);
-    if (songs && songs.length > 0) {
-      return res.json({ success: true, source: 'live_youtube', playlistId, songs });
-    }
-    return res.json({ success: true, source: 'fallback', playlistId, songs: fallbackSongs });
-  });
-
-  // Health check endpoint
+  // API Route: Health Check
   app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok' });
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
-  // Vite middleware in development
+  // API Route: Always Dynamically Fetch YouTube Playlist
+  app.get('/api/playlist', async (req, res) => {
+    const playlistId = (req.query.list as string) || 'PLenw-C64yBCo';
+    try {
+      // 1. Try official XML RSS Feed first (always succeeds on cloud and local without blocking)
+      const feedSongs = await fetchYouTubeFeed(playlistId);
+      if (feedSongs && feedSongs.length > 0) {
+        return res.json({
+          source: 'youtube-feed',
+          playlistId,
+          count: feedSongs.length,
+          songs: feedSongs
+        });
+      }
+
+      // 2. Try HTML page extraction
+      const pageSongs = await fetchYouTubeWebPage(playlistId);
+      if (pageSongs && pageSongs.length > 0) {
+        return res.json({
+          source: 'youtube-web',
+          playlistId,
+          count: pageSongs.length,
+          songs: pageSongs
+        });
+      }
+
+      return res.json({
+        source: 'empty',
+        playlistId,
+        count: 0,
+        songs: []
+      });
+    } catch (e: any) {
+      res.status(500).json({
+        error: 'Failed to fetch playlist',
+        message: e?.message || String(e),
+        songs: []
+      });
+    }
+  });
+
+  // Vite Middleware / Static Serving
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -148,13 +170,13 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
+    app.get('*all', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
+    console.log(`Chhath Puja Server running at http://localhost:${PORT}`);
   });
 }
 

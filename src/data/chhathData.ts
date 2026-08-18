@@ -1,83 +1,50 @@
 import { ChhathSong, NostalgicQuote, SacredDay, CulturalArtifact } from '../types';
 
-// Exact songs from user's curated YouTube Playlist (PLenw-C64yBCo) + timeless Chhath classics
+// The exact 4 songs currently in the user's YouTube playlist (PLenw-C64yBCo)
 export const CHHATH_SONGS: ChhathSong[] = [
   {
     id: '2RR-GcqTfhU',
-    title: 'देवो छठ उगे हे सुरुजदेव (Devo Chhath Uga Hey Surujdev)',
-    artist: 'कल्पना पटवारी (Kalpana Patowary)',
-    era: 'Dishum Exclusive • Devotional Classic',
-    duration: '5:40',
+    title: 'Devo Chhath Uga Hey Surujdev | Kalpana Patowary | Dishum EXCLUSIVE',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'Dishum EXCLUSIVE',
+    duration: 'Chhath Folk',
     youtubeId: '2RR-GcqTfhU',
     lyricsHighlight: 'देवो छठ उगे हे सुरुजदेव, अरघ के रे बेरवा... पूजन के बेरवा...',
     meaning: 'Devotees calling upon the golden Sun God to ascend the horizon during the sacred morning Arghya.',
-    tag: 'प्लेलिस्ट गीत (Track 1)'
+    tag: 'लाइव प्लेलिस्ट गीत'
   },
   {
     id: 'BKoD7bTLc2k',
-    title: 'जोड़े जोड़े फलवा सुरुज देव (Jode Jode Falwa)',
-    artist: 'पवन सिंह (Pawan Singh)',
-    era: 'T-Series • Festive Anthem',
-    duration: '5:15',
+    title: 'पवन सिंह का सबसे ज्यादा बजने वाला छठ गीत - जोड़े जोड़े फलवा T-Series #chhathpuja Jode Jode Falwa',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'T-Series Regional',
+    duration: 'Chhath Folk',
     youtubeId: 'BKoD7bTLc2k',
     lyricsHighlight: 'जोड़े जोड़े फलवा सुरुज देव, घटवे पहुँचाईब... ले ले अहिरन बाँसी के सुपवा...',
     meaning: 'Carrying auspicious paired fruits and woven bamboo soop to the holy river ghat.',
-    tag: 'प्लेलिस्ट गीत (Track 2)'
+    tag: 'लाइव प्लेलिस्ट गीत'
   },
   {
     id: '8MzoVsjL4QU',
-    title: 'उग हो सुरुज देव भेल भिनसरवा (Uga Hai Suraj Dev)',
-    artist: 'अनुराधा पौडवाल (Anuradha Paudwal)',
-    era: 'T-Series • Misty Dawn Bhajan',
-    duration: '5:24',
+    title: 'ऊगा है सूरज देव भोजपुरी छठ पूजा गीत अनुराधा पौडवाल के द्वारा [पूरा वीडियो गाना] | छठ गीत',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'T-Series Bhakti Sagar',
+    duration: 'Chhath Folk',
     youtubeId: '8MzoVsjL4QU',
     lyricsHighlight: 'उग हो सुरुज देव भेल भिनसरवा, अरघ के रे बेरवा... पूजन के बेरवा...',
     meaning: 'Rise O Sun God! The dawn has arrived, it is the holy moment of pouring Arghya into the cold river.',
-    tag: 'प्लेलिस्ट गीत (Track 3)'
+    tag: 'लाइव प्लेलिस्ट गीत'
   },
   {
     id: 'KWvgJvM2zT0',
-    title: 'हो दीनानाथ (Ho Deenanath - New Version)',
-    artist: 'पद्म भूषण शारदा सिन्हा (Sharda Sinha)',
-    era: 'T-Series • Eternal Masterpiece',
-    duration: '6:12',
+    title: 'Ho Deenanath New Version I Chhath Pooja Geet I SHARDA SINHA I Chhath Pooja I Chhathi Maiya',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'T-Series Bhakti Sagar',
+    duration: 'Chhath Folk',
     youtubeId: 'KWvgJvM2zT0',
     lyricsHighlight: 'काँच ही बाँस के बहंगिया, बहंगी लचकत जाए... बाट जे पूछेला बटोहिया, बहंगी केकरा के जाए?',
     meaning: 'The raw green bamboo pole sways under the sacred weight of devotion as we journey to the ghat.',
-    tag: 'प्लेलिस्ट गीत (Track 4)'
-  },
-  {
-    id: '3uU8jX2tX0g',
-    title: 'केलवा के पात पर उगेलन सूरजमल',
-    artist: 'शारदा सिन्हा (Sharda Sinha)',
-    era: 'Classic Devotional',
-    duration: '5:48',
-    youtubeId: '3uU8jX2tX0g',
-    lyricsHighlight: 'केलवा के पात पर उगेलन सूरजमल झाँके-झूके... ए करेलू छठ बरतिया से झाँके-झूके...',
-    meaning: 'The radiant Sun rises over broad banana leaves, peering at the devoted Vratin standing in the holy river.',
-    tag: 'Dawn Arghya'
-  },
-  {
-    id: 'gUa8HkQj2wE',
-    title: 'पहिले पहिल हम कईनी छठी मईया',
-    artist: 'शारदा सिन्हा (Sharda Sinha)',
-    era: 'Modern Masterpiece',
-    duration: '6:45',
-    youtubeId: 'gUa8HkQj2wE',
-    lyricsHighlight: 'पहिले पहिल हम कईनी छठी मईया, पूजा तोहार... करिहा छमा छठी मईया भूल-चूक हमार...',
-    meaning: 'For the very first time I observe your sacred fast, O Mother Chhathi. Please forgive any innocent flaws in our devotion.',
-    tag: 'Heartfelt Prayer'
-  },
-  {
-    id: 'k1Z8fG2gZz0',
-    title: 'मारबो रे सुगवा धनुष से',
-    artist: 'शारदा सिन्हा (Sharda Sinha)',
-    era: 'Folk Legend',
-    duration: '5:32',
-    youtubeId: 'k1Z8fG2gZz0',
-    lyricsHighlight: 'मारबो रे सुगवा धनुष से सुगा गिरे मुरझाय... सुगा जे जूठा कइले फलवा, सुरुज देव ना होई...',
-    meaning: 'Guard the sacred tree so the parrot does not nibble on the pristine fruits meant exclusively for the Sun Lord.',
-    tag: 'Purity & Sanctity'
+    tag: 'लाइव प्लेलिस्ट गीत'
   }
 ];
 

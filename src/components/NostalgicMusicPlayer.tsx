@@ -72,14 +72,14 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
 
   const currentSong = playlistSongs[currentTrackIndex] || playlistSongs[0] || CHHATH_SONGS[0];
 
-  // Fetch live playlist tracks from backend API
+  // Fetch live playlist tracks dynamically from backend API / YouTube feed
   const fetchLivePlaylist = async () => {
     setIsLoadingSongs(true);
     try {
-      const res = await fetch(`/api/playlist?list=${playlistId}`);
+      const res = await fetch(`/api/playlist?list=${playlistId}&t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
-        if (data && data.songs && data.songs.length > 0) {
+        if (data && Array.isArray(data.songs) && data.songs.length > 0) {
           setPlaylistSongs(data.songs);
           setLastSyncedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
         }
