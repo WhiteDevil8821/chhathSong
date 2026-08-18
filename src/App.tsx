@@ -27,6 +27,7 @@ import { NostalgicMemoriesBoard } from './components/NostalgicMemoriesBoard';
 import { NostalgicMusicPlayer } from './components/NostalgicMusicPlayer';
 import { InfoModals, ActiveModal } from './components/InfoModals';
 import { soundSynth } from './utils/soundSynthesizer';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   const [atmosphere, setAtmosphere] = useState<GhatAtmosphere>('dawn');
@@ -342,7 +343,9 @@ export default function App() {
         onClose={() => setActiveModal(null)}
         contactEmail={contactEmail}
       />
+
+      {/* Vercel Web Analytics */}
+      <Analytics />
     </div>
   );
 }
-
