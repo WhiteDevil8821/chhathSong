@@ -79,20 +79,24 @@ export default function App() {
       </div>
 
       {/* Top Floating Navigation Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#180F08]/95 border-b border-[#D4AF37]/20 px-3 sm:px-4 md:px-6 lg:px-8 py-2.5 sm:py-3 transition-all">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4 md:gap-6">
-          {/* Logo & Regional Identity */}
-          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 shrink-0 whitespace-nowrap">
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#180F08]/95 border-b border-[#D4AF37]/20 px-2.5 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-2.5 md:py-3 transition-all">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-1.5 sm:gap-3 md:gap-4 lg:gap-6">
+          {/* Logo & Regional Identity (Adaptive Multiline Wrapping for Mobile/Tablet) */}
+          <div className="flex items-center gap-2 sm:gap-2.5 md:gap-3 min-w-0 flex-1">
             <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-tr from-[#9B3D12] via-[#C87D32] to-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.3)] border border-[#D4AF37]/40 text-sm sm:text-base md:text-lg shrink-0">
               🪔
             </div>
-            <div className="flex flex-col justify-center whitespace-nowrap">
-              <span className="hidden sm:block text-[9px] sm:text-[10px] lg:text-[11px] uppercase tracking-[0.15em] lg:tracking-[0.22em] text-[#D4AF37] font-semibold whitespace-nowrap leading-tight">
+            <div className="min-w-0 flex flex-col justify-center">
+              <span className="hidden lg:block text-[10px] xl:text-[11px] uppercase tracking-[0.18em] text-[#D4AF37] font-semibold truncate leading-none mb-0.5">
                 {isHindi ? 'मिथिला • मगध • अंग • भोजपुरी माटी' : 'Mithila • Magadh • Anga • Bhojpuri Soul'}
               </span>
-              <p className="text-xs sm:text-sm md:text-base font-serif font-bold text-[#FFF5E1] tracking-wide whitespace-nowrap leading-tight">
-                {isHindi ? 'महापर्व छठ • The Pride of Bihar' : 'Chhath Mahaparv • The Pride of Bihar'}
-              </p>
+              <h1 className="text-xs sm:text-sm md:text-base font-serif font-bold text-[#FFF5E1] tracking-wide leading-tight">
+                <span className="block sm:inline">{isHindi ? 'महापर्व छठ' : 'Chhath Mahaparv'}</span>
+                <span className="hidden sm:inline text-[#D4AF37]/60"> • </span>
+                <span className="block sm:inline text-[10px] sm:text-xs md:text-sm font-sans sm:font-serif font-medium sm:font-bold text-[#D4AF37] sm:text-[#FFF5E1] opacity-90 sm:opacity-100">
+                  {isHindi ? 'The Pride of Bihar' : 'The Pride of Bihar'}
+                </span>
+              </h1>
             </div>
           </div>
 

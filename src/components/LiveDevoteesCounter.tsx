@@ -51,7 +51,7 @@ export const LiveDevoteesCounter: React.FC<LiveDevoteesCounterProps> = ({
       <button
         type="button"
         onClick={() => setShowInfoDropdown(!showInfoDropdown)}
-        className="px-2.5 sm:px-3 py-1.5 rounded-full bg-[#1C120A]/95 hover:bg-[#2A1B0E] border border-[#D4AF37]/40 text-xs text-[#FFF5E1] flex items-center gap-1.5 sm:gap-2 transition-all cursor-pointer shadow-sm group whitespace-nowrap shrink-0 hover:border-[#D4AF37]/70"
+        className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[#1C120A]/95 hover:bg-[#2A1B0E] border border-[#D4AF37]/40 text-xs text-[#FFF5E1] flex items-center gap-1 sm:gap-2 transition-all cursor-pointer shadow-sm group whitespace-nowrap shrink-0 hover:border-[#D4AF37]/70"
         title={isHindi ? 'वर्तमान में लाइव जुड़े श्रद्धालु' : 'Live Connected Devotees'}
       >
         {/* Live Pulsing Green Dot */}
@@ -69,7 +69,7 @@ export const LiveDevoteesCounter: React.FC<LiveDevoteesCounterProps> = ({
         </span>
 
         <ChevronDown
-          className={`w-3 h-3 text-[#D4AF37]/80 transition-transform duration-200 ${
+          className={`w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#D4AF37]/80 transition-transform duration-200 ${
             showInfoDropdown ? 'rotate-180 text-[#D4AF37]' : ''
           }`}
         />
