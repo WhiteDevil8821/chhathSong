@@ -143,6 +143,56 @@ async function startServer() {
     }
   }
 
+  // Exact real-time presence tracking for online devotees (no simulated offsets)
+  const activeSessions = new Map<string, { lastSeen: number; city?: string }>();
+  let dailyPeakOnline = 1;
+
+  // Clean up stale sessions every 10 seconds (sessions silent for > 20s are removed)
+  setInterval(() => {
+    const now = Date.now();
+    for (const [id, session] of activeSessions.entries()) {
+      if (now - session.lastSeen > 20000) {
+        activeSessions.delete(id);
+      }
+    }
+  }, 10000);
+
+  // API Route: Real-time Exact Online Users / Heartbeat
+  app.get('/api/presence', (req, res) => {
+    const clientId = (req.query.cid as string) || (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'guest';
+    const now = Date.now();
+    activeSessions.set(clientId, { lastSeen: now });
+
+    const exactCount = Math.max(1, activeSessions.size);
+    if (exactCount > dailyPeakOnline) {
+      dailyPeakOnline = exactCount;
+    }
+
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.json({
+      online: exactCount,
+      exactLive: activeSessions.size,
+      peakToday: dailyPeakOnline,
+      isExact: true
+    });
+  });
+
+  // Client Heartbeat Endpoint
+  app.post('/api/presence/heartbeat', (req, res) => {
+    const clientId = (req.query.cid as string) || (req.body && req.body.cid) || (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'guest';
+    activeSessions.set(clientId, { lastSeen: Date.now() });
+    res.json({ status: 'ok', online: Math.max(1, activeSessions.size) });
+  });
+
+  // Client Leave / Beacon Endpoint (removes immediately upon tab close)
+  app.post('/api/presence/leave', (req, res) => {
+    const clientId = (req.query.cid as string) || (req.body && req.body.cid) || (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress;
+    if (clientId) {
+      activeSessions.delete(clientId);
+    }
+    res.json({ status: 'left', online: Math.max(1, activeSessions.size) });
+  });
+
   // API Route: Health Check
   app.get('/api/health', (req, res) => {
     res.setHeader('Cache-Control', 'public, max-age=60');

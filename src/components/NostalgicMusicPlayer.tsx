@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { ChhathSong } from '../types';
 import { CHHATH_SONGS } from '../data/chhathData';
+import { useLanguage } from '../context/LanguageContext';
 
 declare global {
   interface Window {
@@ -42,6 +43,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
   isPlaying,
   onPlayPauseToggle
 }) => {
+  const { isHindi } = useLanguage();
   const [isMuted, setIsMuted] = useState(false);
   const [showPlaylist, setShowPlaylist] = useState(false);
   const [showVideoEmbed, setShowVideoEmbed] = useState(false);
@@ -409,8 +411,8 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
             <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#F28C28]/25">
               <div className="flex items-center gap-2">
                 <ListMusic className="w-4 h-4 text-[#F28C28]" />
-                <h4 className="text-sm font-devanagari font-bold text-[#FFF5E1]">
-                  छठ महापर्व के अमर लोकगीत (Live YouTube Playlist)
+                <h4 className="text-sm font-bold text-[#FFF5E1]">
+                  {isHindi ? 'छठ महापर्व के अमर लोकगीत (Live YouTube Playlist)' : 'Immortal Chhath Hymns & Folk Melodies (Live Playlist)'}
                 </h4>
                 <span className="text-[11px] text-[#F28C28] bg-black/40 px-2 py-0.5 rounded-full border border-[#F28C28]/30 font-mono">
                   {playlistSongs.length} Songs
@@ -426,7 +428,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
                   title="Sync with latest YouTube playlist updates"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isLoadingSongs ? 'animate-spin text-[#F28C28]' : ''}`} />
-                  <span>{isLoadingSongs ? 'सिंक हो रहा है...' : 'लाइव रिफ्रेश'}</span>
+                  <span>{isLoadingSongs ? (isHindi ? 'सिंक हो रहा है...' : 'Syncing...') : (isHindi ? 'लाइव रिफ्रेश' : 'Live Sync')}</span>
                 </button>
 
                 {/* Repeat Mode Quick Selector inside drawer */}
@@ -444,17 +446,17 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
                   {repeatMode === 'one' ? (
                     <>
                       <Repeat1 className="w-3.5 h-3.5 text-white" />
-                      <span>गीत दोहराएं (Repeat 1)</span>
+                      <span>{isHindi ? 'गीत दोहराएं (Repeat 1)' : 'Repeat 1 Song'}</span>
                     </>
                   ) : repeatMode === 'all' ? (
                     <>
                       <Repeat className="w-3.5 h-3.5 text-[#F28C28]" />
-                      <span>पूरी प्लेलिस्ट (Repeat All)</span>
+                      <span>{isHindi ? 'पूरी प्लेलिस्ट (Repeat All)' : 'Repeat All Songs'}</span>
                     </>
                   ) : (
                     <>
                       <Repeat className="w-3.5 h-3.5 opacity-50" />
-                      <span>लूप बंद (Repeat Off)</span>
+                      <span>{isHindi ? 'लूप बंद (Repeat Off)' : 'Repeat Off'}</span>
                     </>
                   )}
                 </button>
@@ -469,7 +471,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
                   }`}
                 >
                   <Tv className="w-3.5 h-3.5" />
-                  <span>{showVideoEmbed ? 'Hide Video' : 'Show YouTube Video'}</span>
+                  <span>{showVideoEmbed ? (isHindi ? 'वीडियो छुपाएं' : 'Hide Video') : (isHindi ? 'YouTube वीडियो देखें' : 'Show Video')}</span>
                 </button>
 
                 {/* Direct External Link */}
@@ -479,7 +481,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
                   rel="noreferrer"
                   className="px-2.5 py-1 rounded-lg bg-[#E34234]/80 hover:bg-[#E34234] text-[11px] text-white flex items-center gap-1 font-bold shadow-sm transition-all"
                 >
-                  <span>YouTube पर खोलें</span>
+                  <span>{isHindi ? 'YouTube पर खोलें' : 'Open on YouTube'}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
@@ -713,7 +715,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
               title="View all Chhath songs & playlist"
             >
               <ListMusic className="w-4 h-4" />
-              <span className="text-xs font-bold hidden md:inline">गीत माला</span>
+              <span className="text-xs font-bold hidden md:inline">{isHindi ? 'गीत माला' : 'Sacred Playlist'}</span>
               {showPlaylist ? (
                 <ChevronDown className="w-3 h-3" />
               ) : (

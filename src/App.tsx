@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Sun,
@@ -17,10 +17,10 @@ import {
   Shield,
   BookOpen,
   Menu,
-  X
+  X,
+  QrCode,
+  Globe
 } from 'lucide-react';
-import { GhatAtmosphere } from './types';
-import { GhatVisual } from './components/GhatVisual';
 import { InteractiveArghya } from './components/InteractiveArghya';
 import { QuotesTicker } from './components/QuotesTicker';
 import { FourDaysTimeline } from './components/FourDaysTimeline';
@@ -28,20 +28,23 @@ import { CulturalArtifactsGrid } from './components/CulturalArtifactsGrid';
 import { NostalgicMemoriesBoard } from './components/NostalgicMemoriesBoard';
 import { NostalgicMusicPlayer } from './components/NostalgicMusicPlayer';
 import { ActiveModal } from './components/InfoModals';
+import { LiveDevoteesCounter } from './components/LiveDevoteesCounter';
+import { UpiSupportModal } from './components/UpiSupportModal';
 import { soundSynth } from './utils/soundSynthesizer';
+import { useLanguage } from './context/LanguageContext';
 import { Analytics } from '@vercel/analytics/react';
 
-// Lazy load InfoModals to drastically reduce initial bundle size and speed up first contentful paint
+// Lazy load InfoModals to keep initial bundle size lean and fast
 const InfoModals = lazy(() => import('./components/InfoModals').then(m => ({ default: m.InfoModals })));
 
 export default function App() {
-  const [atmosphere, setAtmosphere] = useState<GhatAtmosphere>('dawn');
+  const { lang, setLang, toggleLang, isHindi } = useLanguage();
   const [arghyaCount, setArghyaCount] = useState<number>(0);
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isAudioMuted, setIsAudioMuted] = useState<boolean>(false);
-  const [showShareToast, setShowShareToast] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
+  const [isUpiModalOpen, setIsUpiModalOpen] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   const contactEmail = 'ankit.kumar221099@gmail.com';
@@ -61,127 +64,202 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#2D1B0D] text-[#FFF5E1] relative selection:bg-[#F28C28] selection:text-[#2D1B0D] pb-36 font-serif">
-      {/* Natural Tones Dynamic Background Ambient & Dot Grid Overlay */}
+    <div className="min-h-screen bg-[#180F08] text-[#FFF5E1] relative selection:bg-[#D4AF37] selection:text-[#180F08] pb-36 font-sans">
+      {/* Ambient Background & Subtle Warm Glow */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        {/* Subtle 10px Dot Matrix from Natural Tones Theme */}
         <div
-          className="absolute inset-0 opacity-10"
+          className="absolute inset-0 opacity-[0.06]"
           style={{
-            backgroundImage: 'radial-gradient(#F28C28 0.75px, transparent 0.75px)',
-            backgroundSize: '12px 12px'
+            backgroundImage: 'radial-gradient(#D4AF37 0.75px, transparent 0.75px)',
+            backgroundSize: '16px 16px'
           }}
         />
-        {/* Deep Earthen Terracotta Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#9B3D12]/35 via-transparent to-black/60" />
-
-        {/* Atmospheric Dynamic Sky Glow */}
-        <div
-          className={`absolute top-0 inset-x-0 h-[600px] transition-all duration-1000 opacity-40 blur-[100px] ${
-            atmosphere === 'dawn'
-              ? 'bg-gradient-to-b from-[#F28C28]/30 via-[#9B3D12]/40 to-transparent'
-              : 'bg-gradient-to-b from-[#9B3D12]/50 via-purple-900/30 to-transparent'
-          }`}
-        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#20130A] via-[#180F08]/90 to-[#120B06]" />
+        <div className="absolute top-0 inset-x-0 h-[500px] opacity-30 blur-[120px] bg-gradient-to-b from-[#C87D32]/30 via-[#8A3B14]/20 to-transparent" />
       </div>
 
-      {/* Top Floating Navigation / Status Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#2D1B0D]/90 border-b border-[#F28C28]/25 px-3 md:px-8 py-3">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      {/* Top Floating Navigation Header */}
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#180F08]/90 border-b border-[#D4AF37]/20 px-3 md:px-8 py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
           {/* Logo & Regional Identity */}
           <div className="flex items-center gap-2.5 md:gap-3 min-w-0">
-            <div className="w-9 h-9 md:w-10 md:h-10 rounded-2xl bg-gradient-to-tr from-[#9B3D12] via-[#F28C28] to-[#FFD700] flex items-center justify-center shadow-[0_0_20px_rgba(242,140,40,0.4)] border border-[#F28C28]/40 text-base md:text-lg shrink-0">
+            <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-tr from-[#9B3D12] via-[#C87D32] to-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.3)] border border-[#D4AF37]/40 text-base md:text-lg shrink-0">
               🪔
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 md:gap-2">
-                <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] md:tracking-[0.3em] text-[#F28C28] font-sans font-bold truncate">
-                  Mithila • Magadh • Anga
-                </span>
-                <span className="hidden xs:inline-block text-[9px] md:text-[10px] px-1.5 py-0.5 rounded-full bg-[#E34234] text-white font-sans font-bold tracking-wider uppercase shrink-0">
-                  छठी मईया
+                <span className="text-[10px] md:text-[11px] uppercase tracking-[0.25em] text-[#D4AF37] font-semibold truncate">
+                  {isHindi ? 'मिथिला • मगध • अंग • भोजपुरी माटी' : 'Mithila • Magadh • Anga • Bhojpuri Soul'}
                 </span>
               </div>
-              <p className="text-xs md:text-sm font-devanagari font-bold text-[#FFF5E1] tracking-wide text-natural-glow truncate">
-                महापर्व छठ • The Pride of Bihar
+              <p className="text-xs md:text-sm font-serif font-bold text-[#FFF5E1] tracking-wide truncate">
+                {isHindi ? 'महापर्व छठ • The Pride of Bihar' : 'Chhath Mahaparv • The Pride of Bihar'}
               </p>
             </div>
           </div>
 
           {/* Desktop Navigation Controls */}
-          <div className="hidden md:flex items-center gap-2 md:gap-3">
-            {/* Pan-Bihar Sacred Ghat Location Badge */}
-            <div className="hidden lg:flex border border-[#F28C28]/40 rounded-full px-3.5 py-1.5 backdrop-blur-sm bg-black/20">
-              <span className="text-xs font-sans font-bold tracking-widest uppercase text-[#FFF5E1]">
-                पावन घाट • सम्पूर्ण बिहार
-              </span>
+          <div className="hidden md:flex items-center gap-2.5 lg:gap-3">
+            {/* Real-time Online Devotees Counter (Exact) */}
+            <LiveDevoteesCounter variant="navbar" />
+
+            {/* Language Switch Toggle Button */}
+            <div className="flex items-center p-0.5 rounded-full bg-black/50 border border-[#D4AF37]/35 shadow-inner">
+              <button
+                type="button"
+                onClick={() => setLang('hi')}
+                className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                  isHindi
+                    ? 'bg-[#D4AF37] text-[#180F08] shadow-sm'
+                    : 'text-[#FFF5E1]/70 hover:text-[#FFF5E1]'
+                }`}
+                title="Switch to Hindi"
+              >
+                हिन्दी
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang('en')}
+                className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                  !isHindi
+                    ? 'bg-[#D4AF37] text-[#180F08] shadow-sm'
+                    : 'text-[#FFF5E1]/70 hover:text-[#FFF5E1]'
+                }`}
+                title="Switch to English"
+              >
+                English
+              </button>
             </div>
+
+            {/* UPI QR Support / Seva Button */}
+            <button
+              onClick={() => setIsUpiModalOpen(true)}
+              className="px-3.5 py-1.5 rounded-full bg-[#D4AF37]/15 hover:bg-[#D4AF37]/25 text-xs font-semibold text-[#D4AF37] border border-[#D4AF37]/40 flex items-center gap-1.5 transition-all cursor-pointer shadow-sm hover:scale-[1.02]"
+              title="Support with UPI QR"
+            >
+              <Heart className="w-3.5 h-3.5 fill-[#D4AF37]/30 text-[#D4AF37]" />
+              <span>{isHindi ? 'सहयोग (Support)' : 'Support'}</span>
+            </button>
 
             {/* About Modal Button */}
             <button
               onClick={() => setActiveModal('about')}
-              className="px-3 py-1.5 rounded-full bg-black/30 hover:bg-[#F28C28]/20 text-xs font-sans font-semibold text-[#FFF5E1] border border-[#F28C28]/40 flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+              className="px-3 py-1.5 rounded-full bg-black/30 hover:bg-[#D4AF37]/15 text-xs font-medium text-[#FFF5E1]/90 hover:text-[#FFF5E1] border border-[#D4AF37]/20 flex items-center gap-1.5 transition-all cursor-pointer"
               title="About Chhath Mahaparv"
             >
-              <Info className="w-3.5 h-3.5 text-[#F28C28]" />
-              <span>परिचय (About)</span>
+              <Info className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>{isHindi ? 'परिचय (About)' : 'About'}</span>
             </button>
 
             {/* Contact Modal Button */}
             <button
               onClick={() => setActiveModal('contact')}
-              className="px-3 py-1.5 rounded-full bg-black/30 hover:bg-[#F28C28]/20 text-xs font-sans font-semibold text-[#FFF5E1] border border-[#F28C28]/40 flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+              className="px-3 py-1.5 rounded-full bg-black/30 hover:bg-[#D4AF37]/15 text-xs font-medium text-[#FFF5E1]/90 hover:text-[#FFF5E1] border border-[#D4AF37]/20 flex items-center gap-1.5 transition-all cursor-pointer"
               title="Contact & Feedback"
             >
-              <Mail className="w-3.5 h-3.5 text-[#F28C28]" />
-              <span>संपर्क (Contact)</span>
+              <Mail className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>{isHindi ? 'संपर्क (Contact)' : 'Contact'}</span>
             </button>
 
             {/* Share / Blessings Button */}
             <button
               id="header-share-btn"
               onClick={handleShare}
-              className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#9B3D12] to-[#F28C28] hover:opacity-95 text-xs font-sans font-semibold text-[#2D1B0D] font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md"
+              className="px-4 py-1.5 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#F28C28] to-[#C87D32] hover:opacity-95 text-xs font-bold text-[#180F08] flex items-center gap-1.5 transition-all cursor-pointer shadow-md"
             >
-              <Share2 className="w-3.5 h-3.5 text-[#2D1B0D]" />
-              <span>शुभकामनाएँ (Share)</span>
+              <Share2 className="w-3.5 h-3.5 text-[#180F08]" />
+              <span>{isHindi ? 'शुभकामनाएँ (Share)' : 'Share Blessings'}</span>
             </button>
           </div>
 
-          {/* Mobile Right Controls: Hamburger Toggle */}
-          <div className="flex md:hidden items-center gap-1.5 shrink-0">
+          {/* Mobile Right Controls */}
+          <div className="flex md:hidden items-center gap-2 shrink-0">
+            <LiveDevoteesCounter variant="navbar" />
+
+            {/* Mobile Language Switcher */}
+            <button
+              type="button"
+              onClick={toggleLang}
+              className="px-2 py-1 rounded-lg bg-black/40 border border-[#D4AF37]/35 text-[11px] font-bold text-[#D4AF37] flex items-center gap-1 cursor-pointer"
+              title="Toggle Language"
+            >
+              <Globe className="w-3 h-3" />
+              <span>{isHindi ? 'EN' : 'हिन्दी'}</span>
+            </button>
+
             {/* Hamburger Button */}
             <button
               id="header-hamburger-btn"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 rounded-xl bg-black/40 border border-[#F28C28]/40 text-[#FFF5E1] hover:bg-[#F28C28]/20 transition-all cursor-pointer"
+              className="p-2 rounded-xl bg-black/40 border border-[#D4AF37]/30 text-[#FFF5E1] hover:bg-[#D4AF37]/15 transition-all cursor-pointer"
               aria-label="Toggle navigation menu"
             >
-              {isMobileMenuOpen ? <X className="w-5 h-5 text-[#F28C28]" /> : <Menu className="w-5 h-5" />}
+              {isMobileMenuOpen ? <X className="w-5 h-5 text-[#D4AF37]" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Dropdown / Drawer Menu */}
+        {/* Mobile Dropdown Menu */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="md:hidden overflow-hidden border-t border-[#F28C28]/20 mt-3 pt-3 space-y-2.5"
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              className="md:hidden overflow-hidden border-t border-[#D4AF37]/20 mt-3 pt-3 space-y-2.5"
             >
+              {/* Language Selector in Drawer */}
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-black/40 border border-[#D4AF37]/30 text-xs">
+                <span className="text-[#FFF5E1]/80 font-medium flex items-center gap-1.5">
+                  <Globe className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  {isHindi ? 'भाषा चुनें (Language):' : 'Select Language:'}
+                </span>
+                <div className="flex items-center gap-1 bg-black/60 p-0.5 rounded-lg border border-[#D4AF37]/30">
+                  <button
+                    onClick={() => setLang('hi')}
+                    className={`px-2.5 py-1 rounded text-xs font-semibold ${
+                      isHindi ? 'bg-[#D4AF37] text-[#180F08]' : 'text-[#FFF5E1]/70'
+                    }`}
+                  >
+                    हिन्दी
+                  </button>
+                  <button
+                    onClick={() => setLang('en')}
+                    className={`px-2.5 py-1 rounded text-xs font-semibold ${
+                      !isHindi ? 'bg-[#D4AF37] text-[#180F08]' : 'text-[#FFF5E1]/70'
+                    }`}
+                  >
+                    English
+                  </button>
+                </div>
+              </div>
+
+              {/* Mobile UPI Support Button */}
+              <button
+                onClick={() => {
+                  setIsUpiModalOpen(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full p-2.5 rounded-xl bg-[#D4AF37]/20 border border-[#D4AF37]/40 text-left flex items-center justify-between text-xs font-semibold text-[#D4AF37] hover:bg-[#D4AF37]/30 transition-all cursor-pointer"
+              >
+                <div className="flex items-center gap-2">
+                  <QrCode className="w-4 h-4 text-[#D4AF37] shrink-0" />
+                  <span>{isHindi ? 'सहयोग एवं सेवा (Support via UPI QR)' : 'Support the Platform (UPI QR)'}</span>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#D4AF37] text-[#180F08] font-bold">UPI</span>
+              </button>
+
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => {
                     setActiveModal('about');
                     setIsMobileMenuOpen(false);
                   }}
-                  className="p-2.5 rounded-xl bg-black/40 border border-[#F28C28]/30 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#F28C28]/20 transition-all cursor-pointer"
+                  className="p-2.5 rounded-xl bg-black/40 border border-[#D4AF37]/25 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#D4AF37]/15 transition-all cursor-pointer"
                 >
-                  <Info className="w-4 h-4 text-[#F28C28] shrink-0" />
-                  <span>परिचय (About)</span>
+                  <Info className="w-4 h-4 text-[#D4AF37] shrink-0" />
+                  <span>{isHindi ? 'परिचय (About)' : 'About'}</span>
                 </button>
 
                 <button
@@ -189,10 +267,10 @@ export default function App() {
                     setActiveModal('contact');
                     setIsMobileMenuOpen(false);
                   }}
-                  className="p-2.5 rounded-xl bg-black/40 border border-[#F28C28]/30 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#F28C28]/20 transition-all cursor-pointer"
+                  className="p-2.5 rounded-xl bg-black/40 border border-[#D4AF37]/25 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#D4AF37]/15 transition-all cursor-pointer"
                 >
-                  <Mail className="w-4 h-4 text-[#F28C28] shrink-0" />
-                  <span>संपर्क (Contact)</span>
+                  <Mail className="w-4 h-4 text-[#D4AF37] shrink-0" />
+                  <span>{isHindi ? 'संपर्क (Contact)' : 'Contact'}</span>
                 </button>
               </div>
 
@@ -202,10 +280,10 @@ export default function App() {
                     setActiveModal('privacy');
                     setIsMobileMenuOpen(false);
                   }}
-                  className="p-2.5 rounded-xl bg-black/40 border border-[#F28C28]/30 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#F28C28]/20 transition-all cursor-pointer"
+                  className="p-2.5 rounded-xl bg-black/40 border border-[#D4AF37]/25 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#D4AF37]/15 transition-all cursor-pointer"
                 >
-                  <Shield className="w-4 h-4 text-[#F28C28] shrink-0" />
-                  <span>गोपनीयता (Privacy)</span>
+                  <Shield className="w-4 h-4 text-[#D4AF37] shrink-0" />
+                  <span>{isHindi ? 'गोपनीयता (Privacy)' : 'Privacy'}</span>
                 </button>
 
                 <button
@@ -213,10 +291,10 @@ export default function App() {
                     setActiveModal('terms');
                     setIsMobileMenuOpen(false);
                   }}
-                  className="p-2.5 rounded-xl bg-black/40 border border-[#F28C28]/30 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#F28C28]/20 transition-all cursor-pointer"
+                  className="p-2.5 rounded-xl bg-black/40 border border-[#D4AF37]/25 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#D4AF37]/15 transition-all cursor-pointer"
                 >
-                  <BookOpen className="w-4 h-4 text-[#F28C28] shrink-0" />
-                  <span>नियम व शर्तें (Terms)</span>
+                  <BookOpen className="w-4 h-4 text-[#D4AF37] shrink-0" />
+                  <span>{isHindi ? 'नियम व शर्तें (Terms)' : 'Terms of Use'}</span>
                 </button>
               </div>
 
@@ -226,10 +304,10 @@ export default function App() {
                   handleShare();
                   setIsMobileMenuOpen(false);
                 }}
-                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#9B3D12] via-[#F28C28] to-[#FFD700] text-[#2D1B0D] font-bold text-xs flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#F28C28] to-[#C87D32] text-[#180F08] font-bold text-xs flex items-center justify-center gap-2 shadow-md cursor-pointer"
               >
-                <Share2 className="w-4 h-4 text-[#2D1B0D]" />
-                <span>शुभकामनाएँ भेजें (Share Blessings)</span>
+                <Share2 className="w-4 h-4 text-[#180F08]" />
+                <span>{isHindi ? 'शुभकामनाएँ भेजें (Share Blessings)' : 'Share Greetings & Blessings'}</span>
               </button>
             </motion.div>
           )}
@@ -240,40 +318,38 @@ export default function App() {
       <main className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 pt-8 md:pt-12 space-y-12 md:space-y-16">
         {/* Hero Branding & Memorable Title Section */}
         <section id="hero-title-section" className="text-center space-y-4 max-w-4xl mx-auto">
+          {/* Top Live Presence Badge */}
+          <div className="flex items-center justify-center">
+            <LiveDevoteesCounter variant="hero" />
+          </div>
+
           {/* Eyebrow Label */}
-          <div className="inline-flex items-center gap-2">
-            <h2 className="text-xs uppercase tracking-[0.4em] text-[#F28C28] font-sans font-bold">
-              Mithila • Magadh • Anga • Bhojpuriya Maati
+          <div className="pt-2">
+            <h2 className="text-xs uppercase tracking-[0.35em] text-[#D4AF37] font-semibold">
+              {isHindi ? 'मिथिला • मगध • अंग • भोजपुरिया माटी' : 'Mithila • Magadh • Anga • Bhojpuriya Heritage'}
             </h2>
           </div>
 
           {/* Large Memorable Title */}
-          <h1 className="text-5xl sm:text-6xl md:text-8xl font-serif font-light tracking-tighter leading-none text-[#FFF5E1]">
-            CHHATH <span className="italic font-extralight text-[#F28C28]">PUJA</span>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-light tracking-tight leading-none text-[#FFF5E1]">
+            CHHATH <span className="italic font-normal text-[#D4AF37]">PUJA</span>
           </h1>
 
-          <div className="text-lg md:text-2xl font-devanagari font-semibold text-[#F28C28] tracking-wider text-natural-glow">
-            द प्राइड ऑफ बिहार • लोक आस्था का महापर्व
+          <div className="text-lg md:text-2xl font-serif font-semibold text-[#D4AF37] tracking-wide">
+            {isHindi
+              ? 'द प्राइड ऑफ बिहार • लोक आस्था का महापर्व'
+              : 'The Pride of Bihar • Mahaparv of Folk Faith'}
           </div>
 
           {/* Subtitle & Cultural Statement */}
-          <p className="mt-4 text-base sm:text-lg opacity-85 max-w-2xl mx-auto font-sans font-light leading-relaxed text-[#FFF5E1]">
-            The celebration of cosmic energy, faith, and the eternal bond between the Sun and the Earth.
-            जहाँ उगते और डूबते दोनों सूर्यों को नमन किया जाता है।
+          <p className="mt-4 text-sm sm:text-base opacity-85 max-w-2xl mx-auto font-sans font-light leading-relaxed text-[#FFF5E1]">
+            {isHindi
+              ? 'ब्रह्मांडीय ऊर्जा, अटूट श्रद्धा और सूर्य-प्रकृति के पावन संगम का महापर्व। जहाँ उगते और डूबते दोनों सूर्यों को नमन किया जाता है।'
+              : 'The timeless celebration of cosmic energy, nature, and pure faith. The only festival on Earth that bows with equal reverence to both the setting and rising Sun.'}
           </p>
         </section>
 
-        {/* 1. Visually Rich Nostalgic Ganga Ghat Canvas & Central Object */}
-        <section aria-label="Sacred Ganga Ghat">
-          <GhatVisual
-            atmosphere={atmosphere}
-            onAtmosphereChange={setAtmosphere}
-            onOfferArghya={handleOfferArghya}
-            arghyaCount={arghyaCount}
-          />
-        </section>
-
-        {/* 2. Rotating Nostalgic Quotes & Verses */}
+        {/* 1. Rotating Nostalgic Quotes & Verses */}
         <section aria-label="Nostalgic Quotes and Memories">
           <QuotesTicker />
         </section>
@@ -298,58 +374,68 @@ export default function App() {
           <NostalgicMemoriesBoard />
         </section>
 
-        {/* Production Footer with Navigation Links & Contact Info */}
-        <footer className="pt-12 pb-16 border-t border-[#F28C28]/25 text-center space-y-6 font-sans">
+        {/* Production Footer */}
+        <footer className="pt-12 pb-16 border-t border-[#D4AF37]/20 text-center space-y-6 font-sans">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xl">🪔</span>
-            <span className="text-lg md:text-xl font-devanagari font-bold text-[#FFF5E1] text-natural-glow">
-              जय छठी मईया • सूर्य देवाय नमः
+            <span className="text-lg md:text-xl font-serif font-bold text-[#FFF5E1]">
+              {isHindi ? 'जय छठी मईया • सूर्य देवाय नमः' : 'Jai Chhathi Maiya • Om Suryaya Namaha'}
             </span>
             <span className="text-xl">🪔</span>
           </div>
 
           <p className="text-xs md:text-sm text-[#FFF5E1]/70 max-w-xl mx-auto leading-relaxed">
-            स्वर कोकिला <strong>पद्म भूषण शारदा सिन्हा</strong> जी के अमर स्वरों को भावभीनी श्रद्धांजलि, जिनके गीतों के बिना छठ का महापर्व अधूरा है।
+            {isHindi ? (
+              <>स्वर कोकिला <strong>पद्म भूषण शारदा सिन्हा</strong> जी के अमर स्वरों को भावभीनी श्रद्धांजलि, जिनके गीतों के बिना छठ का महापर्व अधूरा है।</>
+            ) : (
+              <>A soulful homage to the Nightingale of Bihar, <strong>Padma Bhushan Sharda Sinha</strong>, whose immortal folk voice is the very breath of Chhath Mahaparv.</>
+            )}
           </p>
 
           {/* Quick Footer Navigation Links */}
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-[#F28C28]">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-medium text-[#D4AF37]">
             <button
               onClick={() => setActiveModal('about')}
               className="hover:underline hover:text-[#FFF5E1] transition-all cursor-pointer"
             >
-              परिचय (About Chhath)
+              {isHindi ? 'परिचय (About Chhath)' : 'About Chhath'}
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => setIsUpiModalOpen(true)}
+              className="hover:underline hover:text-[#FFF5E1] transition-all cursor-pointer font-bold text-[#D4AF37]"
+            >
+              {isHindi ? 'सहयोग व दान (UPI Support)' : 'UPI Support'}
             </button>
             <span>•</span>
             <button
               onClick={() => setActiveModal('contact')}
               className="hover:underline hover:text-[#FFF5E1] transition-all cursor-pointer"
             >
-              संपर्क (Contact Us)
+              {isHindi ? 'संपर्क (Contact Us)' : 'Contact Us'}
             </button>
             <span>•</span>
             <button
               onClick={() => setActiveModal('privacy')}
               className="hover:underline hover:text-[#FFF5E1] transition-all cursor-pointer"
             >
-              सांस्कृतिक मर्यादा एवं नीति (Privacy & Terms)
+              {isHindi ? 'सांस्कृतिक मर्यादा एवं नीति (Privacy & Terms)' : 'Privacy & Policies'}
             </button>
             <span>•</span>
             <button
               onClick={() => setActiveModal('share')}
               className="hover:underline hover:text-[#FFF5E1] transition-all cursor-pointer"
             >
-              शुभकामनाएँ साझा करें (Share)
+              {isHindi ? 'शुभकामनाएँ साझा करें (Share)' : 'Share Blessings'}
             </button>
           </div>
 
           {/* Creator Social Media Handles */}
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <span className="text-xs font-devanagari text-[#FFF5E1]/70">
-              संयोजक व निर्माता (Creator):
+            <span className="text-xs text-[#FFF5E1]/70">
+              {isHindi ? 'संयोजक व निर्माता (Creator):' : 'Creator & Developer:'}
             </span>
             <div className="flex items-center gap-2">
-              {/* Instagram */}
               <a
                 href="https://www.instagram.com/_ek__bihari__/"
                 target="_blank"
@@ -365,7 +451,6 @@ export default function App() {
                 <span>Instagram</span>
               </a>
 
-              {/* Facebook */}
               <a
                 href="https://www.facebook.com/DarkPheonix8831/"
                 target="_blank"
@@ -379,7 +464,6 @@ export default function App() {
                 <span>Facebook</span>
               </a>
 
-              {/* LinkedIn */}
               <a
                 href="https://www.linkedin.com/in/ankitsingh2210/"
                 target="_blank"
@@ -398,7 +482,7 @@ export default function App() {
           {/* Contact Email & Copyright */}
           <div className="pt-1 space-y-1.5 text-xs text-[#FFF5E1]/60 font-mono">
             <div>
-              Contact: <a href={`mailto:${contactEmail}`} className="text-[#F28C28] hover:underline font-semibold">{contactEmail}</a>
+              {isHindi ? 'संपर्क ईमेल:' : 'Contact:'} <a href={`mailto:${contactEmail}`} className="text-[#D4AF37] hover:underline font-semibold">{contactEmail}</a>
             </div>
             <div className="text-[#FFF5E1]/40 text-[11px]">
               © {new Date().getFullYear()} Chhath: The Pride of Bihar. All rights reserved. • A cultural tribute to Bihar & Purvanchal.
@@ -407,7 +491,7 @@ export default function App() {
         </footer>
       </main>
 
-      {/* Fixed Glassmorphism YouTube Music Player */}
+      {/* Fixed Music Player */}
       <NostalgicMusicPlayer
         currentTrackIndex={currentTrackIndex}
         onTrackChange={setCurrentTrackIndex}
@@ -415,7 +499,13 @@ export default function App() {
         onPlayPauseToggle={() => setIsPlaying(prev => !prev)}
       />
 
-      {/* Production Info & Contact Modals - Deferred Lazy Loaded */}
+      {/* UPI QR Support Modal */}
+      <UpiSupportModal
+        isOpen={isUpiModalOpen}
+        onClose={() => setIsUpiModalOpen(false)}
+      />
+
+      {/* Info Modals */}
       <Suspense fallback={null}>
         {activeModal && (
           <InfoModals
@@ -426,7 +516,7 @@ export default function App() {
         )}
       </Suspense>
 
-      {/* Vercel Web Analytics */}
+      {/* Vercel Analytics */}
       <Analytics />
     </div>
   );

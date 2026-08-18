@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Quote, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import { NOSTALGIC_QUOTES } from '../data/chhathData';
+import { useLanguage } from '../context/LanguageContext';
 
 export const QuotesTicker: React.FC = () => {
+  const { isHindi } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -31,18 +33,18 @@ export const QuotesTicker: React.FC = () => {
       id="quotes-ticker-container"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
-      className="relative glass-card rounded-3xl p-6 md:p-8 border border-[#F28C28]/35 overflow-hidden shadow-2xl transition-all"
+      className="relative rounded-3xl bg-[#1C120B]/90 p-6 md:p-8 border border-[#D4AF37]/30 overflow-hidden shadow-2xl transition-all"
     >
       {/* Background Ambience */}
-      <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#F28C28]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#9B3D12]/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#8A3B14]/15 rounded-full blur-3xl pointer-events-none" />
 
       {/* Header bar */}
-      <div className="flex items-center justify-between pb-3.5 border-b border-[#F28C28]/25 mb-4">
+      <div className="flex items-center justify-between pb-3.5 border-b border-[#D4AF37]/20 mb-4">
         <div className="flex items-center gap-2">
-          <Quote className="w-5 h-5 text-[#F28C28] rotate-180" />
-          <span className="text-xs md:text-sm font-sans font-bold text-[#F28C28] uppercase tracking-widest">
-            छठ की स्मृतियाँ व लोक दर्शन • Folk Philosophy & Memories
+          <Quote className="w-5 h-5 text-[#D4AF37] rotate-180" />
+          <span className="text-xs md:text-sm font-sans font-bold text-[#D4AF37] uppercase tracking-widest">
+            {isHindi ? 'छठ की स्मृतियाँ व लोक दर्शन • Folk Philosophy' : 'Folk Verses & Homeland Memories of Chhath'}
           </span>
         </div>
 
@@ -55,8 +57,8 @@ export const QuotesTicker: React.FC = () => {
                 onClick={() => setCurrentIndex(i)}
                 className={`h-1.5 rounded-full transition-all cursor-pointer ${
                   currentIndex === i
-                    ? 'w-6 bg-gradient-to-r from-[#F28C28] to-[#9B3D12]'
-                    : 'w-1.5 bg-[#FFF5E1]/20 hover:bg-[#F28C28]'
+                    ? 'w-6 bg-[#D4AF37]'
+                    : 'w-1.5 bg-[#FFF5E1]/20 hover:bg-[#D4AF37]'
                 }`}
                 title={`Quote ${i + 1}`}
               />
@@ -65,14 +67,14 @@ export const QuotesTicker: React.FC = () => {
 
           <button
             onClick={handlePrev}
-            className="p-1 rounded-lg hover:bg-[#F28C28]/20 text-[#FFF5E1] transition-colors cursor-pointer"
+            className="p-1 rounded-lg hover:bg-[#D4AF37]/20 text-[#FFF5E1] transition-colors cursor-pointer"
             title="Previous Quote"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={handleNext}
-            className="p-1 rounded-lg hover:bg-[#F28C28]/20 text-[#FFF5E1] transition-colors cursor-pointer"
+            className="p-1 rounded-lg hover:bg-[#D4AF37]/20 text-[#FFF5E1] transition-colors cursor-pointer"
             title="Next Quote"
           >
             <ChevronRight className="w-4 h-4" />
@@ -88,26 +90,26 @@ export const QuotesTicker: React.FC = () => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
             className="w-full space-y-3"
           >
-            {/* Bhojpuri/Hindi Verse in High-Emotive Typography */}
-            <p className="text-lg md:text-2xl font-folk font-normal text-[#FFF5E1] leading-relaxed text-natural-glow">
+            {/* Bhojpuri/Hindi Verse */}
+            <p className="text-lg md:text-2xl font-serif font-normal text-[#FFF5E1] leading-relaxed">
               {quote.quoteDevanagari}
             </p>
 
-            {/* English Cultural Translation */}
-            <p className="text-xs md:text-sm text-[#FFF5E1]/80 italic font-garamond text-base leading-snug">
+            {/* Cultural Translation */}
+            <p className="text-xs md:text-sm text-[#FFF5E1]/80 italic leading-snug">
               “{quote.translation}”
             </p>
 
             {/* Context & Tag */}
             <div className="flex flex-wrap items-center justify-between gap-2 pt-2 text-xs font-sans">
-              <span className="text-[#F28C28] font-bold flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-[#F28C28]" />
+              <span className="text-[#D4AF37] font-bold flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
                 <span>{quote.authorOrFolk}</span>
               </span>
-              <span className="text-[#FFF5E1]/70 text-[11px] bg-black/40 px-3 py-1 rounded-full border border-[#F28C28]/25">
+              <span className="text-[#FFF5E1]/70 text-[11px] bg-black/40 px-3 py-1 rounded-full border border-[#D4AF37]/25">
                 {quote.context}
               </span>
             </div>
