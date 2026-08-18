@@ -45,6 +45,72 @@ export const CHHATH_SONGS: ChhathSong[] = [
     lyricsHighlight: 'काँच ही बाँस के बहंगिया, बहंगी लचकत जाए... बाट जे पूछेला बटोहिया, बहंगी केकरा के जाए?',
     meaning: 'The raw green bamboo pole sways under the sacred weight of devotion as we journey to the ghat.',
     tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'OrlnX9zM5-k',
+    title: 'Chhathi Maiya Bulaye - Vishal Mishra | Kaushal Kishore | Desh Unplugged | Chhath Song 2021',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'CLIK RECORDS',
+    duration: 'Chhath Folk',
+    youtubeId: 'OrlnX9zM5-k',
+    lyricsHighlight: 'छठी मईया बुलाये... घरे आ जा बटोहिया...',
+    meaning: 'The heart-touching call of Mother Chhathi welcoming every migrant home.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'f-WsraDBPnY',
+    title: 'Ho Dinaanaath By Sharda Sinha Bhojpuri Chhath Songs [Full HD Song] I Chhathi Maiya',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'T-Series Bhakti Sagar',
+    duration: 'Chhath Folk',
+    youtubeId: 'f-WsraDBPnY',
+    lyricsHighlight: 'हो दीनानाथ, सुरुज देव... अन्हरा के आँख दिहनी...',
+    meaning: 'The timeless magnum opus of Bihar by Padma Bhushan Sharda Sinha.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'Eyq7vfxu4iA',
+    title: 'छठ पूजा: काँच ही बाँस के बहंगिया WITH LYRICS I Kaanch Hi Baans Ke Bahangiya I ANURADHA PAUDWAL',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'T-Series Bhakti Sagar',
+    duration: 'Chhath Folk',
+    youtubeId: 'Eyq7vfxu4iA',
+    lyricsHighlight: 'काँच ही बाँस के बहंगिया, बहंगी लचकत जाए...',
+    meaning: 'Traditional sacred devotional offering of Anuradha Paudwal.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'jRsXRee52xw',
+    title: 'Maarbo Re Sugva Dhanukh Se Bhojpuri Chhath Songs I ANURADHA PAUDWAL I Bahangi Chhath Mayee Ke Jaay',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'T-Series Bhakti Sagar',
+    duration: 'Chhath Folk',
+    youtubeId: 'jRsXRee52xw',
+    lyricsHighlight: 'मारबो रे सुगवा धनुख से, सुगा गिरे मुरझाय...',
+    meaning: 'Devotional folk song protecting the pure fruits for the divine sun offering.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'FGQ0SCK1AtE',
+    title: 'Ugi He Dinanath | उगी हे दीनानाथ | Ugi Hey Dinanath || Kalpna || Bhojpuri Chhath Geet 2025',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'Wave Music Bhakti',
+    duration: 'Chhath Folk',
+    youtubeId: 'FGQ0SCK1AtE',
+    lyricsHighlight: 'उगी हे दीनानाथ, सुरुज मल हे...',
+    meaning: 'Glorious morning hymn invoking the first rays of Surya.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'T_YXL_blE3A',
+    title: '#Video - पारम्परिक छठ गीत - दर्शन देखाई दीही- #Kalpana Patawory - #Ritu -Bhojpuri Chhath Geet 2023',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'Trimurti Music World',
+    duration: 'Chhath Folk',
+    youtubeId: 'T_YXL_blE3A',
+    lyricsHighlight: 'दर्शन देखाई दीही हे सुरुज देव...',
+    meaning: 'Devotional plea for the divine vision of the golden sun at dawn.',
+    tag: 'लाइव प्लेलिस्ट गीत'
   }
 ];
 

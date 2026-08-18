@@ -72,23 +72,63 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
 
   const currentSong = playlistSongs[currentTrackIndex] || playlistSongs[0] || CHHATH_SONGS[0];
 
-  // Fetch live playlist tracks dynamically from backend API / YouTube feed
+  // Fetch live playlist tracks dynamically from backend API or client-side RSS2JSON proxy
   const fetchLivePlaylist = async () => {
     setIsLoadingSongs(true);
+    let success = false;
+
+    // Tier 1: Try full-stack Express API route
     try {
       const res = await fetch(`/api/playlist?list=${playlistId}&t=${Date.now()}`);
-      if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
         const data = await res.json();
         if (data && Array.isArray(data.songs) && data.songs.length > 0) {
           setPlaylistSongs(data.songs);
           setLastSyncedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+          success = true;
         }
       }
     } catch (e) {
-      console.warn('Failed to fetch dynamic playlist:', e);
-    } finally {
-      setIsLoadingSongs(false);
+      console.warn('Backend API playlist fetch skipped, trying client fallback:', e);
     }
+
+    // Tier 2: Direct public RSS2JSON syndication (works 100% in static cloud deployment and previews)
+    if (!success) {
+      try {
+        const feedUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`;
+        const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedUrl)}&t=${Date.now()}`;
+        const res = await fetch(proxyUrl);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
+            const mappedSongs = data.items.map((item: any) => {
+              const rawId = item.guid || item.link || '';
+              const match = rawId.match(/video:([a-zA-Z0-9_-]+)/) || rawId.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+              const videoId = match ? match[1] : rawId.replace('yt:video:', '');
+              return {
+                id: videoId,
+                videoId: videoId,
+                title: item.title || 'छठ महापर्व गीत',
+                artist: item.author || 'छठ महापर्व लोकगायक',
+                tag: 'लाइव प्लेलिस्ट गीत',
+                duration: 'Chhath Folk'
+              };
+            }).filter((s: any) => s.id && s.title);
+
+            if (mappedSongs.length > 0) {
+              setPlaylistSongs(mappedSongs);
+              setLastSyncedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+              success = true;
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Client-side RSS2JSON fallback failed:', e);
+      }
+    }
+
+    setIsLoadingSongs(false);
   };
 
   useEffect(() => {
