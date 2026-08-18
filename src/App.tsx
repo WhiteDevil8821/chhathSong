@@ -137,20 +137,6 @@ export default function App() {
               <span>संपर्क (Contact)</span>
             </button>
 
-            {/* Audio Synthesis Sound Toggle */}
-            <button
-              id="header-sound-mute-btn"
-              onClick={handleToggleMute}
-              className={`p-2 rounded-full border transition-all cursor-pointer ${
-                isAudioMuted
-                  ? 'bg-black/40 border-[#E34234]/40 text-[#E34234]'
-                  : 'bg-black/30 border-[#F28C28]/40 text-[#F28C28] hover:bg-[#F28C28]/20'
-              }`}
-              title={isAudioMuted ? 'Unmute ritual sounds' : 'Mute ritual sounds'}
-            >
-              {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-            </button>
-
             {/* Share / Blessings Button */}
             <button
               id="header-share-btn"
@@ -162,22 +148,8 @@ export default function App() {
             </button>
           </div>
 
-          {/* Mobile Right Controls: Sound & Hamburger Toggle */}
+          {/* Mobile Right Controls: Hamburger Toggle */}
           <div className="flex md:hidden items-center gap-1.5 shrink-0">
-            {/* Audio Toggle (Always accessible) */}
-            <button
-              id="header-mobile-sound-btn"
-              onClick={handleToggleMute}
-              className={`p-2 rounded-xl border transition-all cursor-pointer ${
-                isAudioMuted
-                  ? 'bg-black/40 border-[#E34234]/40 text-[#E34234]'
-                  : 'bg-black/30 border-[#F28C28]/40 text-[#F28C28]'
-              }`}
-              title={isAudioMuted ? 'Unmute ritual sounds' : 'Mute ritual sounds'}
-            >
-              {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-            </button>
-
             {/* Hamburger Button */}
             <button
               id="header-hamburger-btn"

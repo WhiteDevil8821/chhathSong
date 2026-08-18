@@ -137,8 +137,8 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
       if (window.YT && window.YT.Player && playerContainerRef.current) {
         if (!playerRef.current) {
           playerRef.current = new window.YT.Player('yt-hidden-player', {
-            height: '180',
-            width: '320',
+            height: '200',
+            width: '200',
             playerVars: {
               listType: 'playlist',
               list: playlistId,
@@ -153,19 +153,18 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
               onReady: (event: any) => {
                 if (isMuted) event.target.mute();
                 syncLiveTrackInfo(event.target);
-                // Extract playlist video list if available from player
                 try {
                   if (typeof event.target.getPlaylist === 'function') {
                     const videoIds = event.target.getPlaylist();
                     if (Array.isArray(videoIds) && videoIds.length > 0) {
-                      console.log('YouTube Player playlist loaded with IDs:', videoIds);
+                      console.log('YouTube Player playlist ready:', videoIds.length);
                     }
                   }
                 } catch (e) {}
               },
               onStateChange: (event: any) => {
                 syncLiveTrackInfo(event.target);
-                // 1 = playing, 2 = paused, 0 = ended
+                // 1 = playing, 2 = paused, 0 = ended, 3 = buffering
                 if (event.data === 1 && !isPlayingRef.current) {
                   onPlayPauseToggle();
                 } else if (event.data === 2 && isPlayingRef.current) {
@@ -251,14 +250,20 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
     });
   };
 
-  // Sync state with YouTube player
+  // Sync state with YouTube player with immediate direct command execution
   const togglePlay = () => {
-    if (playerRef.current && typeof playerRef.current.playVideo === 'function') {
+    if (playerRef.current) {
       try {
         if (isPlaying) {
-          playerRef.current.pauseVideo();
+          if (typeof playerRef.current.pauseVideo === 'function') {
+            playerRef.current.pauseVideo();
+          }
         } else {
-          playerRef.current.playVideo();
+          if (typeof playerRef.current.playVideo === 'function') {
+            playerRef.current.playVideo();
+          } else if (typeof playerRef.current.playVideoAt === 'function') {
+            playerRef.current.playVideoAt(currentTrackIndex);
+          }
         }
       } catch (e) {
         console.warn('YT player toggle error:', e);
@@ -272,13 +277,19 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
     const nextIndex = (currentTrackIndex + 1) % total;
     onTrackChange(nextIndex);
     setProgress(0);
-    if (playerRef.current && typeof playerRef.current.nextVideo === 'function') {
+    if (!isPlaying) onPlayPauseToggle();
+    if (playerRef.current) {
       try {
-        playerRef.current.nextVideo();
-      } catch (e) {
         if (typeof playerRef.current.playVideoAt === 'function') {
           playerRef.current.playVideoAt(nextIndex);
+        } else if (typeof playerRef.current.nextVideo === 'function') {
+          playerRef.current.nextVideo();
         }
+        if (typeof playerRef.current.playVideo === 'function') {
+          playerRef.current.playVideo();
+        }
+      } catch (e) {
+        console.warn('Next track error:', e);
       }
     }
   };
@@ -288,13 +299,19 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
     const prevIndex = (currentTrackIndex - 1 + total) % total;
     onTrackChange(prevIndex);
     setProgress(0);
-    if (playerRef.current && typeof playerRef.current.previousVideo === 'function') {
+    if (!isPlaying) onPlayPauseToggle();
+    if (playerRef.current) {
       try {
-        playerRef.current.previousVideo();
-      } catch (e) {
         if (typeof playerRef.current.playVideoAt === 'function') {
           playerRef.current.playVideoAt(prevIndex);
+        } else if (typeof playerRef.current.previousVideo === 'function') {
+          playerRef.current.previousVideo();
         }
+        if (typeof playerRef.current.playVideo === 'function') {
+          playerRef.current.playVideo();
+        }
+      } catch (e) {
+        console.warn('Prev track error:', e);
       }
     }
   };
@@ -478,8 +495,12 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Hidden YouTube Iframe for Background Playback */}
-      <div className="hidden" ref={playerContainerRef}>
+      {/* Hidden YouTube Iframe for Background Playback - placed offscreen to prevent mobile browser throttling */}
+      <div
+        ref={playerContainerRef}
+        className="fixed -left-[9999px] -top-[9999px] w-[200px] h-[200px] pointer-events-none opacity-0 overflow-hidden"
+        aria-hidden="true"
+      >
         <div id="yt-hidden-player" />
       </div>
 
