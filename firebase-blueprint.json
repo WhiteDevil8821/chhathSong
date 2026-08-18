@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "Presence": {
+      "title": "Presence",
+      "description": "Real-time active device presence session for Chhath Puja devotees",
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "description": "Unique client session identifier",
+          "maxLength": 128
+        },
+        "lastSeen": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of last heartbeat"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Session creation timestamp"
+        }
+      },
+      "required": ["sessionId", "lastSeen"]
+    },
+    "GlobalStats": {
+      "title": "GlobalStats",
+      "description": "Aggregated stats for the festival platform",
+      "type": "object",
+      "properties": {
+        "peakToday": {
+          "type": "number",
+          "description": "Peak online devotee count reached today"
+        },
+        "totalBlessings": {
+          "type": "number",
+          "description": "Total arghya and blessings offered"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["updatedAt"]
+    }
+  },
+  "firestore": {
+    "/presence/{sessionId}": {
+      "schema": "Presence",
+      "description": "Active connected devices presence records with heartbeats"
+    },
+    "/stats/{statId}": {
+      "schema": "GlobalStats",
+      "description": "Global statistics and daily peak count"
+    }
+  }
+}
