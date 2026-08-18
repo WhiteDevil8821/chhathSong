@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Sun,
   Flame,
@@ -15,7 +15,9 @@ import {
   Music,
   Mail,
   Shield,
-  BookOpen
+  BookOpen,
+  Menu,
+  X
 } from 'lucide-react';
 import { GhatAtmosphere } from './types';
 import { GhatVisual } from './components/GhatVisual';
@@ -37,6 +39,7 @@ export default function App() {
   const [isAudioMuted, setIsAudioMuted] = useState<boolean>(false);
   const [showShareToast, setShowShareToast] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   const contactEmail = 'ankit.kumar221099@gmail.com';
 
@@ -80,30 +83,30 @@ export default function App() {
       </div>
 
       {/* Top Floating Navigation / Status Header */}
-      <header className="sticky top-0 z-30 backdrop-blur-xl bg-[#2D1B0D]/85 border-b border-[#F28C28]/25 px-4 md:px-8 py-3.5">
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#2D1B0D]/90 border-b border-[#F28C28]/25 px-3 md:px-8 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Logo & Regional Identity */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#9B3D12] via-[#F28C28] to-[#FFD700] flex items-center justify-center shadow-[0_0_20px_rgba(242,140,40,0.4)] border border-[#F28C28]/40 text-lg">
+          <div className="flex items-center gap-2.5 md:gap-3 min-w-0">
+            <div className="w-9 h-9 md:w-10 md:h-10 rounded-2xl bg-gradient-to-tr from-[#9B3D12] via-[#F28C28] to-[#FFD700] flex items-center justify-center shadow-[0_0_20px_rgba(242,140,40,0.4)] border border-[#F28C28]/40 text-base md:text-lg shrink-0">
               🪔
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs uppercase tracking-[0.3em] text-[#F28C28] font-sans font-bold">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 md:gap-2">
+                <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] md:tracking-[0.3em] text-[#F28C28] font-sans font-bold truncate">
                   Mithila • Magadh • Anga
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#E34234] text-white font-sans font-bold tracking-wider uppercase">
-                  Jai Chhathi Maiya
+                <span className="hidden xs:inline-block text-[9px] md:text-[10px] px-1.5 py-0.5 rounded-full bg-[#E34234] text-white font-sans font-bold tracking-wider uppercase shrink-0">
+                  छठी मईया
                 </span>
               </div>
-              <p className="text-sm font-devanagari font-bold text-[#FFF5E1] tracking-wide text-natural-glow">
+              <p className="text-xs md:text-sm font-devanagari font-bold text-[#FFF5E1] tracking-wide text-natural-glow truncate">
                 महापर्व छठ • The Pride of Bihar
               </p>
             </div>
           </div>
 
-          {/* Quick Controls, Modals & Status */}
-          <div className="flex items-center gap-2 md:gap-3">
+          {/* Desktop Navigation Controls */}
+          <div className="hidden md:flex items-center gap-2 md:gap-3">
             {/* Pan-Bihar Sacred Ghat Location Badge */}
             <div className="hidden lg:flex border border-[#F28C28]/40 rounded-full px-3.5 py-1.5 backdrop-blur-sm bg-black/20">
               <span className="text-xs font-sans font-bold tracking-widest uppercase text-[#FFF5E1]">
@@ -118,7 +121,7 @@ export default function App() {
               title="About Chhath Mahaparv"
             >
               <Info className="w-3.5 h-3.5 text-[#F28C28]" />
-              <span className="hidden sm:inline">परिचय (About)</span>
+              <span>परिचय (About)</span>
             </button>
 
             {/* Contact Modal Button */}
@@ -128,7 +131,7 @@ export default function App() {
               title="Contact & Feedback"
             >
               <Mail className="w-3.5 h-3.5 text-[#F28C28]" />
-              <span className="hidden sm:inline">संपर्क (Contact)</span>
+              <span>संपर्क (Contact)</span>
             </button>
 
             {/* Audio Synthesis Sound Toggle */}
@@ -152,10 +155,110 @@ export default function App() {
               className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#9B3D12] to-[#F28C28] hover:opacity-95 text-xs font-sans font-semibold text-[#2D1B0D] font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-md"
             >
               <Share2 className="w-3.5 h-3.5 text-[#2D1B0D]" />
-              <span className="hidden sm:inline">शुभकामनाएँ (Share)</span>
+              <span>शुभकामनाएँ (Share)</span>
+            </button>
+          </div>
+
+          {/* Mobile Right Controls: Sound & Hamburger Toggle */}
+          <div className="flex md:hidden items-center gap-1.5 shrink-0">
+            {/* Audio Toggle (Always accessible) */}
+            <button
+              id="header-mobile-sound-btn"
+              onClick={handleToggleMute}
+              className={`p-2 rounded-xl border transition-all cursor-pointer ${
+                isAudioMuted
+                  ? 'bg-black/40 border-[#E34234]/40 text-[#E34234]'
+                  : 'bg-black/30 border-[#F28C28]/40 text-[#F28C28]'
+              }`}
+              title={isAudioMuted ? 'Unmute ritual sounds' : 'Mute ritual sounds'}
+            >
+              {isAudioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </button>
+
+            {/* Hamburger Button */}
+            <button
+              id="header-hamburger-btn"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-xl bg-black/40 border border-[#F28C28]/40 text-[#FFF5E1] hover:bg-[#F28C28]/20 transition-all cursor-pointer"
+              aria-label="Toggle navigation menu"
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5 text-[#F28C28]" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
+
+        {/* Mobile Dropdown / Drawer Menu */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="md:hidden overflow-hidden border-t border-[#F28C28]/20 mt-3 pt-3 space-y-2.5"
+            >
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => {
+                    setActiveModal('about');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="p-2.5 rounded-xl bg-black/40 border border-[#F28C28]/30 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#F28C28]/20 transition-all cursor-pointer"
+                >
+                  <Info className="w-4 h-4 text-[#F28C28] shrink-0" />
+                  <span>परिचय (About)</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setActiveModal('contact');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="p-2.5 rounded-xl bg-black/40 border border-[#F28C28]/30 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#F28C28]/20 transition-all cursor-pointer"
+                >
+                  <Mail className="w-4 h-4 text-[#F28C28] shrink-0" />
+                  <span>संपर्क (Contact)</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => {
+                    setActiveModal('privacy');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="p-2.5 rounded-xl bg-black/40 border border-[#F28C28]/30 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#F28C28]/20 transition-all cursor-pointer"
+                >
+                  <Shield className="w-4 h-4 text-[#F28C28] shrink-0" />
+                  <span>गोपनीयता (Privacy)</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setActiveModal('terms');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="p-2.5 rounded-xl bg-black/40 border border-[#F28C28]/30 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#F28C28]/20 transition-all cursor-pointer"
+                >
+                  <BookOpen className="w-4 h-4 text-[#F28C28] shrink-0" />
+                  <span>नियम व शर्तें (Terms)</span>
+                </button>
+              </div>
+
+              {/* Share Blessings Full Button */}
+              <button
+                onClick={() => {
+                  handleShare();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#9B3D12] via-[#F28C28] to-[#FFD700] text-[#2D1B0D] font-bold text-xs flex items-center justify-center gap-2 shadow-md cursor-pointer"
+              >
+                <Share2 className="w-4 h-4 text-[#2D1B0D]" />
+                <span>शुभकामनाएँ भेजें (Share Blessings)</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* Main Content Body */}

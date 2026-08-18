@@ -1,41 +1,64 @@
 import { ChhathSong, NostalgicQuote, SacredDay, CulturalArtifact } from '../types';
 
+// Exact songs from user's curated YouTube Playlist (PLenw-C64yBCo) + timeless Chhath classics
 export const CHHATH_SONGS: ChhathSong[] = [
   {
-    id: 'song-1',
-    title: 'काँच ही बाँस के बहंगिया',
-    artist: 'पद्म भूषण शारदा सिन्हा (Sharda Sinha)',
-    era: '1980s Timeless Classic',
-    duration: '6:12',
-    youtubeId: 'Oq5P-s0y00A',
-    lyricsHighlight: 'काँच ही बाँस के बहंगिया, बहंगी लचकत जाए... बहंगी लचकत जाए...',
-    meaning: 'The raw green bamboo pole is bending gently with the weight of the sacred offerings as we walk towards the holy river.',
-    tag: 'All-Time Iconic'
+    id: '2RR-GcqTfhU',
+    title: 'देवो छठ उगे हे सुरुजदेव (Devo Chhath Uga Hey Surujdev)',
+    artist: 'कल्पना पटवारी (Kalpana Patowary)',
+    era: 'Dishum Exclusive • Devotional Classic',
+    duration: '5:40',
+    youtubeId: '2RR-GcqTfhU',
+    lyricsHighlight: 'देवो छठ उगे हे सुरुजदेव, अरघ के रे बेरवा... पूजन के बेरवा...',
+    meaning: 'Devotees calling upon the golden Sun God to ascend the horizon during the sacred morning Arghya.',
+    tag: 'प्लेलिस्ट गीत (Track 1)'
   },
   {
-    id: 'song-2',
+    id: 'BKoD7bTLc2k',
+    title: 'जोड़े जोड़े फलवा सुरुज देव (Jode Jode Falwa)',
+    artist: 'पवन सिंह (Pawan Singh)',
+    era: 'T-Series • Festive Anthem',
+    duration: '5:15',
+    youtubeId: 'BKoD7bTLc2k',
+    lyricsHighlight: 'जोड़े जोड़े फलवा सुरुज देव, घटवे पहुँचाईब... ले ले अहिरन बाँसी के सुपवा...',
+    meaning: 'Carrying auspicious paired fruits and woven bamboo soop to the holy river ghat.',
+    tag: 'प्लेलिस्ट गीत (Track 2)'
+  },
+  {
+    id: '8MzoVsjL4QU',
+    title: 'उग हो सुरुज देव भेल भिनसरवा (Uga Hai Suraj Dev)',
+    artist: 'अनुराधा पौडवाल (Anuradha Paudwal)',
+    era: 'T-Series • Misty Dawn Bhajan',
+    duration: '5:24',
+    youtubeId: '8MzoVsjL4QU',
+    lyricsHighlight: 'उग हो सुरुज देव भेल भिनसरवा, अरघ के रे बेरवा... पूजन के बेरवा...',
+    meaning: 'Rise O Sun God! The dawn has arrived, it is the holy moment of pouring Arghya into the cold river.',
+    tag: 'प्लेलिस्ट गीत (Track 3)'
+  },
+  {
+    id: 'KWvgJvM2zT0',
+    title: 'हो दीनानाथ (Ho Deenanath - New Version)',
+    artist: 'पद्म भूषण शारदा सिन्हा (Sharda Sinha)',
+    era: 'T-Series • Eternal Masterpiece',
+    duration: '6:12',
+    youtubeId: 'KWvgJvM2zT0',
+    lyricsHighlight: 'काँच ही बाँस के बहंगिया, बहंगी लचकत जाए... बाट जे पूछेला बटोहिया, बहंगी केकरा के जाए?',
+    meaning: 'The raw green bamboo pole sways under the sacred weight of devotion as we journey to the ghat.',
+    tag: 'प्लेलिस्ट गीत (Track 4)'
+  },
+  {
+    id: '3uU8jX2tX0g',
     title: 'केलवा के पात पर उगेलन सूरजमल',
     artist: 'शारदा सिन्हा (Sharda Sinha)',
     era: 'Classic Devotional',
     duration: '5:48',
     youtubeId: '3uU8jX2tX0g',
     lyricsHighlight: 'केलवा के पात पर उगेलन सूरजमल झाँके-झूके... ए करेलू छठ बरतिया से झाँके-झूके...',
-    meaning: 'The radiant Sun rises over the broad green banana leaves, peering through the morning mist at the devoted Vratin standing in the river.',
+    meaning: 'The radiant Sun rises over broad banana leaves, peering at the devoted Vratin standing in the holy river.',
     tag: 'Dawn Arghya'
   },
   {
-    id: 'song-3',
-    title: 'उग हो सुरुज देव भेल भिनसरवा',
-    artist: 'अनुराधा पौडवाल (Anuradha Paudwal)',
-    era: 'Nostalgic Morning Bhajan',
-    duration: '5:24',
-    youtubeId: '2yvBfE3x1q8',
-    lyricsHighlight: 'उग हो सुरुज देव भेल भिनसरवा, अरघ के रे बेरवा... पूजन के बेरवा...',
-    meaning: 'Rise, O Sun God! The dawn has arrived, it is the sacred hour of offering Arghya and worship in the cold sacred waters.',
-    tag: 'Misty Dawn'
-  },
-  {
-    id: 'song-4',
+    id: 'gUa8HkQj2wE',
     title: 'पहिले पहिल हम कईनी छठी मईया',
     artist: 'शारदा सिन्हा (Sharda Sinha)',
     era: 'Modern Masterpiece',
@@ -46,7 +69,7 @@ export const CHHATH_SONGS: ChhathSong[] = [
     tag: 'Heartfelt Prayer'
   },
   {
-    id: 'song-5',
+    id: 'k1Z8fG2gZz0',
     title: 'मारबो रे सुगवा धनुष से',
     artist: 'शारदा सिन्हा (Sharda Sinha)',
     era: 'Folk Legend',
@@ -55,17 +78,6 @@ export const CHHATH_SONGS: ChhathSong[] = [
     lyricsHighlight: 'मारबो रे सुगवा धनुष से सुगा गिरे मुरझाय... सुगा जे जूठा कइले फलवा, सुरुज देव ना होई...',
     meaning: 'Guard the sacred tree so the parrot does not nibble on the pristine fruits meant exclusively for the Sun Lord.',
     tag: 'Purity & Sanctity'
-  },
-  {
-    id: 'song-6',
-    title: 'जोड़े जोड़े फलवा सुरुज देव',
-    artist: 'देवी व पवन सिंह (Folk Duet)',
-    era: 'Festive High Spirits',
-    duration: '5:15',
-    youtubeId: 'z7P9yB5x3aA',
-    lyricsHighlight: 'जोड़े जोड़े फलवा सुरुज देव, घटवे पहुँचाईब... ले ले अहिरन बाँसी के सुपवा...',
-    meaning: 'We offer fruits in divine pairs atop woven bamboo soops, carrying the weight of family prayers to the sacred ghat.',
-    tag: 'Ghat Procession'
   }
 ];
 

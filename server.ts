@@ -63,14 +63,14 @@ async function startServer() {
     }
   }
 
-  // Fallback songs from the exact user playlist
+  // Curated tracks from playlist PLenw-C64yBCo and Chhath classics
   const fallbackSongs = [
     {
       id: '2RR-GcqTfhU',
       videoId: '2RR-GcqTfhU',
       title: 'Devo Chhath Uga Hey Surujdev | Kalpana Patowary',
       artist: 'कल्पना पटवारी (Kalpana Patowary)',
-      tag: 'भिनसरवा अरघ',
+      tag: 'प्लेलिस्ट गीत (Track 1)',
       duration: '5:40'
     },
     {
@@ -78,7 +78,7 @@ async function startServer() {
       videoId: 'BKoD7bTLc2k',
       title: 'जोड़े जोड़े फलवा सुरुज देव (Jode Jode Falwa)',
       artist: 'पवन सिंह (Pawan Singh)',
-      tag: 'घाट शोभायात्रा',
+      tag: 'प्लेलिस्ट गीत (Track 2)',
       duration: '5:15'
     },
     {
@@ -86,7 +86,7 @@ async function startServer() {
       videoId: '8MzoVsjL4QU',
       title: 'उग हो सुरुज देव भेल भिनसरवा (Uga Hai Suraj Dev)',
       artist: 'अनुराधा पौडवाल (Anuradha Paudwal)',
-      tag: 'प्रातः अर्घ्य',
+      tag: 'प्लेलिस्ट गीत (Track 3)',
       duration: '5:24'
     },
     {
@@ -94,8 +94,32 @@ async function startServer() {
       videoId: 'KWvgJvM2zT0',
       title: 'हो दीनानाथ (Ho Deenanath - New Version)',
       artist: 'पद्म भूषण शारदा सिन्हा (Sharda Sinha)',
-      tag: 'सर्वकालिक अमर गीत',
+      tag: 'प्लेलिस्ट गीत (Track 4)',
       duration: '6:12'
+    },
+    {
+      id: '3uU8jX2tX0g',
+      videoId: '3uU8jX2tX0g',
+      title: 'केलवा के पात पर उगेलन सूरजमल',
+      artist: 'शारदा सिन्हा (Sharda Sinha)',
+      tag: 'Dawn Arghya',
+      duration: '5:48'
+    },
+    {
+      id: 'gUa8HkQj2wE',
+      videoId: 'gUa8HkQj2wE',
+      title: 'पहिले पहिल हम कईनी छठी मईया',
+      artist: 'शारदा सिन्हा (Sharda Sinha)',
+      tag: 'Heartfelt Prayer',
+      duration: '6:45'
+    },
+    {
+      id: 'k1Z8fG2gZz0',
+      videoId: 'k1Z8fG2gZz0',
+      title: 'मारबो रे सुगवा धनुष से',
+      artist: 'शारदा सिन्हा (Sharda Sinha)',
+      tag: 'Purity & Sanctity',
+      duration: '5:32'
     }
   ];
 

@@ -153,6 +153,15 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
               onReady: (event: any) => {
                 if (isMuted) event.target.mute();
                 syncLiveTrackInfo(event.target);
+                // Extract playlist video list if available from player
+                try {
+                  if (typeof event.target.getPlaylist === 'function') {
+                    const videoIds = event.target.getPlaylist();
+                    if (Array.isArray(videoIds) && videoIds.length > 0) {
+                      console.log('YouTube Player playlist loaded with IDs:', videoIds);
+                    }
+                  }
+                } catch (e) {}
               },
               onStateChange: (event: any) => {
                 syncLiveTrackInfo(event.target);
@@ -434,23 +443,23 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
               </div>
             )}
 
-            {/* Song Items List dynamically loaded from YouTube playlist */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3 max-h-56 overflow-y-auto pr-1">
+            {/* Song Items List dynamically loaded from YouTube playlist - Scrollable with max 6 visible in 1 view */}
+            <div className="flex flex-col gap-1.5 mt-3 max-h-[340px] overflow-y-auto pr-1.5 scrollbar-thin scrollbar-thumb-[#F28C28]/40 scrollbar-track-black/20">
               {playlistSongs.map((song, idx) => (
                 <button
                   key={song.id || song.videoId || idx}
                   onClick={() => handleSelectTrack(idx)}
-                  className={`flex items-center justify-between p-2.5 rounded-xl text-left transition-all cursor-pointer ${
+                  className={`flex items-center justify-between p-2.5 rounded-xl text-left transition-all cursor-pointer min-h-[50px] shrink-0 ${
                     currentTrackIndex === idx
                       ? 'bg-[#F28C28]/25 border border-[#F28C28]/70 text-[#FFF5E1] shadow-md'
-                      : 'hover:bg-black/40 border border-transparent text-[#FFF5E1]/70'
+                      : 'hover:bg-black/40 bg-black/20 border border-[#F28C28]/10 text-[#FFF5E1]/75'
                   }`}
                 >
-                  <div className="flex items-center gap-3 overflow-hidden">
+                  <div className="flex items-center gap-3 overflow-hidden min-w-0 pr-2">
                     <span className="text-xs font-mono text-[#F28C28] font-bold w-5 shrink-0">
                       {idx + 1}
                     </span>
-                    <div className="truncate">
+                    <div className="truncate min-w-0">
                       <div className="text-xs md:text-sm font-devanagari font-semibold text-[#FFF5E1] truncate">
                         {song.title}
                       </div>
