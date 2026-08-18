@@ -1,10 +1,21 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, Firestore } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+
+export const db: Firestore = (() => {
+  try {
+    if (firebaseConfig.firestoreDatabaseId && firebaseConfig.firestoreDatabaseId.trim() !== '') {
+      return getFirestore(app, firebaseConfig.firestoreDatabaseId);
+    }
+  } catch (err) {
+    console.warn('Named Firestore database initialization failed, falling back to default:', err);
+  }
+  return getFirestore(app);
+})();
+
 export const auth = getAuth(app);
 
 export enum OperationType {
@@ -36,5 +47,5 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
     operationType,
     path
   };
-  console.warn('Firestore Notice: ', JSON.stringify(errInfo));
+  console.warn('Firestore Operation Notice:', JSON.stringify(errInfo));
 }

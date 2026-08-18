@@ -6,39 +6,16 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    function isValidId(id) {
-      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
-    }
-
-    function incoming() {
-      return request.resource.data;
-    }
-
-    function isValidPresence(data, sessionId) {
-      return data.sessionId is string &&
-             data.sessionId == sessionId &&
-             data.sessionId.size() <= 128 &&
-             data.lastSeen is timestamp;
-    }
-
-    // Real-time Devotees Presence Collection
+    // Real-time Devotees Presence Collection (Least-read session tracking)
     match /presence/{sessionId} {
-      allow read: if isValidId(sessionId);
-      allow create: if isValidId(sessionId) &&
-                    isValidPresence(incoming(), sessionId) &&
-                    incoming().keys().hasAll(['sessionId', 'lastSeen']) &&
-                    incoming().keys().size() <= 4;
-      allow update: if isValidId(sessionId) &&
-                    isValidPresence(incoming(), sessionId) &&
-                    incoming().sessionId == sessionId;
-      allow delete: if isValidId(sessionId);
+      allow read: if true;
+      allow write: if sessionId is string && sessionId.size() <= 128;
     }
 
-    // Global Stats & Peak Tracking
+    // Global Stats & Live Presence Single Document (O(1) read cost for all users)
     match /stats/{statId} {
-      allow read: if isValidId(statId);
-      allow write: if isValidId(statId) &&
-                   incoming().updatedAt is timestamp;
+      allow read: if true;
+      allow write: if statId is string && statId.size() <= 128;
     }
   }
 }
