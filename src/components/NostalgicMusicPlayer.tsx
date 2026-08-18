@@ -46,13 +46,16 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
   const [showPlaylist, setShowPlaylist] = useState(false);
   const [showVideoEmbed, setShowVideoEmbed] = useState(false);
   const [repeatMode, setRepeatMode] = useState<RepeatMode>('all');
-  const [progress, setProgress] = useState(20);
+  const [progress, setProgress] = useState(0);
   const [liveTrackData, setLiveTrackData] = useState<{ title?: string; author?: string } | null>(null);
   const [playlistSongs, setPlaylistSongs] = useState<any[]>(CHHATH_SONGS);
   const [isLoadingSongs, setIsLoadingSongs] = useState(false);
   const [lastSyncedAt, setLastSyncedAt] = useState<string>('Live');
 
   const playerRef = useRef<any>(null);
+  const isPlayingRef = useRef<boolean>(isPlaying);
+  isPlayingRef.current = isPlaying;
+
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const repeatModeRef = useRef<RepeatMode>(repeatMode);
   repeatModeRef.current = repeatMode;
@@ -92,10 +95,11 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
     fetchLivePlaylist();
   }, []);
 
-  // Helper to extract live track information from YouTube Iframe
+  // Helper to extract live track information from YouTube Iframe and update progress
   const syncLiveTrackInfo = (player: any) => {
-    if (player && typeof player.getVideoData === 'function') {
-      try {
+    if (!player) return;
+    try {
+      if (typeof player.getVideoData === 'function') {
         const data = player.getVideoData();
         if (data && (data.title || data.author)) {
           setLiveTrackData({
@@ -103,19 +107,29 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
             author: data.author || ''
           });
         }
-        if (typeof player.getPlaylistIndex === 'function') {
-          const pIdx = player.getPlaylistIndex();
-          if (typeof pIdx === 'number' && pIdx >= 0 && pIdx !== currentTrackIndexRef.current) {
-            onTrackChange(pIdx % (playlistSongsRef.current.length || 1));
-          }
-        }
-      } catch (e) {
-        // Video data may be restricted in sandbox
       }
+
+      if (typeof player.getPlaylistIndex === 'function') {
+        const pIdx = player.getPlaylistIndex();
+        if (typeof pIdx === 'number' && pIdx >= 0 && pIdx !== currentTrackIndexRef.current) {
+          onTrackChange(pIdx % (playlistSongsRef.current.length || 1));
+        }
+      }
+
+      // Sync actual duration & current time for accurate seekbar
+      if (typeof player.getCurrentTime === 'function' && typeof player.getDuration === 'function') {
+        const curr = player.getCurrentTime();
+        const dur = player.getDuration();
+        if (dur > 0 && typeof curr === 'number') {
+          setProgress(Math.min(100, Math.max(0, (curr / dur) * 100)));
+        }
+      }
+    } catch (e) {
+      // Sandbox or restricted origin
     }
   };
 
-  // Initialize YouTube Iframe API with the user's specific playlist
+  // Initialize YouTube Iframe API with the user's specific playlist once
   useEffect(() => {
     let interval: any;
 
@@ -143,12 +157,11 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
               onStateChange: (event: any) => {
                 syncLiveTrackInfo(event.target);
                 // 1 = playing, 2 = paused, 0 = ended
-                if (event.data === 1 && !isPlaying) {
+                if (event.data === 1 && !isPlayingRef.current) {
                   onPlayPauseToggle();
-                } else if (event.data === 2 && isPlaying) {
+                } else if (event.data === 2 && isPlayingRef.current) {
                   onPlayPauseToggle();
                 } else if (event.data === 0) {
-                  // Track ended: apply repeat mode logic
                   handleTrackEnded();
                 }
               }
@@ -164,19 +177,37 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
       window.onYouTubeIframeAPIReady = setupYT;
     }
 
+    return () => {};
+  }, [playlistId]);
+
+  // Interval for updating progress and info when playing
+  useEffect(() => {
+    let interval: any;
     if (isPlaying) {
       interval = setInterval(() => {
-        setProgress(prev => (prev >= 100 ? 0 : prev + 0.35));
         if (playerRef.current) {
           syncLiveTrackInfo(playerRef.current);
         }
-      }, 1000);
+      }, 800);
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isPlaying, playlistId, isMuted]);
+  }, [isPlaying]);
+
+  // Handle mute state toggle on the YouTube player
+  useEffect(() => {
+    if (playerRef.current) {
+      try {
+        if (isMuted && typeof playerRef.current.mute === 'function') {
+          playerRef.current.mute();
+        } else if (!isMuted && typeof playerRef.current.unMute === 'function') {
+          playerRef.current.unMute();
+        }
+      } catch (e) {}
+    }
+  }, [isMuted]);
 
   // Handle when current track finishes playing
   const handleTrackEnded = () => {
