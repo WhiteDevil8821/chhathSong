@@ -1,6 +1,6 @@
 import { ChhathSong, NostalgicQuote, SacredDay, CulturalArtifact } from '../types';
 
-// The exact 4 songs currently in the user's YouTube playlist (PLenw-C64yBCo)
+// The full 19 sacred songs in the user's YouTube playlist (PLenw-C64yBCo)
 export const CHHATH_SONGS: ChhathSong[] = [
   {
     id: '2RR-GcqTfhU',
@@ -110,6 +110,105 @@ export const CHHATH_SONGS: ChhathSong[] = [
     youtubeId: 'T_YXL_blE3A',
     lyricsHighlight: 'दर्शन देखाई दीही हे सुरुज देव...',
     meaning: 'Devotional plea for the divine vision of the golden sun at dawn.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: '0fZt65tj6L8',
+    title: 'Kanch Hi Bans Ke Bahangiya Bhojpuri Chhath Geet By DEVI I Full Video I BAHANGI CHHATH MAAI KE JAAY',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'T-Series Regional',
+    duration: 'Chhath Folk',
+    youtubeId: '0fZt65tj6L8',
+    lyricsHighlight: 'काँच ही बाँस के बहंगिया, बहंगी लचकत जाए...',
+    meaning: 'Devotional classic praising the holy offerings by Devi.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'YVrZBmI9_ag',
+    title: 'KOPI KOPI BOLELI Bhojpuri Chhath Pooja Geet DEVI I Full HD Video Song I BAHANGI CHHATH MAAI KE JAAY',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'T-Series Regional',
+    duration: 'Chhath Folk',
+    youtubeId: 'YVrZBmI9_ag',
+    lyricsHighlight: 'कोपी कोपी बोलेली सुरुज देव, सुन ए सुरुज मल...',
+    meaning: 'Auspicious traditional dialogue between the devotee and Lord Surya.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'MyidNZdmxKQ',
+    title: 'Piya More Banale Khevaiya [Full Song] Kosi Ke Deeyana- Chhath Geet',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'T-Series Bhakti',
+    duration: 'Chhath Folk',
+    youtubeId: 'MyidNZdmxKQ',
+    lyricsHighlight: 'पिया मोरे बनले खेवइया, कोसी के दीयना...',
+    meaning: 'The soulful melody of lighting Kosi lamps for fulfilling long-held wishes.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'y7hrM7PouQM',
+    title: 'SHARDA SINHA |🙏शारदा सिन्हा🙏 | Kelwa Ke Paat Par with Lyrics | Kelva Ke Paat Par🙏🙏 | Lyrical Video',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'T-Series Bhakti Sagar',
+    duration: 'Chhath Folk',
+    youtubeId: 'y7hrM7PouQM',
+    lyricsHighlight: 'केलवा के पात पर उगेलन सुरुज देव, झाँके झुकवा...',
+    meaning: 'The golden Sun emerging over fresh green banana leaves at the ghat.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'aLbXQ9VIxKI',
+    title: 'छठ माई के बरतिया - खेसारी लाल यादव- भोजपुरी हॉट सांग 2015- नागिन',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'Wave Music',
+    duration: 'Chhath Folk',
+    youtubeId: 'aLbXQ9VIxKI',
+    lyricsHighlight: 'छठ माई के बरतिया, होखी सहाई सुरुज देव...',
+    meaning: 'Devotional folk dedication to Chhathi Maiya and Vratins.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'WsvuH5QO23I',
+    title: 'KELWA KE PAAT PAR Bhojpuri Chhath Pooja Geet DEVI I Full HD Video Song I BAHANGI CHHATH MAAI KE JAAY',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'T-Series Bhakti Sagar',
+    duration: 'Chhath Folk',
+    youtubeId: 'WsvuH5QO23I',
+    lyricsHighlight: 'केलवा के पात पर उगेलन सुरुज देव...',
+    meaning: 'Rendition of the beloved banana leaf sun salutation folk hymn.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'XP6vUVZeSwg',
+    title: 'Bhorewe Me Nadiya Nahaila || Anuradha Paudwal, Kavita Paudwal || Bhojpuri ... Chhath Puja Song ||',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'T-Series Bhakti Sagar',
+    duration: 'Chhath Folk',
+    youtubeId: 'XP6vUVZeSwg',
+    lyricsHighlight: 'भोरवे में नदिया नहाइला, सुरुज देव के अरघ देबाई...',
+    meaning: 'Taking the holy pre-dawn dip in the river to offer the morning Arghya.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'zaUyuCUTbyA',
+    title: '#Pawan_Singh का यह #Viral #पारम्परिक छठ गीत घर घर में बज रहा है || Chhath Geet 2019',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'Maa Janki Series',
+    duration: 'Chhath Folk',
+    youtubeId: 'zaUyuCUTbyA',
+    lyricsHighlight: 'उग हो सुरुज देव, घटवे पे ठाड़ बानी...',
+    meaning: 'Standing devotedly at the water’s edge awaiting the blessed dawn.',
+    tag: 'लाइव प्लेलिस्ट गीत'
+  },
+  {
+    id: 'm76W1RcKPzo',
+    title: 'Chhathi Maiya Hoyiha Sahay',
+    artist: 'छठ महापर्व लोकगायक',
+    era: 'T-Series Bhakti Sagar',
+    duration: 'Chhath Folk',
+    youtubeId: 'm76W1RcKPzo',
+    lyricsHighlight: 'छठी मईया होइह सहाय, दरशन दीहें सुरुज देव...',
+    meaning: 'Heartfelt prayer to Mother Chhathi to grant protection, wellness, and peace.',
     tag: 'लाइव प्लेलिस्ट गीत'
   }
 ];

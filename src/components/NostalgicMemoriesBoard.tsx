@@ -71,7 +71,6 @@ export const NostalgicMemoriesBoard: React.FC = () => {
             whileHover={{ y: -3 }}
             onClick={() => {
               setActiveMemoryIdx(idx);
-              soundSynth.playTempleBell();
             }}
             className={`p-5 rounded-2xl border transition-all cursor-pointer relative overflow-hidden flex flex-col justify-between font-sans ${
               activeMemoryIdx === idx

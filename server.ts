@@ -87,6 +87,28 @@ async function startServer() {
 
       function extractLockups(obj: any) {
         if (!obj || typeof obj !== 'object') return;
+
+        // Pattern 1: Classic desktop playlistVideoRenderer
+        if (obj.playlistVideoRenderer) {
+          const v = obj.playlistVideoRenderer;
+          const videoId = v.videoId;
+          const title = v.title?.runs?.[0]?.text || v.title?.simpleText || '';
+          const author = v.shortBylineText?.runs?.[0]?.text || '';
+          const duration = v.lengthText?.simpleText || 'Chhath Folk';
+          if (videoId && title && !seenIds.has(videoId)) {
+            seenIds.add(videoId);
+            songs.push({
+              id: videoId,
+              videoId,
+              title,
+              artist: author || 'छठ महापर्व लोकगायक',
+              tag: 'लाइव प्लेलिस्ट गीत',
+              duration
+            });
+          }
+        }
+
+        // Pattern 2: Modern lockupViewModel
         if (obj.lockupViewModel) {
           const l = obj.lockupViewModel;
           const title = l.metadata?.lockupMetadataViewModel?.title?.content;
@@ -140,21 +162,7 @@ async function startServer() {
     }
 
     try {
-      // 1. Try official XML RSS Feed first (always succeeds on cloud and local without blocking)
-      const feedSongs = await fetchYouTubeFeed(playlistId);
-      if (feedSongs && feedSongs.length > 0) {
-        const payload = {
-          source: 'youtube-feed',
-          playlistId,
-          count: feedSongs.length,
-          songs: feedSongs
-        };
-        playlistCache[playlistId] = { timestamp: now, data: payload };
-        res.setHeader('Cache-Control', 'public, max-age=30');
-        return res.json(payload);
-      }
-
-      // 2. Try HTML page extraction
+      // 1. Try HTML page extraction first (fetches all 19 songs)
       const pageSongs = await fetchYouTubeWebPage(playlistId);
       if (pageSongs && pageSongs.length > 0) {
         const payload = {
@@ -162,6 +170,20 @@ async function startServer() {
           playlistId,
           count: pageSongs.length,
           songs: pageSongs
+        };
+        playlistCache[playlistId] = { timestamp: now, data: payload };
+        res.setHeader('Cache-Control', 'public, max-age=30');
+        return res.json(payload);
+      }
+
+      // 2. Fallback to XML RSS feed if web page extraction fails
+      const feedSongs = await fetchYouTubeFeed(playlistId);
+      if (feedSongs && feedSongs.length > 0) {
+        const payload = {
+          source: 'youtube-feed',
+          playlistId,
+          count: feedSongs.length,
+          songs: feedSongs
         };
         playlistCache[playlistId] = { timestamp: now, data: payload };
         res.setHeader('Cache-Control', 'public, max-age=30');

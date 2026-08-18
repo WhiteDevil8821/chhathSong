@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, Sun, Droplets, Volume2, Music2 } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { soundSynth } from '../utils/soundSynthesizer';
+import { ArghyaLotaVisual } from './CulturalArtifactVisuals';
 
 interface InteractiveArghyaProps {
   onArghyaOffered: () => void;
@@ -27,9 +28,8 @@ export const InteractiveArghya: React.FC<InteractiveArghyaProps> = ({
     if (isPouring) return;
     setIsPouring(true);
 
-    // 1. Play sound synthesis: Arghya stream + Conch + Temple Bell
+    // 1. Play sound synthesis: sacred pouring stream
     soundSynth.playArghyaStream();
-    setTimeout(() => soundSynth.playShankhnaad(), 400);
 
     // 2. Trigger auspicious marigold petals confetti shower
     const end = Date.now() + 1200;
@@ -89,7 +89,7 @@ export const InteractiveArghya: React.FC<InteractiveArghyaProps> = ({
 
           <p className="text-sm md:text-base text-[#FFF5E1]/85 leading-relaxed max-w-xl font-sans font-normal">
             हाथों में पीतल का कलश या सूप लेकर तांबे/पीतल के लोटे से गंगाजल और कच्चे दूध की पावन धार सूर्य देव को अर्पित करें।
-            शंखनाद और घंटियों की मधुर गूंज के साथ छठी मईया से प्रार्थना करें।
+            पावन मंत्रोच्चार और भक्ति भाव के साथ छठी मईया से प्रार्थना करें।
           </p>
 
           {/* Sacred Mantra Display Box */}
@@ -107,12 +107,8 @@ export const InteractiveArghya: React.FC<InteractiveArghyaProps> = ({
 
           {/* Arghya Status Details */}
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-1 font-sans">
-            <div className="flex items-center gap-2 text-xs text-[#FFF5E1]/80">
-              <span className="w-2 h-2 rounded-full bg-[#F28C28] animate-pulse" />
-              <span>प्रेस <strong>'A'</strong> या क्लिक करें</span>
-            </div>
-            <div className="text-xs text-[#F28C28] bg-black/40 px-3 py-1 rounded-full border border-[#F28C28]/35 font-bold">
-              कुल समर्पित अर्घ्य: <span className="text-[#FFF5E1]">{count}</span>
+            <div className="text-xs text-[#F28C28] bg-black/40 px-3.5 py-1.5 rounded-full border border-[#F28C28]/35 font-bold">
+              कुल समर्पित अर्घ्य: <span className="text-[#FFF5E1] font-extrabold">{count}</span>
             </div>
           </div>
         </div>
@@ -143,13 +139,13 @@ export const InteractiveArghya: React.FC<InteractiveArghyaProps> = ({
               }`}
             >
               {/* Kalash Icon / Visual Representation */}
-              <div className="relative">
+              <div className="relative flex items-center justify-center">
                 <motion.div
                   animate={isPouring ? { rotate: [-25, -35, -25], y: [-5, 5, -5] } : { rotate: 0, y: 0 }}
                   transition={{ duration: 1.2, repeat: isPouring ? Infinity : 0 }}
-                  className="text-4xl md:text-5xl drop-shadow-md"
+                  className="drop-shadow-md"
                 >
-                  🪔
+                  <ArghyaLotaVisual size={54} isPouring={isPouring} />
                 </motion.div>
 
                 {/* Pouring Stream Animation Effect */}
@@ -167,31 +163,9 @@ export const InteractiveArghya: React.FC<InteractiveArghyaProps> = ({
                 {isPouring ? 'अर्घ्य अर्पण...' : 'अर्घ्य दें (Offer)'}
               </span>
               <span className="text-[10px] text-[#FFF5E1]/80 font-sans font-medium">
-                {isPouring ? 'शंखनाद व मंत्र' : 'Click / Tap Lota'}
+                {isPouring ? 'पवित्र मंत्रोच्चार' : 'Click / Tap Lota'}
               </span>
             </motion.button>
-          </div>
-
-          {/* Sound Synthesizer Quick Buttons */}
-          <div className="flex items-center gap-2 mt-4 font-sans">
-            <button
-              id="sound-shankh-btn"
-              onClick={() => soundSynth.playShankhnaad()}
-              className="px-3 py-1.5 rounded-full bg-black/40 hover:bg-[#F28C28]/20 text-[11px] font-semibold text-[#FFF5E1] border border-[#F28C28]/35 flex items-center gap-1.5 transition-colors cursor-pointer"
-              title="Play authentic Conch Shell sound (शंखनाद)"
-            >
-              <Volume2 className="w-3.5 h-3.5 text-[#F28C28]" />
-              <span>शंखनाद (Shankh)</span>
-            </button>
-            <button
-              id="sound-bell-btn"
-              onClick={() => soundSynth.playTempleBell()}
-              className="px-3 py-1.5 rounded-full bg-black/40 hover:bg-[#F28C28]/20 text-[11px] font-semibold text-[#FFF5E1] border border-[#F28C28]/35 flex items-center gap-1.5 transition-colors cursor-pointer"
-              title="Play temple brass bell chime (मंदिर घंटी)"
-            >
-              <Music2 className="w-3.5 h-3.5 text-[#F28C28]" />
-              <span>मंदिर घंटी (Bell)</span>
-            </button>
           </div>
         </div>
       </div>

@@ -93,7 +93,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
       console.warn('Backend API playlist fetch skipped, trying client fallback:', e);
     }
 
-    // Tier 2: Direct public RSS2JSON syndication (works 100% in static cloud deployment and previews)
+    // Tier 2: Direct public RSS2JSON syndication
     if (!success) {
       try {
         const feedUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`;
@@ -117,7 +117,11 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
             }).filter((s: any) => s.id && s.title);
 
             if (mappedSongs.length > 0) {
-              setPlaylistSongs(mappedSongs);
+              // Merge with pre-seeded 19 songs to preserve the complete list
+              const existingIds = new Set(mappedSongs.map((s: any) => s.id));
+              const missingSeedSongs = CHHATH_SONGS.filter((s: any) => !existingIds.has(s.id));
+              const fullPlaylist = [...mappedSongs, ...missingSeedSongs];
+              setPlaylistSongs(fullPlaylist);
               setLastSyncedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
               success = true;
             }
