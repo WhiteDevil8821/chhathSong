@@ -1,0 +1,6 @@
+{
+  "name": "Chhath: The Pride of Bihar",
+  "description": "An immersive, deeply nostalgic interactive celebration of Chhath Puja, with sacred river ghat visuals, traditional folk melodies, devotional rituals, memories, and authentic cultural heritage.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
