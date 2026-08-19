@@ -35,7 +35,7 @@ const LinkedInIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   </svg>
 );
 
-export type ActiveModal = 'about' | 'privacy' | 'contact' | 'share' | null;
+export type ActiveModal = 'about' | 'privacy' | 'contact' | 'share' | 'terms' | 'disclaimer' | null;
 
 interface InfoModalsProps {
   activeModal: ActiveModal;
@@ -480,6 +480,108 @@ export const InfoModals: React.FC<InfoModalsProps> = ({
 
               <div className="pt-3 border-t border-[#F28C28]/20 text-[11px] text-[#FFF5E1]/60 font-mono text-center">
                 © {currentYear} Chhath: The Pride of Bihar • All Rights Reserved.
+              </div>
+            </div>
+          )}
+
+          {/* TERMS OF SERVICE MODAL */}
+          {activeModal === 'terms' && (
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-2xl bg-[#F28C28]/20 border border-[#F28C28]/40 text-[#F28C28]">
+                  <Shield className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-serif font-light text-[#FFF5E1]">
+                    Terms of <span className="italic font-normal text-[#F28C28]">Service</span>
+                  </h3>
+                  <p className="text-xs font-devanagari text-[#F28C28] font-semibold">
+                    उपयोग की शर्तें एवं नियम (Terms & Conditions)
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3.5 text-xs sm:text-sm text-[#FFF5E1]/80 leading-relaxed max-h-[60vh] overflow-y-auto pr-2">
+                <div className="p-3 rounded-xl bg-black/40 border border-[#F28C28]/20 text-[11px] text-[#FFF5E1]/90">
+                  Effective Date: January 1, {currentYear} • ChhathSong.in
+                </div>
+
+                <p>
+                  <strong>1. Acceptance of Terms:</strong> By accessing and using <strong>ChhathSong.in</strong> (the "Website"),
+                  you agree to comply with and be bound by these Terms of Service. If you do not agree to these terms, please refrain from using the platform.
+                </p>
+
+                <p>
+                  <strong>2. Nature of Platform:</strong> ChhathSong.in is an educational, cultural, and spiritual archive dedicated to the folk traditions, sacred geet (songs), rituals, and heritage of Chhath Puja. All information, lyrics, panchang data, and cultural analysis are provided in good faith for non-commercial devotional enrichment.
+                </p>
+
+                <p>
+                  <strong>3. Intellectual Property & YouTube API Compliance:</strong> Audio and video content on this platform are streamed using the official YouTube IFrame Embed Player API. We do not host, store, or redistribute copyrighted audio/video files on our servers. All copyrights, advertising earnings, views, and brand ownership remain solely with the original creators and music labels.
+                </p>
+
+                <p>
+                  <strong>4. User Conduct:</strong> Visitors agree not to misuse the live presence, Arghya offering interactions, feedback mechanisms, or any features of the website for unlawful, abusive, or spam purposes.
+                </p>
+
+                <p>
+                  <strong>5. Limitation of Liability:</strong> While we endeavor to ensure all festival dates, panchang timings, and lyrics are authentic, festival timings may vary across different geographical longitudes. ChhathSong.in is not liable for minor variations in local temple schedules.
+                </p>
+
+                <p>
+                  <strong>6. Contact & Disputes:</strong> Any questions regarding these terms should be addressed to <strong>{contactEmail}</strong>.
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-[#F28C28]/20 text-[11px] text-[#FFF5E1]/60 font-mono text-center">
+                © {currentYear} ChhathSong.in • Preserving Folk Heritage
+              </div>
+            </div>
+          )}
+
+          {/* DISCLAIMER & COPYRIGHT POLICY MODAL */}
+          {activeModal === 'disclaimer' && (
+            <div className="space-y-5">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-2xl bg-[#F28C28]/20 border border-[#F28C28]/40 text-[#F28C28]">
+                  <BookOpen className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-serif font-light text-[#FFF5E1]">
+                    Disclaimer & <span className="italic font-normal text-[#F28C28]">Copyright Policy</span>
+                  </h3>
+                  <p className="text-xs font-devanagari text-[#F28C28] font-semibold">
+                    कॉपीराइट नीति, DMCA अनुपालन एवं श्रेय (Attribution)
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3.5 text-xs sm:text-sm text-[#FFF5E1]/80 leading-relaxed max-h-[60vh] overflow-y-auto pr-2">
+                <div className="p-3 rounded-xl bg-black/40 border border-[#F28C28]/20 text-[11px] text-[#FFF5E1]/90">
+                  DMCA Compliance & Fair Use Cultural Disclaimer • {currentYear}
+                </div>
+
+                <p>
+                  <strong>1. Fair Use & Cultural Heritage Tribute:</strong> This website is an independent non-profit cultural initiative celebrating the sacred folk music of Chhath Puja, including legendary renditions by Padma Bhushan Sharda Sinha, Anuradha Paudwal, and Bhojpuri folk artists.
+                </p>
+
+                <p>
+                  <strong>2. Attribution & Streaming Mechanics:</strong> We do not claim ownership of any embedded music, song compositions, or video recordings. All media playback is handled via YouTube's official developer API. Views and advertising revenue are attributed directly to the official channels and record labels (T-Series, Wave Music, Ganga Music, etc.).
+                </p>
+
+                <p>
+                  <strong>3. DMCA Takedown Notice:</strong> If you are a copyright owner, artist, or authorized representative and wish for any embedded link or reference to be modified or removed, please notify us with the relevant details at:
+                  <br />
+                  <span className="font-mono font-bold text-[#F28C28] block mt-1">{contactEmail}</span>
+                  We will promptly review and take appropriate action within 24–48 hours.
+                </p>
+
+                <p>
+                  <strong>4. Astronomical & Muhurat Disclaimer:</strong> The sunrise and sunset Arghya timings provided for Chhath Puja 2026 are calculated based on India Standard Time (IST, UTC+5:30) and standard Vedic panchang references. Devotees are encouraged to also check local horizon visibility at their respective river ghats.
+                </p>
+              </div>
+
+              <div className="pt-3 border-t border-[#F28C28]/20 text-[11px] text-[#FFF5E1]/60 font-mono text-center">
+                © {currentYear} ChhathSong.in • Jai Chhathi Maiya
               </div>
             </div>
           )}

@@ -76,7 +76,7 @@ async function startServer() {
     }
   }
 
-  // 2. Secondary Strategy: Web page extraction
+  // 2. Secondary Strategy: Complete Web page extraction with multi-page continuation pagination
   async function fetchYouTubeWebPage(playlistId: string) {
     try {
       const url = `https://www.youtube.com/playlist?list=${playlistId}`;
@@ -89,6 +89,11 @@ async function startServer() {
       });
       if (!res.ok) return null;
       const html = await res.text();
+
+      // Extract Innertube API Key for continuation requests (e.g. videos beyond 100)
+      const cfgIdx = html.indexOf('"INNERTUBE_API_KEY":"');
+      const apiKey = cfgIdx !== -1 ? html.slice(cfgIdx + 21, html.indexOf('"', cfgIdx + 21)) : '';
+
       const idx = html.indexOf('ytInitialData = ');
       if (idx === -1) return null;
       const end = html.indexOf(';</script>', idx);
@@ -96,13 +101,25 @@ async function startServer() {
 
       const songs: any[] = [];
       const seenIds = new Set<string>();
+      let continuationToken = '';
 
-      function extractLockups(obj: any) {
-        if (!obj || typeof obj !== 'object') return;
+      function findToken(obj: any): string {
+        if (!obj || typeof obj !== 'object') return '';
+        if (typeof obj.token === 'string' && obj.token.length > 20) return obj.token;
+        if (obj.continuationCommand?.token) return obj.continuationCommand.token;
+        for (const k in obj) {
+          const t = findToken(obj[k]);
+          if (t) return t;
+        }
+        return '';
+      }
+
+      function processItem(item: any) {
+        if (!item || typeof item !== 'object') return;
 
         // Pattern 1: Classic desktop playlistVideoRenderer
-        if (obj.playlistVideoRenderer) {
-          const v = obj.playlistVideoRenderer;
+        if (item.playlistVideoRenderer) {
+          const v = item.playlistVideoRenderer;
           const videoId = v.videoId;
           const title = v.title?.runs?.[0]?.text || v.title?.simpleText || '';
           const author = v.shortBylineText?.runs?.[0]?.text || '';
@@ -121,16 +138,32 @@ async function startServer() {
         }
 
         // Pattern 2: Modern lockupViewModel
-        if (obj.lockupViewModel) {
-          const l = obj.lockupViewModel;
-          const title = l.metadata?.lockupMetadataViewModel?.title?.content;
-          const metadata =
+        if (item.lockupViewModel) {
+          const l = item.lockupViewModel;
+          const title = l.metadata?.lockupMetadataViewModel?.title?.content || '';
+          const metadataRows =
             l.metadata?.lockupMetadataViewModel?.metadata?.contentMetadataViewModel?.metadataRows;
-          const author = metadata?.[0]?.elements?.[0]?.text?.content || '';
-          const idMatch = l.contentImage?.thumbnailViewModel?.image?.sources?.[0]?.url?.match(
-            /\/vi\/([^\/]+)\//
-          );
-          const videoId = idMatch ? idMatch[1] : l.contentId || '';
+          const author = metadataRows?.[0]?.metadataParts?.[0]?.text?.content ||
+            metadataRows?.[0]?.elements?.[0]?.text?.content || '';
+          const duration = metadataRows?.[1]?.metadataParts?.[0]?.text?.content ||
+            metadataRows?.[1]?.elements?.[0]?.text?.content || 'Chhath Folk';
+
+          let videoId = '';
+          if (l.contentId && l.contentId.length === 11 && !l.contentId.startsWith('PL')) {
+            videoId = l.contentId;
+          } else if (l.rendererContext?.commandContext?.onTap?.innertubeCommand?.watchEndpoint?.videoId) {
+            videoId = l.rendererContext.commandContext.onTap.innertubeCommand.watchEndpoint.videoId;
+          } else {
+            const thumbUrl =
+              l.contentImage?.thumbnailViewModel?.image?.sources?.[0]?.url ||
+              l.contentImage?.collectionThumbnailViewModel?.primaryThumbnail?.thumbnailViewModel?.image?.sources?.[0]?.url ||
+              '';
+            const idMatch =
+              thumbUrl.match(/\/vi\/([a-zA-Z0-9_-]{11})\//) ||
+              thumbUrl.match(/\/vi_webp\/([a-zA-Z0-9_-]{11})\//);
+            if (idMatch) videoId = idMatch[1];
+          }
+
           if (title && videoId && !seenIds.has(videoId)) {
             seenIds.add(videoId);
             songs.push({
@@ -139,15 +172,90 @@ async function startServer() {
               title,
               artist: author || 'छठ महापर्व लोकगायक',
               tag: 'लाइव प्लेलिस्ट गीत',
-              duration: metadata?.[1]?.elements?.[0]?.text?.content || 'Chhath Folk'
+              duration
             });
           }
         }
-        for (const k in obj) {
-          if (k !== 'responseContext') extractLockups(obj[k]);
+
+        // Check for continuation token
+        if (item.continuationItemRenderer || item.continuationItemViewModel) {
+          const token = findToken(item);
+          if (token) continuationToken = token;
         }
       }
-      extractLockups(data);
+
+      // Initial page items: strictly within the playlist content section
+      const initialItems =
+        data.contents?.twoColumnBrowseResultsRenderer?.tabs?.[0]?.tabRenderer?.content?.sectionListRenderer?.contents?.[0]?.itemSectionRenderer?.contents ||
+        data.contents?.twoColumnBrowseResultsRenderer?.tabs?.[0]?.tabRenderer?.content?.sectionListRenderer?.contents?.[0]?.itemSectionRenderer?.contents?.[0]?.playlistVideoListRenderer?.contents ||
+        [];
+
+      if (Array.isArray(initialItems)) {
+        initialItems.forEach(processItem);
+      }
+
+      // If strict selector didn't find items, fallback to safe scan of main tabs only (never sidebar)
+      if (songs.length === 0 && data.contents?.twoColumnBrowseResultsRenderer?.tabs?.[0]) {
+        const tab = data.contents.twoColumnBrowseResultsRenderer.tabs[0];
+        const scan = (obj: any) => {
+          if (!obj || typeof obj !== 'object') return;
+          processItem(obj);
+          for (const k in obj) {
+            if (k !== 'sidebar' && k !== 'topbar' && k !== 'responseContext') scan(obj[k]);
+          }
+        };
+        scan(tab);
+      }
+
+      // Fetch all remaining pages of videos if playlist has > 100 songs (strictly continuation items)
+      let pageCount = 0;
+      while (continuationToken && apiKey && pageCount < 15) {
+        pageCount++;
+        const currentToken = continuationToken;
+        continuationToken = ''; // Reset before fetch
+        try {
+          const contUrl = `https://www.youtube.com/youtubei/v1/browse?key=${apiKey}`;
+          const contRes = await fetch(contUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'User-Agent':
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+              'Accept-Language': 'hi,en-US;q=0.9,en;q=0.8'
+            },
+            body: JSON.stringify({
+              context: {
+                client: {
+                  clientName: 'WEB',
+                  clientVersion: '2.20240101.00.00',
+                  hl: 'hi',
+                  gl: 'IN'
+                }
+              },
+              continuation: currentToken
+            })
+          });
+
+          if (!contRes.ok) break;
+          const contData = await contRes.json();
+          const prevCount = songs.length;
+
+          // Strictly extract from onResponseReceivedActions (contains only the next playlist items)
+          const actions = contData.onResponseReceivedActions || [];
+          for (const action of actions) {
+            const items = action.appendContinuationItemsAction?.continuationItems || [];
+            if (Array.isArray(items)) {
+              items.forEach(processItem);
+            }
+          }
+
+          if (songs.length === prevCount || !continuationToken) break;
+        } catch (pageErr) {
+          console.warn('Error fetching playlist continuation page:', pageErr);
+          break;
+        }
+      }
+
       return songs.length > 0 ? songs : null;
     } catch (err) {
       console.warn('Error fetching YouTube web page:', err);

@@ -35,13 +35,15 @@ interface NostalgicMusicPlayerProps {
   onTrackChange: (index: number) => void;
   isPlaying: boolean;
   onPlayPauseToggle: () => void;
+  onSongsLoaded?: (songs: any[]) => void;
 }
 
 export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
   currentTrackIndex,
   onTrackChange,
   isPlaying,
-  onPlayPauseToggle
+  onPlayPauseToggle,
+  onSongsLoaded
 }) => {
   const { isHindi } = useLanguage();
   const [isMuted, setIsMuted] = useState(false);
@@ -74,12 +76,12 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
 
   const currentSong = playlistSongs[currentTrackIndex] || playlistSongs[0] || CHHATH_SONGS[0];
 
-  // Fetch live playlist tracks dynamically from backend API or client-side RSS2JSON proxy
+  // Fetch live playlist tracks dynamically from backend API (with multi-page pagination for 100+ songs)
   const fetchLivePlaylist = async () => {
     setIsLoadingSongs(true);
     let success = false;
 
-    // Tier 1: Try full-stack Express API route
+    // Tier 1: Try full-stack Express API route (supports full pagination > 100 songs)
     try {
       const res = await fetch(`/api/playlist?list=${playlistId}&t=${Date.now()}`);
       const contentType = res.headers.get('content-type') || '';
@@ -88,6 +90,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
         if (data && Array.isArray(data.songs) && data.songs.length > 0) {
           setPlaylistSongs(data.songs);
           setLastSyncedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+          if (onSongsLoaded) onSongsLoaded(data.songs);
           success = true;
         }
       }
@@ -95,7 +98,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
       console.warn('Backend API playlist fetch skipped, trying client fallback:', e);
     }
 
-    // Tier 2: Direct public RSS2JSON syndication
+    // Tier 2: Direct public RSS2JSON syndication fallback
     if (!success) {
       try {
         const feedUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`;
@@ -125,6 +128,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
               const fullPlaylist = [...mappedSongs, ...missingSeedSongs];
               setPlaylistSongs(fullPlaylist);
               setLastSyncedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+              if (onSongsLoaded) onSongsLoaded(fullPlaylist);
               success = true;
             }
           }
@@ -140,6 +144,18 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
   useEffect(() => {
     fetchLivePlaylist();
   }, []);
+
+  // Synchronize track change in YouTube Player when currentTrackIndex changes externally
+  useEffect(() => {
+    if (playerRef.current && typeof playerRef.current.playVideoAt === 'function') {
+      try {
+        const playerCurrentIndex = typeof playerRef.current.getPlaylistIndex === 'function' ? playerRef.current.getPlaylistIndex() : -1;
+        if (playerCurrentIndex !== currentTrackIndex && currentTrackIndex >= 0) {
+          playerRef.current.playVideoAt(currentTrackIndex);
+        }
+      } catch (e) {}
+    }
+  }, [currentTrackIndex]);
 
   // Helper to extract live track information from YouTube Iframe and update progress
   const syncLiveTrackInfo = (player: any) => {

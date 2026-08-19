@@ -19,7 +19,10 @@ import {
   Menu,
   X,
   QrCode,
-  Globe
+  Globe,
+  Calendar,
+  Layers,
+  HelpCircle
 } from 'lucide-react';
 import { InteractiveArghya } from './components/InteractiveArghya';
 import { QuotesTicker } from './components/QuotesTicker';
@@ -27,11 +30,17 @@ import { FourDaysTimeline } from './components/FourDaysTimeline';
 import { CulturalArtifactsGrid } from './components/CulturalArtifactsGrid';
 import { NostalgicMemoriesBoard } from './components/NostalgicMemoriesBoard';
 import { NostalgicMusicPlayer } from './components/NostalgicMusicPlayer';
+import { ChhathCountdown2026 } from './components/ChhathCountdown2026';
+import { SongDirectory } from './components/SongDirectory';
+import { SongDetailModal } from './components/SongDetailModal';
+import { ChhathGuide2026 } from './components/ChhathGuide2026';
 import { ActiveModal } from './components/InfoModals';
 import { LiveDevoteesCounter } from './components/LiveDevoteesCounter';
 import { UpiSupportModal } from './components/UpiSupportModal';
 import { soundSynth } from './utils/soundSynthesizer';
 import { useLanguage } from './context/LanguageContext';
+import { CHHATH_SONGS } from './data/chhathData';
+import { ChhathSong } from './types';
 import { Analytics } from '@vercel/analytics/react';
 
 // Lazy load InfoModals to keep initial bundle size lean and fast
@@ -40,14 +49,17 @@ const InfoModals = lazy(() => import('./components/InfoModals').then(m => ({ def
 export default function App() {
   const { lang, setLang, toggleLang, isHindi } = useLanguage();
   const [arghyaCount, setArghyaCount] = useState<number>(0);
+  const [allSongs, setAllSongs] = useState<ChhathSong[]>(CHHATH_SONGS);
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isAudioMuted, setIsAudioMuted] = useState<boolean>(false);
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
+  const [selectedSongDetail, setSelectedSongDetail] = useState<ChhathSong | null>(null);
   const [isUpiModalOpen, setIsUpiModalOpen] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   const contactEmail = 'ankit.kumar221099@gmail.com';
+  const currentSong = allSongs[currentTrackIndex] || allSongs[0] || CHHATH_SONGS[0];
 
   const handleOfferArghya = () => {
     setArghyaCount(prev => prev + 1);
@@ -61,6 +73,67 @@ export default function App() {
 
   const handleShare = () => {
     setActiveModal('share');
+  };
+
+  const handleSongsLoaded = (loadedSongs: any[]) => {
+    if (!Array.isArray(loadedSongs) || loadedSongs.length === 0) return;
+
+    const curatedMap = new Map<string, ChhathSong>();
+    CHHATH_SONGS.forEach(s => {
+      curatedMap.set(s.id, s);
+      if (s.youtubeId) curatedMap.set(s.youtubeId, s);
+    });
+
+    const merged: ChhathSong[] = loadedSongs.map((rawSong, idx) => {
+      const vid = rawSong.videoId || rawSong.id || `track_${idx}`;
+      if (curatedMap.has(vid)) {
+        return curatedMap.get(vid)!;
+      }
+
+      const title = rawSong.title || 'छठ महापर्व लोकगीत';
+      const artist = rawSong.artist || 'छठ महापर्व लोकगायक';
+      const combined = (title + ' ' + artist).toLowerCase();
+
+      // Intelligent category assignment based on title and artist keywords
+      let category: ChhathSong['category'] = 'bhojpuri_folk';
+      if (combined.includes('sharda') || combined.includes('शारदा') || combined.includes('sinha') || combined.includes('सिन्हा')) {
+        category = 'sharda_sinha';
+      } else if (combined.includes('उषा') || combined.includes('भोर') || combined.includes('सुरुज') || combined.includes('suruj') || combined.includes('bhor') || combined.includes('morning')) {
+        category = 'morning_arghya';
+      } else if (combined.includes('संध्या') || combined.includes('सांझ') || combined.includes('साँझ') || combined.includes('sanjh') || combined.includes('evening') || combined.includes('dusk')) {
+        category = 'evening_arghya';
+      } else if (combined.includes('पारंपरिक') || combined.includes('traditional') || combined.includes('anuradha') || combined.includes('anup') || combined.includes('pawan') || combined.includes('khesari')) {
+        category = 'traditional';
+      }
+
+      return {
+        id: vid,
+        title,
+        singer: artist,
+        artist,
+        category,
+        tag: 'लाइव प्लेलिस्ट गीत',
+        duration: rawSong.duration || 'Chhath Folk',
+        youtubeId: vid,
+        whenSung: 'छठ पूजा के पावन अनुष्ठान, अर्घ्य व घाट यात्रा के समय',
+        lyricsHighlight: title,
+        meaning: 'छठ महापर्व की महिमा, सूर्यदेव व छठी मइया के प्रति अगाध श्रद्धा और लोक आस्था का पावन लोकगीत।'
+      };
+    });
+
+    setAllSongs(merged);
+  };
+
+  const handlePlaySongFromDirectory = (song: ChhathSong) => {
+    const idx = allSongs.findIndex(s => s.id === song.id || s.youtubeId === song.youtubeId);
+    if (idx !== -1) {
+      setCurrentTrackIndex(idx);
+      setIsPlaying(true);
+    }
+  };
+
+  const handleOpenSongDetail = (song: ChhathSong) => {
+    setSelectedSongDetail(song);
   };
 
   return (
@@ -222,7 +295,7 @@ export default function App() {
               className="p-1.5 rounded-xl bg-black/40 border border-[#D4AF37]/30 text-[#FFF5E1] hover:bg-[#D4AF37]/15 transition-all cursor-pointer shrink-0"
               aria-label="Toggle navigation menu"
             >
-              {isMobileMenuOpen ? <X className="w-5 h-5 text-[#D4AF37]" /> : <Menu className="w-5 h-5" />}
+              {isMobileMenuOpen ? <X className="w-5 h-5 text-[#D4AF37]" /> : <Menu className="w-5 h-5 text-[#FFF5E1]" />}
             </button>
           </div>
 
@@ -248,7 +321,7 @@ export default function App() {
               className="p-1.5 sm:p-2 rounded-xl bg-black/40 border border-[#D4AF37]/30 text-[#FFF5E1] hover:bg-[#D4AF37]/15 transition-all cursor-pointer shrink-0"
               aria-label="Toggle navigation menu"
             >
-              {isMobileMenuOpen ? <X className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" /> : <Menu className="w-4 h-4 sm:w-5 sm:h-5" />}
+              {isMobileMenuOpen ? <X className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" /> : <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-[#FFF5E1]" />}
             </button>
           </div>
         </div>
@@ -263,30 +336,24 @@ export default function App() {
               transition={{ duration: 0.2, ease: 'easeInOut' }}
               className="xl:hidden overflow-hidden border-t border-[#D4AF37]/20 mt-3 pt-3 space-y-2.5"
             >
-              {/* Language Selector in Drawer */}
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-black/40 border border-[#D4AF37]/30 text-xs">
-                <span className="text-[#FFF5E1]/80 font-medium flex items-center gap-1.5">
-                  <Globe className="w-3.5 h-3.5 text-[#D4AF37]" />
-                  {isHindi ? 'भाषा चुनें (Language):' : 'Select Language:'}
-                </span>
-                <div className="flex items-center gap-1 bg-black/60 p-0.5 rounded-lg border border-[#D4AF37]/30">
-                  <button
-                    onClick={() => setLang('hi')}
-                    className={`px-2.5 py-1 rounded text-xs font-semibold ${
-                      isHindi ? 'bg-[#D4AF37] text-[#180F08]' : 'text-[#FFF5E1]/70'
-                    }`}
-                  >
-                    हिन्दी
-                  </button>
-                  <button
-                    onClick={() => setLang('en')}
-                    className={`px-2.5 py-1 rounded text-xs font-semibold ${
-                      !isHindi ? 'bg-[#D4AF37] text-[#180F08]' : 'text-[#FFF5E1]/70'
-                    }`}
-                  >
-                    English
-                  </button>
-                </div>
+              {/* Quick Jump Links */}
+              <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
+                <a
+                  href="#chhath-2026-countdown"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2.5 rounded-xl bg-black/40 border border-[#D4AF37]/25 text-[#FFF5E1] hover:text-[#D4AF37] flex items-center gap-2"
+                >
+                  <Calendar className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <span>{isHindi ? '२०२६ पंचांग' : '2026 Schedule'}</span>
+                </a>
+                <a
+                  href="#chhath-songs-directory"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2.5 rounded-xl bg-black/40 border border-[#D4AF37]/25 text-[#FFF5E1] hover:text-[#D4AF37] flex items-center gap-2"
+                >
+                  <Music className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <span>{isHindi ? 'छठ गीत माला' : 'Chhath Songs'}</span>
+                </a>
               </div>
 
               {/* Mobile UPI Support Button */}
@@ -328,16 +395,15 @@ export default function App() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2 text-xs">
                 <button
                   onClick={() => {
                     setActiveModal('privacy');
                     setIsMobileMenuOpen(false);
                   }}
-                  className="p-2.5 rounded-xl bg-black/40 border border-[#D4AF37]/25 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#D4AF37]/15 transition-all cursor-pointer"
+                  className="p-2 rounded-xl bg-black/40 border border-[#D4AF37]/25 text-center text-[#FFF5E1] hover:bg-[#D4AF37]/15 transition-all cursor-pointer"
                 >
-                  <Shield className="w-4 h-4 text-[#D4AF37] shrink-0" />
-                  <span>{isHindi ? 'गोपनीयता (Privacy)' : 'Privacy'}</span>
+                  <span className="block text-[11px] truncate">{isHindi ? 'गोपनीयता' : 'Privacy'}</span>
                 </button>
 
                 <button
@@ -345,10 +411,19 @@ export default function App() {
                     setActiveModal('terms');
                     setIsMobileMenuOpen(false);
                   }}
-                  className="p-2.5 rounded-xl bg-black/40 border border-[#D4AF37]/25 text-left flex items-center gap-2 text-xs font-semibold text-[#FFF5E1] hover:bg-[#D4AF37]/15 transition-all cursor-pointer"
+                  className="p-2 rounded-xl bg-black/40 border border-[#D4AF37]/25 text-center text-[#FFF5E1] hover:bg-[#D4AF37]/15 transition-all cursor-pointer"
                 >
-                  <BookOpen className="w-4 h-4 text-[#D4AF37] shrink-0" />
-                  <span>{isHindi ? 'नियम व शर्तें (Terms)' : 'Terms of Use'}</span>
+                  <span className="block text-[11px] truncate">{isHindi ? 'नियम' : 'Terms'}</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setActiveModal('disclaimer');
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="p-2 rounded-xl bg-black/40 border border-[#D4AF37]/25 text-center text-[#FFF5E1] hover:bg-[#D4AF37]/15 transition-all cursor-pointer"
+                >
+                  <span className="block text-[11px] truncate">{isHindi ? 'कॉपीराइट' : 'Disclaimer'}</span>
                 </button>
               </div>
 
@@ -369,36 +444,39 @@ export default function App() {
       </header>
 
       {/* Main Content Body */}
-      <main className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 pt-8 md:pt-12 space-y-12 md:space-y-16">
-        {/* Hero Branding & Memorable Title Section */}
-        <section id="hero-title-section" className="text-center space-y-4 max-w-4xl mx-auto">
+      <main className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 md:px-8 pt-3 sm:pt-4 md:pt-6 space-y-8 sm:space-y-10 md:space-y-14">
+        {/* Hero Branding & 1st View Title Section */}
+        <section id="hero-title-section" className="text-center space-y-2 sm:space-y-3 max-w-4xl mx-auto">
           {/* Eyebrow Label */}
-          <div className="pt-2">
-            <h2 className="text-xs uppercase tracking-[0.35em] text-[#D4AF37] font-semibold">
+          <div>
+            <h2 className="text-[10px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.35em] text-[#D4AF37] font-semibold">
               {isHindi ? 'मिथिला • मगध • अंग • भोजपुरिया माटी' : 'Mithila • Magadh • Anga • Bhojpuriya Heritage'}
             </h2>
           </div>
 
           {/* Large Memorable Title */}
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-light tracking-tight leading-none text-[#FFF5E1]">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-light tracking-tight leading-none text-[#FFF5E1]">
             CHHATH <span className="italic font-normal text-[#D4AF37]">PUJA</span>
           </h1>
 
-          <div className="text-lg md:text-2xl font-serif font-semibold text-[#D4AF37] tracking-wide">
+          <div className="text-sm sm:text-lg md:text-xl font-serif font-semibold text-[#D4AF37] tracking-wide">
             {isHindi
               ? 'द प्राइड ऑफ बिहार • लोक आस्था का महापर्व'
               : 'The Pride of Bihar • Mahaparv of Folk Faith'}
           </div>
 
-          {/* Subtitle & Cultural Statement */}
-          <p className="mt-4 text-sm sm:text-base opacity-85 max-w-2xl mx-auto font-sans font-light leading-relaxed text-[#FFF5E1]">
+          {/* Cultural Statement */}
+          <p className="text-xs sm:text-sm opacity-85 max-w-xl mx-auto font-sans font-light leading-relaxed text-[#FFF5E1]">
             {isHindi
-              ? 'ब्रह्मांडीय ऊर्जा, अटूट श्रद्धा और सूर्य-प्रकृति के पावन संगम का महापर्व। जहाँ उगते और डूबते दोनों सूर्यों को नमन किया जाता है।'
-              : 'The timeless celebration of cosmic energy, nature, and pure faith. The only festival on Earth that bows with equal reverence to both the setting and rising Sun.'}
+              ? 'ब्रह्मांडीय ऊर्जा और सूर्य-प्रकृति के पावन संगम का महापर्व। जहाँ उगते और डूबते दोनों सूर्यों को नमन किया जाता है।'
+              : 'The timeless celebration of cosmic energy and nature. Bowing with reverence to both the setting and rising Sun.'}
           </p>
         </section>
 
-        {/* 1. Rotating Nostalgic Quotes & Verses */}
+        {/* 1. Chhath Puja 2026 Live Countdown & Complete Tithi (Directly in 1st view for all screens) */}
+        <ChhathCountdown2026 />
+
+        {/* 2. Rotating Nostalgic Quotes & Verses */}
         <section aria-label="Nostalgic Quotes and Memories">
           <QuotesTicker />
         </section>
@@ -408,17 +486,34 @@ export default function App() {
           <InteractiveArghya onArghyaOffered={handleOfferArghya} count={arghyaCount} />
         </section>
 
-        {/* 4. The 4 Sacred Days of Chhath Puja */}
+        {/* 4. Sacred Chhath Songs Directory with Search & Category Filters */}
+        <SongDirectory
+          songs={allSongs}
+          currentSong={currentSong}
+          isPlaying={isPlaying}
+          onPlaySong={handlePlaySongFromDirectory}
+          onOpenSongDetail={handleOpenSongDetail}
+        />
+
+        {/* 5. The 4 Sacred Days of Chhath Puja Timeline */}
         <section aria-label="Four Sacred Days of Chhath">
           <FourDaysTimeline />
         </section>
 
-        {/* 5. Authentic Artifacts: Daura, Soop, Thekua, Ganna Mandap, Sindoor */}
+        {/* 6. Authentic Artifacts: Daura, Soop, Thekua, Ganna Mandap, Sindoor */}
         <section aria-label="Sacred Cultural Artifacts">
           <CulturalArtifactsGrid />
         </section>
 
-        {/* 6. Emotional Nostalgia, Train Journey & Community Unity */}
+        {/* 7. Comprehensive Chhath 2026 Guide & Vidhi Hub */}
+        <ChhathGuide2026
+          onExploreSongs={() => {
+            const el = document.getElementById('chhath-songs-directory');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
+        />
+
+        {/* 8. Emotional Nostalgia, Train Journey & Community Unity */}
         <section aria-label="Bihari Diaspora Memories">
           <NostalgicMemoriesBoard />
         </section>
@@ -442,7 +537,7 @@ export default function App() {
           </p>
 
           {/* Quick Footer Navigation Links */}
-          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-medium text-[#D4AF37]">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs font-medium text-[#D4AF37]">
             <button
               onClick={() => setActiveModal('about')}
               className="hover:underline hover:text-[#FFF5E1] transition-all cursor-pointer"
@@ -468,7 +563,21 @@ export default function App() {
               onClick={() => setActiveModal('privacy')}
               className="hover:underline hover:text-[#FFF5E1] transition-all cursor-pointer"
             >
-              {isHindi ? 'सांस्कृतिक मर्यादा एवं नीति (Privacy & Terms)' : 'Privacy & Policies'}
+              {isHindi ? 'गोपनीयता नीति (Privacy Policy)' : 'Privacy Policy'}
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => setActiveModal('terms')}
+              className="hover:underline hover:text-[#FFF5E1] transition-all cursor-pointer"
+            >
+              {isHindi ? 'उपयोग की शर्तें (Terms of Service)' : 'Terms of Service'}
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => setActiveModal('disclaimer')}
+              className="hover:underline hover:text-[#FFF5E1] transition-all cursor-pointer"
+            >
+              {isHindi ? 'कॉपीराइट एवं डिस्क्लेमर (Disclaimer)' : 'Disclaimer & DMCA'}
             </button>
             <span>•</span>
             <button
@@ -534,19 +643,40 @@ export default function App() {
               {isHindi ? 'संपर्क ईमेल:' : 'Contact:'} <a href={`mailto:${contactEmail}`} className="text-[#D4AF37] hover:underline font-semibold">{contactEmail}</a>
             </div>
             <div className="text-[#FFF5E1]/40 text-[11px]">
-              © {new Date().getFullYear()} Chhath: The Pride of Bihar. All rights reserved. • A cultural tribute to Bihar & Purvanchal.
+              © {new Date().getFullYear()} ChhathSong.in • All rights reserved. • A cultural tribute to Bihar, Purvanchal & Global Maithil/Bhojpuri Community.
             </div>
           </div>
         </footer>
       </main>
 
-      {/* Fixed Music Player */}
+      {/* Fixed Music Player with Live Sync */}
       <NostalgicMusicPlayer
         currentTrackIndex={currentTrackIndex}
         onTrackChange={setCurrentTrackIndex}
         isPlaying={isPlaying}
         onPlayPauseToggle={() => setIsPlaying(prev => !prev)}
+        onSongsLoaded={handleSongsLoaded}
       />
+
+      {/* Song Detail & Lyrics Modal */}
+      <AnimatePresence>
+        {selectedSongDetail && (
+          <SongDetailModal
+            song={selectedSongDetail}
+            allSongs={allSongs}
+            isPlaying={isPlaying}
+            currentPlayingId={currentSong.id}
+            onClose={() => setSelectedSongDetail(null)}
+            onPlaySong={(song) => {
+              handlePlaySongFromDirectory(song);
+            }}
+            onSelectRelatedSong={(song) => {
+              setSelectedSongDetail(song);
+              handlePlaySongFromDirectory(song);
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {/* UPI QR Support Modal */}
       <UpiSupportModal
@@ -570,3 +700,4 @@ export default function App() {
     </div>
   );
 }
+
