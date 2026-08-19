@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Music2, Play, BookOpen, Mic2, Tag, Calendar, Sparkles, Filter, X, Volume2, Share2, Check } from 'lucide-react';
+import { Search, Music2, Play, BookOpen, Mic2, Tag, Calendar, Sparkles, Filter, X, Volume2, Share2, Check, ArrowLeft, Home } from 'lucide-react';
 import { ChhathSong, SongCategory } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -10,6 +10,7 @@ interface SongDirectoryProps {
   isPlaying: boolean;
   onPlaySong: (song: ChhathSong) => void;
   onOpenSongDetail: (song: ChhathSong) => void;
+  onBackToHome?: () => void;
 }
 
 export const SongDirectory: React.FC<SongDirectoryProps> = ({
@@ -17,7 +18,8 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
   currentSong,
   isPlaying,
   onPlaySong,
-  onOpenSongDetail
+  onOpenSongDetail,
+  onBackToHome
 }) => {
   const { isHindi } = useLanguage();
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -78,7 +80,24 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
   };
 
   return (
-    <section id="chhath-songs-directory" className="w-full relative rounded-3xl bg-[#180F08]/90 border border-[#D4AF37]/30 p-6 md:p-8 shadow-2xl space-y-6 font-sans">
+    <section id="chhath-songs-directory" className="w-full relative rounded-3xl bg-[#180F08]/90 border border-[#D4AF37]/30 p-5 sm:p-6 md:p-8 shadow-2xl space-y-6 font-sans">
+      {/* Back to Home Navigation Bar if rendered as a dedicated page */}
+      {onBackToHome && (
+        <div className="flex items-center justify-between pb-3 border-b border-[#D4AF37]/15">
+          <button
+            onClick={onBackToHome}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/40 hover:bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-xs sm:text-sm font-semibold text-[#D4AF37] hover:text-[#FFF5E1] transition-all cursor-pointer group shadow-sm"
+          >
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform text-[#D4AF37]" />
+            <span>{isHindi ? '← मुख्य पृष्ठ पर वापस जाएँ' : '← Back to Home Overview'}</span>
+          </button>
+
+          <span className="text-xs text-[#FFF5E1]/60 font-mono hidden sm:inline-block">
+            {isHindi ? 'अमर छठ संगीत धरोहर' : 'Sacred Folk Music Heritage'}
+          </span>
+        </div>
+      )}
+
       {/* Header & Dynamic Song Counter */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#D4AF37]/20">
         <div>

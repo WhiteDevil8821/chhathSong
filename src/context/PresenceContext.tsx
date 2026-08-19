@@ -47,6 +47,17 @@ function getOrCreateDeviceId(): string {
   return id;
 }
 
+// Generate unique ID for this specific tab instance
+function generateTabId(): string {
+  return 'tab_' + Math.random().toString(36).substring(2, 9);
+}
+
+// Configuration Constants for Optimized Firestore Writes
+const HEARTBEAT_INTERVAL_MS = 75000; // 75 seconds (reduced write frequency)
+const MIN_WRITE_THROTTLE_MS = 30000;  // 30 seconds minimum between any writes (eliminates reconnect bursts)
+const PRESENCE_ACTIVE_CUTOFF_SEC = 200; // 200 seconds cutoff for active query
+const STATS_WRITE_THROTTLE_MS = 180000; // 3 minutes throttle for aggregated stats document write
+
 export const PresenceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [presence, setPresence] = useState<PresenceState>({
     online: 1,
@@ -55,48 +66,89 @@ export const PresenceProvider: React.FC<{ children: ReactNode }> = ({ children }
     isSyncing: true
   });
 
-  // Track last known online count in Firestore to prevent redundant writes
+  // Write throttling and tracking refs
+  const lastWriteTimeRef = useRef<number>(0);
   const lastRecordedFirestoreCount = useRef<number | null>(null);
-  const lastRecordedTime = useRef<number>(0);
+  const lastStatsWriteTime = useRef<number>(0);
+  const isLeaderRef = useRef<boolean>(true);
+  const tabIdRef = useRef<string>(generateTabId());
 
   useEffect(() => {
     const deviceId = getOrCreateDeviceId();
+    const tabId = tabIdRef.current;
     const sessionDocRef = doc(db, 'presence', deviceId);
     const globalStatsDocRef = doc(db, 'stats', 'live_presence');
+    
     let heartbeatTimer: NodeJS.Timeout | null = null;
     let broadcastChannel: BroadcastChannel | null = null;
     let isMounted = true;
-    let isLeader = true;
 
-    // 1. Cross-tab Coordinator (0 extra writes/reads for duplicate tabs)
+    // -------------------------------------------------------------
+    // STRATEGY 3: Multi-Tab Sync & Tab Leadership via BroadcastChannel
+    // Ensures N tabs on the same browser share exactly 1 write stream
+    // -------------------------------------------------------------
     try {
       if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
         broadcastChannel = new BroadcastChannel('chhath_devotee_sync');
 
-        // Claim leadership or defer to existing active tab
+        // Announce presence to other tabs and negotiate leadership
+        broadcastChannel.postMessage({
+          type: 'TAB_OPENED',
+          tabId,
+          deviceId
+        });
+
         broadcastChannel.onmessage = (event) => {
-          if (event.data?.type === 'PRESENCE_UPDATE' && typeof event.data.online === 'number') {
+          const data = event.data;
+          if (!data) return;
+
+          // If an older leader tab exists, become follower (no Firestore writes)
+          if (data.type === 'LEADER_HEARTBEAT' && data.tabId !== tabId) {
+            isLeaderRef.current = false;
+          }
+
+          // Follower tab receives updated presence count directly from Leader (0 network cost)
+          if (data.type === 'PRESENCE_BROADCAST' && typeof data.online === 'number') {
             if (isMounted) {
               setPresence((prev) => ({
-                online: Math.max(1, event.data.online),
-                peakToday: Math.max(prev.peakToday, event.data.peakToday || event.data.online),
+                online: Math.max(1, data.online),
+                peakToday: Math.max(prev.peakToday, data.peakToday || data.online),
                 isExact: true,
                 isSyncing: false
               }));
             }
           }
+
+          // If current leader closes, claim leadership
+          if (data.type === 'LEADER_CLOSED') {
+            isLeaderRef.current = true;
+            scheduleHeartbeat(true);
+          }
         };
       }
     } catch {
-      // BroadcastChannel unavailable
+      // BroadcastChannel fallback: Single tab mode
+      isLeaderRef.current = true;
     }
 
-    // Helper: Compute live count and ONLY write to Firestore if the number has CHANGED
+    // -------------------------------------------------------------
+    // STRATEGY 4: Local Write Throttling on Reconnect & Actions
+    // Prevents burst writes during reconnects or rapid tab toggling
+    // -------------------------------------------------------------
+    const canPerformWrite = (isForce: boolean = false): boolean => {
+      if (!isLeaderRef.current) return false;
+      const now = Date.now();
+      if (!isForce && now - lastWriteTimeRef.current < MIN_WRITE_THROTTLE_MS) {
+        return false; // Throttled: Less than 30s since last write
+      }
+      return true;
+    };
+
+    // Helper: Compute live count from Firestore server aggregation
     const syncActiveCount = async () => {
       if (!isMounted) return;
       try {
-        // Sessions active in the last 150 seconds (2.5 mins)
-        const cutoffTime = new Date(Date.now() - 150 * 1000);
+        const cutoffTime = new Date(Date.now() - PRESENCE_ACTIVE_CUTOFF_SEC * 1000);
         const activePresenceQuery = query(
           collection(db, 'presence'),
           where('lastSeen', '>=', Timestamp.fromDate(cutoffTime))
@@ -104,7 +156,6 @@ export const PresenceProvider: React.FC<{ children: ReactNode }> = ({ children }
 
         let activeCount = 1;
         try {
-          // Server aggregation cost: 1 read per 1,000 documents
           const countSnap = await getCountFromServer(activePresenceQuery);
           activeCount = Math.max(1, countSnap.data().count);
         } catch {
@@ -115,14 +166,16 @@ export const PresenceProvider: React.FC<{ children: ReactNode }> = ({ children }
         if (isMounted) {
           setPresence((prev) => {
             const newPeak = Math.max(prev.peakToday, activeCount);
-            // Broadcast locally to sibling tabs on the same machine (0 network cost)
+            
+            // Broadcast locally to sibling tabs in same browser
             if (broadcastChannel) {
               broadcastChannel.postMessage({
-                type: 'PRESENCE_UPDATE',
+                type: 'PRESENCE_BROADCAST',
                 online: activeCount,
                 peakToday: newPeak
               });
             }
+
             return {
               online: activeCount,
               peakToday: newPeak,
@@ -132,15 +185,14 @@ export const PresenceProvider: React.FC<{ children: ReactNode }> = ({ children }
           });
         }
 
-        // --- WRITE-MINIMIZATION LOGIC ---
-        // ONLY write to /stats/live_presence IF the count actually changed or > 3 mins passed!
+        // Write to /stats/live_presence ONLY if count changed or > 3 mins passed
         const now = Date.now();
         const hasCountChanged = lastRecordedFirestoreCount.current !== activeCount;
-        const isTimeStale = now - lastRecordedTime.current > 180000; // 3 minutes
+        const isTimeStale = now - lastStatsWriteTime.current > STATS_WRITE_THROTTLE_MS;
 
-        if (hasCountChanged || isTimeStale) {
+        if (isLeaderRef.current && (hasCountChanged || isTimeStale)) {
           lastRecordedFirestoreCount.current = activeCount;
-          lastRecordedTime.current = now;
+          lastStatsWriteTime.current = now;
 
           await setDoc(
             globalStatsDocRef,
@@ -156,41 +208,69 @@ export const PresenceProvider: React.FC<{ children: ReactNode }> = ({ children }
       }
     };
 
-    // 2. Initial Registration (1 write upon page open)
-    const registerDevice = async () => {
-      try {
-        await setDoc(sessionDocRef, {
-          deviceId,
-          lastSeen: serverTimestamp()
-        });
-        await syncActiveCount();
-      } catch (err) {
-        handleFirestoreError(err, OperationType.WRITE, `presence/${deviceId}`);
-      }
-    };
+    // -------------------------------------------------------------
+    // Write Pulse: Updates device presence in Firestore
+    // -------------------------------------------------------------
+    const performHeartbeatWrite = async (isForce: boolean = false) => {
+      if (!isMounted) return;
 
-    registerDevice();
-
-    // 3. Relaxed Heartbeat (Every 60s while tab is active, instead of 25s)
-    // Cuts device session writes by >58%
-    heartbeatTimer = setInterval(async () => {
-      // If user is not looking at the tab, pause heartbeats to save writes
+      // STRATEGY 1: Visibility Gating - Do NOT write if user has hidden/minimized the tab
       if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
         return;
       }
 
+      // STRATEGY 4: Local Write Throttling check
+      if (!canPerformWrite(isForce)) {
+        return;
+      }
+
       try {
+        lastWriteTimeRef.current = Date.now();
+
         await setDoc(sessionDocRef, {
           deviceId,
           lastSeen: serverTimestamp()
         });
+
+        // Broadcast to other tabs that this leader is healthy
+        if (broadcastChannel) {
+          broadcastChannel.postMessage({
+            type: 'LEADER_HEARTBEAT',
+            tabId,
+            deviceId
+          });
+        }
+
         await syncActiveCount();
       } catch (err) {
         handleFirestoreError(err, OperationType.UPDATE, `presence/${deviceId}`);
       }
-    }, 60000); // 60 seconds interval
+    };
 
-    // 4. Single-document Realtime Listener (O(1) read: only 1 read when global count changes)
+    // -------------------------------------------------------------
+    // STRATEGY 2: Increased Heartbeat Interval (75s)
+    // -------------------------------------------------------------
+    const scheduleHeartbeat = (immediate: boolean = false) => {
+      if (heartbeatTimer) {
+        clearInterval(heartbeatTimer);
+        heartbeatTimer = null;
+      }
+
+      if (immediate) {
+        performHeartbeatWrite(true);
+      }
+
+      heartbeatTimer = setInterval(() => {
+        performHeartbeatWrite(false);
+      }, HEARTBEAT_INTERVAL_MS);
+    };
+
+    // Initial Registration
+    scheduleHeartbeat(true);
+
+    // -------------------------------------------------------------
+    // Realtime Listener for Global Stats (O(1) read)
+    // -------------------------------------------------------------
     const unsubscribeStats = onSnapshot(
       globalStatsDocRef,
       (docSnap) => {
@@ -215,20 +295,51 @@ export const PresenceProvider: React.FC<{ children: ReactNode }> = ({ children }
       }
     );
 
-    // 5. Smart Visibility Recovery (When user switches back to this tab, refresh session)
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') {
-        registerDevice();
+    // -------------------------------------------------------------
+    // STRATEGY 1: Visibility Gating - Pause on hidden, throttle-check on visible
+    // -------------------------------------------------------------
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        // Pause active interval when backgrounded
+        if (heartbeatTimer) {
+          clearInterval(heartbeatTimer);
+          heartbeatTimer = null;
+        }
+      } else if (document.visibilityState === 'visible') {
+        // Resumed: Resume timer with write throttling protection
+        const elapsedSinceLastWrite = Date.now() - lastWriteTimeRef.current;
+        if (elapsedSinceLastWrite >= MIN_WRITE_THROTTLE_MS) {
+          scheduleHeartbeat(true);
+        } else {
+          // Stagger remainder so we don't burst write
+          const remainingDelay = MIN_WRITE_THROTTLE_MS - elapsedSinceLastWrite;
+          setTimeout(() => {
+            if (document.visibilityState === 'visible') {
+              scheduleHeartbeat(true);
+            }
+          }, remainingDelay);
+        }
       }
     };
-    document.addEventListener('visibilitychange', handleVisibility);
 
-    // 6. Cleanup on tab close
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // -------------------------------------------------------------
+    // Tab Cleanup
+    // -------------------------------------------------------------
     const handleUnload = () => {
+      if (broadcastChannel && isLeaderRef.current) {
+        broadcastChannel.postMessage({
+          type: 'LEADER_CLOSED',
+          tabId
+        });
+      }
       try {
-        deleteDoc(sessionDocRef).catch(() => {});
+        if (isLeaderRef.current) {
+          deleteDoc(sessionDocRef).catch(() => {});
+        }
       } catch {
-        // ignore
+        // ignore unload aborts
       }
     };
 
@@ -238,12 +349,22 @@ export const PresenceProvider: React.FC<{ children: ReactNode }> = ({ children }
     return () => {
       isMounted = false;
       if (heartbeatTimer) clearInterval(heartbeatTimer);
-      if (broadcastChannel) broadcastChannel.close();
+      if (broadcastChannel) {
+        if (isLeaderRef.current) {
+          broadcastChannel.postMessage({
+            type: 'LEADER_CLOSED',
+            tabId
+          });
+        }
+        broadcastChannel.close();
+      }
       unsubscribeStats();
-      document.removeEventListener('visibilitychange', handleVisibility);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('beforeunload', handleUnload);
       window.removeEventListener('pagehide', handleUnload);
-      deleteDoc(sessionDocRef).catch(() => {});
+      if (isLeaderRef.current) {
+        deleteDoc(sessionDocRef).catch(() => {});
+      }
     };
   }, []);
 
