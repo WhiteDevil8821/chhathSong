@@ -27,6 +27,7 @@ export default defineConfig((): UserConfig => {
       chunkSizeWarningLimit: 1000,
     },
     server: {
+      allowedHosts: true,
       hmr: process.env.DISABLE_HMR !== 'true',
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },

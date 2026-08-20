@@ -22,6 +22,16 @@ async function startServer() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  // 301 Permanent Redirect non-www (chhathsong.in) to canonical www (www.chhathsong.in), preserving exact pathname and query
+  app.use((req, res, next) => {
+    const rawHost = req.headers['x-forwarded-host'] || req.headers.host || '';
+    const host = (Array.isArray(rawHost) ? rawHost[0] : rawHost).split(':')[0].toLowerCase();
+    if (host === 'chhathsong.in') {
+      return res.redirect(301, `https://www.chhathsong.in${req.originalUrl}`);
+    }
+    next();
+  });
+
   // Cache in-memory for playlist data (30 seconds TTL) to prevent repeated remote calls and provide instant responses
   let playlistCache: { [key: string]: { timestamp: number; data: any } } = {};
 
@@ -462,6 +472,32 @@ async function startServer() {
         songs: []
       });
     }
+  });
+
+  // Technical SEO: Dynamic & Maintainable Sitemap Endpoint
+  // Only includes genuine public crawlable documents (currently root homepage).
+  // Prepared for future individual song URLs once permanent routes exist in Step 3.
+  app.get('/sitemap.xml', (req, res) => {
+    const canonicalBaseUrl = 'https://www.chhathsong.in';
+    const publicRoutes = [{ path: '/' }];
+
+    const xmlUrls = publicRoutes
+      .map((route) => `  <url>\n    <loc>${canonicalBaseUrl}${route.path}</loc>\n  </url>`)
+      .join('\n');
+
+    const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${xmlUrls}\n</urlset>\n`;
+
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    res.status(200).send(sitemapXml);
+  });
+
+  // Technical SEO: Dedicated Robots.txt Endpoint
+  app.get('/robots.txt', (req, res) => {
+    const robotsTxt = `User-agent: *\nAllow: /\n\nSitemap: https://www.chhathsong.in/sitemap.xml\n`;
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    res.status(200).send(robotsTxt);
   });
 
   // Vite Middleware / Static Serving with High Performance Cache Headers
