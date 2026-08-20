@@ -135,13 +135,13 @@ export default function App() {
   useEffect(() => {
     if (route.type === 'home') {
       document.title = isHindi
-        ? `छठ पूजा 2026: ${allSongs.length} अमर छठ गीत, नहाय-खाय, खरना, अर्घ्य व विधि | ChhathSong.in`
-        : `Chhath Puja 2026: ${allSongs.length} Sacred Songs, Arghya Timings & Rituals | ChhathSong.in`;
+        ? `छठ पूजा 2026: अमर छठ गीत, नहाय-खाय, खरना व अर्घ्य | ChhathSong.in`
+        : `Chhath Puja 2026: 107+ Sacred Songs & Rituals | ChhathSong.in`;
       updateCanonicalUrl('https://www.chhathsong.in/');
     } else if (route.type === 'songs') {
       document.title = isHindi
-        ? `${allSongs.length} अमर छठ गीत संग्रह, बोल, भावार्थ व शारदा सिन्हा लोकगीत | ChhathSong.in`
-        : `${allSongs.length} Sacred Chhath Songs Archive, Lyrics & Sharda Sinha Classics | ChhathSong.in`;
+        ? `107+ अमर छठ गीत संग्रह, बोल, भावार्थ व शारदा सिन्हा लोकगीत | ChhathSong.in`
+        : `107+ Sacred Chhath Songs, Lyrics & Sharda Sinha Classics | ChhathSong.in`;
       updateCanonicalUrl('https://www.chhathsong.in/songs');
     }
   }, [route.type, isHindi, allSongs.length]);

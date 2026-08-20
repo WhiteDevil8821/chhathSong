@@ -1,9 +1,16 @@
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import compression from 'compression';
 import { createServer as createViteServer } from 'vite';
 import { CHHATH_SONGS } from './src/data/chhathData';
-import { getSongSlug } from './src/utils/songSlug';
+import { getSongSlug, findSongBySlug } from './src/utils/songSlug';
+import {
+  renderHomepageHtml,
+  renderSongsDirectoryHtml,
+  renderSongPageHtml,
+  renderNotFoundHtml
+} from './src/server/seoRenderer';
 
 async function startServer() {
   const app = express();
@@ -20,6 +27,14 @@ async function startServer() {
       }
     })
   );
+
+  // Security & Best Practice HTTP Headers
+  app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    next();
+  });
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
@@ -512,21 +527,92 @@ async function startServer() {
     res.status(200).send(robotsTxt);
   });
 
+  // Technical SEO: Dedicated LLMs.txt Endpoint
+  app.get('/llms.txt', (req, res) => {
+    const llmsPath = path.join(process.cwd(), 'public', 'llms.txt');
+    if (fs.existsSync(llmsPath)) {
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
+      return res.status(200).sendFile(llmsPath);
+    }
+    res.status(404).send('Not Found');
+  });
+
+  // Helper function to render SEO-injected & pre-rendered HTML for any route
+  function renderSeoResponse(reqPath: string, rawHtml: string, res: express.Response) {
+    const cleanPath = reqPath.split('?')[0].replace(/\/+$/, '') || '/';
+
+    if (cleanPath === '/' || cleanPath === '') {
+      const html = renderHomepageHtml(rawHtml);
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+      return res.status(200).send(html);
+    }
+
+    if (cleanPath === '/songs') {
+      const html = renderSongsDirectoryHtml(rawHtml);
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+      return res.status(200).send(html);
+    }
+
+    if (cleanPath.startsWith('/songs/')) {
+      const rawSlug = cleanPath.substring(7);
+      const song = findSongBySlug(rawSlug);
+      if (song) {
+        const html = renderSongPageHtml(song, rawHtml);
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+        return res.status(200).send(html);
+      } else {
+        // Explicit 404 HTTP Status for non-existent song
+        const html = renderNotFoundHtml(rawSlug, rawHtml);
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        return res.status(404).send(html);
+      }
+    }
+
+    // Default fallback
+    const html = renderHomepageHtml(rawHtml);
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    return res.status(200).send(html);
+  }
+
   // Vite Middleware / Static Serving with High Performance Cache Headers
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
-      appType: 'spa'
+      appType: 'custom'
     });
     app.use(vite.middlewares);
+
+    app.get('*', async (req, res, next) => {
+      if (req.path.startsWith('/api/') || req.path.startsWith('/@') || req.path.includes('.')) {
+        return next();
+      }
+      try {
+        const templatePath = path.resolve(process.cwd(), 'index.html');
+        let template = fs.readFileSync(templatePath, 'utf-8');
+        template = await vite.transformIndexHtml(req.originalUrl, template);
+        renderSeoResponse(req.path, template, res);
+      } catch (e) {
+        vite.ssrFixStacktrace(e as Error);
+        next(e);
+      }
+    });
   } else {
     const distPath = path.join(process.cwd(), 'dist');
+    const indexHtmlPath = path.join(distPath, 'index.html');
+    let cachedIndexHtml = '';
+
     app.use(
       express.static(distPath, {
         maxAge: '1y',
         immutable: true,
         setHeaders: (res, filePath) => {
-          if (filePath.endsWith('.html') || filePath.endsWith('sitemap.xml') || filePath.endsWith('robots.txt')) {
+          if (filePath.endsWith('.html') || filePath.endsWith('sitemap.xml') || filePath.endsWith('robots.txt') || filePath.endsWith('llms.txt')) {
             res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
           } else {
             res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
@@ -534,9 +620,23 @@ async function startServer() {
         }
       })
     );
-    app.get('*all', (req, res) => {
-      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
-      res.sendFile(path.join(distPath, 'index.html'));
+
+    app.get('*', (req, res, next) => {
+      if (req.path.startsWith('/api/')) {
+        return next();
+      }
+      try {
+        if (!cachedIndexHtml && fs.existsSync(indexHtmlPath)) {
+          cachedIndexHtml = fs.readFileSync(indexHtmlPath, 'utf-8');
+        }
+        const rawHtml = cachedIndexHtml || (fs.existsSync(indexHtmlPath) ? fs.readFileSync(indexHtmlPath, 'utf-8') : '');
+        if (!rawHtml) {
+          return res.status(500).send('Application build in progress');
+        }
+        renderSeoResponse(req.path, rawHtml, res);
+      } catch (err) {
+        next(err);
+      }
     });
   }
 

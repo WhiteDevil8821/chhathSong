@@ -1,0 +1,30 @@
+# ChhathSong.in — The Sacred Chhath Puja Heritage & Song Archive
+
+> Official Web Portal: https://www.chhathsong.in/
+> Cultural Heritage: Bihar, Mithila, Magadh, Anga, and Purvanchal
+> Main Festival: Chhath Puja (Kartik Shukla Shashthi)
+
+## Overview
+ChhathSong.in is an authentic cultural and devotional web portal dedicated to Chhath Puja — the ancient Vedic festival of Sun and nature worship. The platform hosts a comprehensive archive of 107+ sacred Chhath Geet, authentic ritual timings, cultural guides, and devotional hymns.
+
+## Key Sections & Canonical URLs
+- **Home / Festival Portal**: `https://www.chhathsong.in/`
+  - Four-Day Ritual Guide: Nahay-Khay, Kharna, Sandhya Arghya (Sunset), and Usha Arghya (Sunrise).
+  - Authentic 2026 Arghya Timings and astronomical calendar.
+  - Interactive Digital Arghya offering with sacred mantras.
+  - Cultural artifacts: Daura, Soop, Thekua, Sugarcane (Ikh), and sacred Ganga Ghat traditions.
+  - Live Devotees collective presence counter and community reflections.
+
+- **Sacred Songs Directory**: `https://www.chhathsong.in/songs`
+  - 107+ Sacred Chhath folk songs curated by ritual phases.
+  - Categories: Sharda Sinha Classics, Morning Arghya (Bhor Ke Geet), Evening Arghya (Sanjh Ke Geet), Traditional Folk, and Bhojpuri Devotion.
+  - Searchable by song title, singer name, and lyrics snippets.
+
+- **Individual Song & Lyrics Pages**: `https://www.chhathsong.in/songs/<song-slug>`
+  - Verified song lyrics in Devanagari and English transliteration.
+  - Spiritual meaning and cultural context behind each traditional folk hymn.
+  - Singer and composer attributions (Padma Bhushan Sharda Sinha, Anuradha Paudwal, Kalpana Patowary, Pawan Singh, etc.).
+  - Related songs categorized by ritual context.
+
+## Cultural Context
+Chhath Puja is a rigorous four-day Vedic festival honoring Lord Surya (Sun God) and Chhathi Maiya (Goddess Usha / Shashti). It is celebrated with absolute purity (Pavitrata), water fasting (Nirjala Vrat), and reverence for nature without the intermediary of priests.

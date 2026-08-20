@@ -127,9 +127,9 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
                 : `Sacred Chhath Folk Collection • ${songs.length} Songs`}
             </span>
           </div>
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold text-[#FFF5E1]">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold text-[#FFF5E1]">
             {isHindi ? 'पारंपरिक छठ गीत, भजन व संपूर्ण भावार्थ' : 'Traditional Chhath Geet, Lyrics & Devotional Archive'}
-          </h2>
+          </h1>
         </div>
 
         <p className="text-xs md:text-sm text-[#FFF5E1]/70 max-w-md">
