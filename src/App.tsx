@@ -89,6 +89,7 @@ export default function App() {
 
   const contactEmail = 'ankit.kumar221099@gmail.com';
   const currentSong = allSongs[currentTrackIndex] || allSongs[0] || CHHATH_SONGS[0];
+  const songCount = allSongs.length;
 
   const handleOfferArghya = () => {
     setArghyaCount(prev => prev + 1);
@@ -226,10 +227,10 @@ export default function App() {
                     ? 'bg-[#D4AF37] text-[#180F08] shadow-sm'
                     : 'text-[#FFF5E1]/80 hover:text-[#FFF5E1] hover:bg-[#D4AF37]/15'
                 }`}
-                title="Open 107 Chhath Geet Archive"
+                title={isHindi ? `खोलें ${songCount} छठ गीत संग्रह` : `Open ${songCount} Chhath Geet Archive`}
               >
                 <Music className="w-3.5 h-3.5" />
-                <span>{isHindi ? '१०७ छठ गीत संग्रह' : '107 Songs'}</span>
+                <span>{isHindi ? `${songCount} छठ गीत संग्रह` : `${songCount} Songs`}</span>
               </button>
             </nav>
 
@@ -325,7 +326,7 @@ export default function App() {
                   activeTab === 'songs' ? 'bg-[#D4AF37] text-[#180F08]' : 'text-[#FFF5E1]/80 hover:text-[#FFF5E1]'
                 }`}
               >
-                {isHindi ? '१०७ गीत' : '107 Songs'}
+                {isHindi ? `${songCount} गीत` : `${songCount} Songs`}
               </button>
             </div>
 
@@ -422,7 +423,7 @@ export default function App() {
               transition={{ duration: 0.22, ease: 'easeInOut' }}
               className="xl:hidden overflow-hidden border-t border-[#D4AF37]/25 mt-3 pt-3 space-y-3"
             >
-              {/* Primary Mobile Navigation Links (Home & 107 Songs) */}
+              {/* Primary Mobile Navigation Links (Home & Sacred Songs Archive) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold">
                 <button
                   onClick={() => {
@@ -469,7 +470,7 @@ export default function App() {
                       <Music className={`w-4 h-4 ${activeTab === 'songs' ? 'text-[#180F08]' : 'text-[#D4AF37]'}`} />
                     </div>
                     <div className="text-left">
-                      <div className="font-bold text-xs sm:text-sm">{isHindi ? '१०७ छठ गीत संग्रह' : '107 Chhath Geet Archive'}</div>
+                      <div className="font-bold text-xs sm:text-sm">{isHindi ? `${songCount} छठ गीत संग्रह` : `${songCount} Chhath Geet Archive`}</div>
                       <div className={`text-[10px] ${activeTab === 'songs' ? 'text-[#180F08]/80' : 'text-[#FFF5E1]/60'}`}>
                         {isHindi ? 'शारदा सिन्हा व पारंपरिक गीत' : 'Sharda Sinha, Lyrics & Audio'}
                       </div>
@@ -478,7 +479,7 @@ export default function App() {
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                     activeTab === 'songs' ? 'bg-[#180F08] text-[#D4AF37]' : 'bg-[#D4AF37]/25 text-[#D4AF37] border border-[#D4AF37]/40'
                   }`}>
-                    107 Songs
+                    {songCount} Songs
                   </span>
                 </button>
               </div>
@@ -615,7 +616,7 @@ export default function App() {
               <InteractiveArghya onArghyaOffered={handleOfferArghya} count={arghyaCount} />
             </section>
 
-            {/* 4. Compact Featured Songs Banner with Quick Play & CTA to full 107 songs page */}
+            {/* 4. Compact Featured Songs Banner with Quick Play & CTA to full songs archive */}
             <section aria-label="Featured Chhath Geet">
               <FeaturedSongsBanner
                 songs={allSongs}
@@ -648,7 +649,7 @@ export default function App() {
             </section>
           </>
         ) : (
-          /* Dedicated Separate Page: 107 Chhath Geet, Lyrics & Devotional Archive */
+          /* Dedicated Separate Page: Sacred Chhath Geet, Lyrics & Devotional Archive */
           <div className="space-y-6">
             <SongDirectory
               songs={allSongs}
@@ -692,7 +693,7 @@ export default function App() {
               onClick={() => navigateToTab('songs')}
               className={`hover:underline transition-all cursor-pointer font-bold ${activeTab === 'songs' ? 'text-[#FFF5E1] underline' : 'text-[#D4AF37]'}`}
             >
-              {isHindi ? '१०७ छठ गीत संग्रह (All Songs)' : '107 Songs Archive'}
+              {isHindi ? `${songCount} छठ गीत संग्रह (All Songs)` : `${songCount} Songs Archive`}
             </button>
             <span>•</span>
             <button

@@ -44,8 +44,8 @@ export const FeaturedSongsBanner: React.FC<FeaturedSongsBannerProps> = ({
           </h2>
           <p className="text-xs sm:text-sm text-[#FFF5E1]/75 leading-relaxed">
             {isHindi
-              ? 'पद्म भूषण शारदा सिन्हा, अनुराधा पौडवाल, पवन सिंह व लोक गायकों के अमर स्वर में रचे-बसे 107 पारंपरिक छठ गीतों का संपूर्ण संग्रह, बोल व आध्यात्मिक भावार्थ।'
-              : 'Explore the complete archive of 107 timeless Chhath hymns by Padma Bhushan Sharda Sinha, Anuradha Paudwal, and regional folk legends with complete lyrics and meanings.'}
+              ? `पद्म भूषण शारदा सिन्हा, अनुराधा पौडवाल, पवन सिंह व लोक गायकों के अमर स्वर में रचे-बसे ${songs.length} पारंपरिक छठ गीतों का संपूर्ण संग्रह, बोल व आध्यात्मिक भावार्थ।`
+              : `Explore the complete archive of ${songs.length} timeless Chhath hymns by Padma Bhushan Sharda Sinha, Anuradha Paudwal, and regional folk legends with complete lyrics and meanings.`}
           </p>
         </div>
 
@@ -55,7 +55,7 @@ export const FeaturedSongsBanner: React.FC<FeaturedSongsBannerProps> = ({
           className="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-[#D4AF37] via-[#F28C28] to-[#C87D32] hover:opacity-95 text-[#180F08] font-bold text-sm sm:text-base flex items-center gap-2.5 transition-all shadow-lg hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:scale-[1.02] cursor-pointer shrink-0 group w-full sm:w-auto justify-center"
         >
           <Disc3 className="w-5 h-5 text-[#180F08] animate-spin-slow" />
-          <span>{isHindi ? 'सम्पूर्ण 107 छठ गीत देखें' : 'Explore All 107 Songs'}</span>
+          <span>{isHindi ? `सम्पूर्ण ${songs.length} छठ गीत देखें` : `Explore All ${songs.length} Songs`}</span>
           <ArrowRight className="w-4 h-4 text-[#180F08] group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
