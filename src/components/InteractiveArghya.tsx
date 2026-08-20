@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Radio, Heart } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { soundSynth } from '../utils/soundSynthesizer';
 import { ArghyaLotaVisual } from './CulturalArtifactVisuals';
 import { useLanguage } from '../context/LanguageContext';
+import { useRealtimePresence } from '../context/PresenceContext';
 
 interface InteractiveArghyaProps {
-  onArghyaOffered: () => void;
-  count: number;
+  onArghyaOffered?: () => void;
+  count?: number;
 }
 
 export const InteractiveArghya: React.FC<InteractiveArghyaProps> = ({
-  onArghyaOffered,
-  count
+  onArghyaOffered
 }) => {
   const { isHindi } = useLanguage();
+  const presence = useRealtimePresence();
   const [isPouring, setIsPouring] = useState(false);
   const [lastBlessing, setLastBlessing] = useState<string | null>(null);
 
@@ -23,14 +24,16 @@ export const InteractiveArghya: React.FC<InteractiveArghyaProps> = ({
     'ॐ सूर्याय नमः! सूर्य देव आपको तेज, स्वास्थ्य और दीर्घायु प्रदान करें।',
     'छठी मईया की असीम कृपा आपके परिवार पर सदा बनी रहे।',
     'उगते सूर्य का यह पावन अर्घ्य आपके जीवन में नई ऊर्जा और प्रकाश भरे।',
-    'जय छठी मईया! मनोकामनाएं पूर्ण हों और घर-आँगन में सुख-शांति बसे।'
+    'जय छठी मईया! मनोकामनाएं पूर्ण हों और घर-आँगन में सुख-शांति बसे।',
+    'कंचन थार सजाए के, कलश उठाए के सूर्य देव के चरणों में शत-शत नमन।'
   ];
 
   const blessingsEn = [
     'Om Suryaya Namaha! May the Sun God bestow vigor, radiant health, and longevity.',
-    "May the boundless blessings of Mother Chhathi reside forever with your family.",
+    'May the boundless blessings of Mother Chhathi reside forever with your family.',
     'May this sacred offering illuminate your life with divine energy and clarity.',
-    'Jai Chhathi Maiya! May all noble aspirations be fulfilled with peace and joy.'
+    'Jai Chhathi Maiya! May all noble aspirations be fulfilled with peace and joy.',
+    'Salutations to the illuminator of the cosmos, may Surya Dev enlighten our intellect.'
   ];
 
   const triggerArghya = () => {
@@ -41,27 +44,27 @@ export const InteractiveArghya: React.FC<InteractiveArghyaProps> = ({
     soundSynth.playArghyaStream();
 
     // 2. Trigger auspicious marigold petals confetti shower
-    const end = Date.now() + 1200;
-    const colors = ['#f59e0b', '#d97706', '#ef4444', '#fde047', '#ffedd5'];
+    const end = Date.now() + 1400;
+    const colors = ['#f59e0b', '#d97706', '#ef4444', '#fde047', '#ffedd5', '#d4af37'];
 
     (function frame() {
       confetti({
-        particleCount: 4,
+        particleCount: 5,
         angle: 60,
-        spread: 55,
+        spread: 60,
         origin: { x: 0.1, y: 0.7 },
         colors: colors,
         shapes: ['circle'],
-        scalar: 1.2
+        scalar: 1.25
       });
       confetti({
-        particleCount: 4,
+        particleCount: 5,
         angle: 120,
-        spread: 55,
+        spread: 60,
         origin: { x: 0.9, y: 0.7 },
         colors: colors,
         shapes: ['circle'],
-        scalar: 1.2
+        scalar: 1.25
       });
 
       if (Date.now() < end) {
@@ -69,8 +72,12 @@ export const InteractiveArghya: React.FC<InteractiveArghyaProps> = ({
       }
     })();
 
-    // 3. Callback
-    onArghyaOffered();
+    // 3. Record Live Arghya in Firestore & optimistic local update
+    presence.recordArghyaOffering();
+    if (onArghyaOffered) {
+      onArghyaOffered();
+    }
+
     const activeList = isHindi ? blessingsHi : blessingsEn;
     const randomBlessing = activeList[Math.floor(Math.random() * activeList.length)];
     setLastBlessing(randomBlessing);
@@ -79,6 +86,9 @@ export const InteractiveArghya: React.FC<InteractiveArghyaProps> = ({
       setIsPouring(false);
     }, 2800);
   };
+
+  const totalCount = presence.totalArghya || 0;
+  const userCount = presence.userArghyaCount || 0;
 
   return (
     <div id="interactive-arghya-section" className="relative rounded-3xl bg-[#1C120B]/90 p-6 md:p-8 border border-[#D4AF37]/30 overflow-hidden shadow-2xl">
@@ -116,10 +126,31 @@ export const InteractiveArghya: React.FC<InteractiveArghyaProps> = ({
             </div>
           </div>
 
-          {/* Arghya Status Details */}
-          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-1 font-sans">
-            <div className="text-xs text-[#D4AF37] bg-black/40 px-3.5 py-1.5 rounded-full border border-[#D4AF37]/35 font-bold">
-              {isHindi ? 'कुल समर्पित अर्घ्य:' : 'Total Arghya Offered:'} <span className="text-[#FFF5E1] font-extrabold">{count}</span>
+          {/* Live Arghya Status Counters (Global Live Sync + Personal Offerings) */}
+          <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 pt-2 font-sans">
+            {/* Global Live Arghya Count with Pulsing Beacon */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 border border-[#D4AF37]/45 shadow-sm text-xs">
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+              </span>
+              <span className="text-[#FFF5E1]/85 font-medium">
+                {isHindi ? 'विश्वभर से समर्पित अर्घ्य:' : 'Total Arghya Offered Globally:'}
+              </span>
+              <strong className="text-[#D4AF37] font-extrabold tracking-wide font-mono text-sm">
+                {totalCount.toLocaleString('en-IN')}
+              </strong>
+            </div>
+
+            {/* Devotee's Personal Offering Count */}
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/60 border border-[#D4AF37]/45 shadow-sm text-xs text-[#FFF5E1]">
+              <Heart className="w-3.5 h-3.5 fill-[#D4AF37] text-[#D4AF37]" />
+              <span className="text-[#FFF5E1]/85 font-medium">
+                {isHindi ? 'आपकी भेंट:' : 'Your Offerings:'}
+              </span>
+              <strong className="text-[#D4AF37] font-extrabold font-mono text-sm">
+                {userCount.toLocaleString('en-IN')}
+              </strong>
             </div>
           </div>
         </div>
