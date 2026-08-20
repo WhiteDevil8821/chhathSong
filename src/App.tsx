@@ -38,6 +38,8 @@ import { SongDirectory } from './components/SongDirectory';
 import { FeaturedSongsBanner } from './components/FeaturedSongsBanner';
 import { SongDetailModal } from './components/SongDetailModal';
 import { ChhathGuide2026 } from './components/ChhathGuide2026';
+import { SongPage } from './components/SongPage';
+import { SongNotFoundPage } from './components/SongNotFoundPage';
 import { ActiveModal } from './components/InfoModals';
 import { LiveDevoteesCounter } from './components/LiveDevoteesCounter';
 import { UpiSupportModal } from './components/UpiSupportModal';
@@ -45,21 +47,67 @@ import { soundSynth } from './utils/soundSynthesizer';
 import { useLanguage } from './context/LanguageContext';
 import { CHHATH_SONGS } from './data/chhathData';
 import { ChhathSong } from './types';
+import { getSongSlug, getSongPath, findSongBySlug } from './utils/songSlug';
 import { Analytics } from '@vercel/analytics/react';
+import { updateCanonicalUrl, trackEvent } from './utils/analytics';
+
+export type AppRoute =
+  | { type: 'home' }
+  | { type: 'songs' }
+  | { type: 'song'; slug: string }
+  | { type: 'song_404'; slug: string };
+
+function parseCurrentRoute(songs: ChhathSong[]): AppRoute {
+  if (typeof window === 'undefined') return { type: 'home' };
+
+  const rawPath = window.location.pathname.replace(/\/+$/, '') || '/';
+
+  // 1. Direct song path: /songs/<slug>
+  if (rawPath.startsWith('/songs/')) {
+    const rawSlug = rawPath.substring(7); // Remove '/songs/'
+    const decodedSlug = decodeURIComponent(rawSlug).trim();
+    if (decodedSlug) {
+      const song = findSongBySlug(decodedSlug, songs);
+      if (song) {
+        return { type: 'song', slug: getSongSlug(song) };
+      }
+      return { type: 'song_404', slug: decodedSlug };
+    }
+  }
+
+  // 2. Songs directory: /songs
+  if (rawPath === '/songs') {
+    return { type: 'songs' };
+  }
+
+  // 3. Root URL or legacy hash / query (?song=...)
+  if (rawPath === '/' || rawPath === '') {
+    const params = new URLSearchParams(window.location.search);
+    const songParam = params.get('song');
+    if (songParam) {
+      const song = songs.find((s) => s.id === songParam || s.youtubeId === songParam);
+      if (song) {
+        return { type: 'song', slug: getSongSlug(song) };
+      }
+    }
+
+    if (window.location.hash === '#songs' || window.location.hash === '#geet') {
+      return { type: 'songs' };
+    }
+    return { type: 'home' };
+  }
+
+  return { type: 'home' };
+}
 
 // Lazy load InfoModals to keep initial bundle size lean and fast
 const InfoModals = lazy(() => import('./components/InfoModals').then(m => ({ default: m.InfoModals })));
 
 export default function App() {
   const { lang, setLang, toggleLang, isHindi } = useLanguage();
-  const [activeTab, setActiveTab] = useState<'home' | 'songs'>(() => {
-    if (typeof window !== 'undefined' && (window.location.hash === '#songs' || window.location.hash === '#geet')) {
-      return 'songs';
-    }
-    return 'home';
-  });
-  const [arghyaCount, setArghyaCount] = useState<number>(0);
   const [allSongs, setAllSongs] = useState<ChhathSong[]>(CHHATH_SONGS);
+  const [route, setRoute] = useState<AppRoute>(() => parseCurrentRoute(CHHATH_SONGS));
+  const [arghyaCount, setArghyaCount] = useState<number>(0);
   const [currentTrackIndex, setCurrentTrackIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isAudioMuted, setIsAudioMuted] = useState<boolean>(false);
@@ -68,23 +116,48 @@ export default function App() {
   const [isUpiModalOpen, setIsUpiModalOpen] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
+  // Sync browser location with app route
   useEffect(() => {
-    const handleHash = () => {
-      if (window.location.hash === '#songs' || window.location.hash === '#geet') {
-        setActiveTab('songs');
-      } else if (window.location.hash === '#home' || !window.location.hash) {
-        setActiveTab('home');
-      }
+    const handleLocationChange = () => {
+      const nextRoute = parseCurrentRoute(allSongs);
+      setRoute(nextRoute);
     };
-    window.addEventListener('hashchange', handleHash);
-    return () => window.removeEventListener('hashchange', handleHash);
-  }, []);
+
+    window.addEventListener('popstate', handleLocationChange);
+    window.addEventListener('hashchange', handleLocationChange);
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('hashchange', handleLocationChange);
+    };
+  }, [allSongs]);
+
+  // Manage top-level document title and canonical tag for root and /songs
+  useEffect(() => {
+    if (route.type === 'home') {
+      document.title = isHindi
+        ? `छठ पूजा 2026 महापर्व: ${allSongs.length} अमर छठ गीत, नहाय-खाय, खरना, अर्घ्य व लोक आस्था | ChhathSong.in`
+        : `Chhath Puja 2026: ${allSongs.length} Sacred Chhath Songs, Timings, Arghya & Rituals | ChhathSong.in`;
+      updateCanonicalUrl('https://www.chhathsong.in/');
+    } else if (route.type === 'songs') {
+      document.title = isHindi
+        ? `${allSongs.length} अमर छठ गीत संग्रह, बोल, भावार्थ व शारदा सिन्हा लोकगीत | ChhathSong.in`
+        : `${allSongs.length} Sacred Chhath Songs Archive, Lyrics & Sharda Sinha Classics | ChhathSong.in`;
+      updateCanonicalUrl('https://www.chhathsong.in/songs');
+    }
+  }, [route.type, isHindi, allSongs.length]);
+
+  const navigateTo = (path: string) => {
+    if (typeof window !== 'undefined') {
+      window.history.pushState({}, '', path);
+      const nextRoute = parseCurrentRoute(allSongs);
+      setRoute(nextRoute);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setIsMobileMenuOpen(false);
+    }
+  };
 
   const navigateToTab = (tab: 'home' | 'songs') => {
-    setActiveTab(tab);
-    window.location.hash = tab === 'songs' ? 'songs' : 'home';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setIsMobileMenuOpen(false);
+    navigateTo(tab === 'songs' ? '/songs' : '/');
   };
 
   const contactEmail = 'ankit.kumar221099@gmail.com';
@@ -184,33 +257,43 @@ export default function App() {
       {/* Top Floating Navigation Header */}
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-[#180F08]/95 border-b border-[#D4AF37]/20 px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-2.5 md:py-3 transition-all">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-1 sm:gap-3 md:gap-4 lg:gap-6">
-          {/* Logo & Regional Identity (Fixed typography with clean 2-line layout for mobile/tablet) */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3 min-w-0 shrink-0">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-tr from-[#9B3D12] via-[#C87D32] to-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.3)] border border-[#D4AF37]/40 text-sm sm:text-base md:text-lg shrink-0">
+          {/* Logo & Regional Identity */}
+          <a
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              navigateTo('/');
+            }}
+            className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3 min-w-0 shrink-0 cursor-pointer group"
+          >
+            <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-tr from-[#9B3D12] via-[#C87D32] to-[#D4AF37] flex items-center justify-center shadow-[0_0_15px_rgba(212,175,55,0.3)] border border-[#D4AF37]/40 text-sm sm:text-base md:text-lg shrink-0 group-hover:scale-105 transition-transform">
               🪔
             </div>
             <div className="flex flex-col justify-center min-w-0">
               <span className="hidden lg:block text-[10px] xl:text-[11px] uppercase tracking-[0.18em] text-[#D4AF37] font-semibold truncate leading-none mb-0.5">
                 {isHindi ? 'मिथिला • मगध • अंग • भोजपुरी माटी' : 'Mithila • Magadh • Anga • Bhojpuri Soul'}
               </span>
-              <div className="font-serif font-bold text-[#FFF5E1] text-[13px] sm:text-sm md:text-base tracking-wide leading-tight whitespace-nowrap">
+              <div className="font-serif font-bold text-[#FFF5E1] text-[13px] sm:text-sm md:text-base tracking-wide leading-tight whitespace-nowrap group-hover:text-[#D4AF37] transition-colors">
                 {isHindi ? 'महापर्व छठ' : 'Chhath Mahaparv'}
               </div>
               <div className="text-[9px] sm:text-[10px] md:text-xs font-sans font-semibold text-[#D4AF37] tracking-wider uppercase whitespace-nowrap leading-tight opacity-90">
                 {isHindi ? 'द प्राइड ऑफ बिहार' : 'The Pride of Bihar'}
               </div>
             </div>
-          </div>
+          </a>
 
           {/* Desktop Navigation Controls (Extra Large Screens: xl+) */}
           <div className="hidden xl:flex items-center gap-2.5 lg:gap-3 shrink-0 whitespace-nowrap">
             {/* Primary Page Navigation Tabs */}
             <nav className="flex items-center p-0.5 rounded-full bg-black/60 border border-[#D4AF37]/35 shadow-inner shrink-0">
-              <button
-                type="button"
-                onClick={() => navigateToTab('home')}
+              <a
+                href="/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigateTo('/');
+                }}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                  activeTab === 'home'
+                  route.type === 'home'
                     ? 'bg-[#D4AF37] text-[#180F08] shadow-sm'
                     : 'text-[#FFF5E1]/80 hover:text-[#FFF5E1] hover:bg-[#D4AF37]/15'
                 }`}
@@ -218,12 +301,15 @@ export default function App() {
               >
                 <Home className="w-3.5 h-3.5" />
                 <span>{isHindi ? 'मुख्य पृष्ठ' : 'Home'}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => navigateToTab('songs')}
+              </a>
+              <a
+                href="/songs"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigateTo('/songs');
+                }}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                  activeTab === 'songs'
+                  route.type === 'songs' || route.type === 'song' || route.type === 'song_404'
                     ? 'bg-[#D4AF37] text-[#180F08] shadow-sm'
                     : 'text-[#FFF5E1]/80 hover:text-[#FFF5E1] hover:bg-[#D4AF37]/15'
                 }`}
@@ -231,7 +317,7 @@ export default function App() {
               >
                 <Music className="w-3.5 h-3.5" />
                 <span>{isHindi ? `${songCount} छठ गीत संग्रह` : `${songCount} Songs`}</span>
-              </button>
+              </a>
             </nav>
 
             {/* Real-time Online Devotees Counter (Exact) */}
@@ -310,24 +396,32 @@ export default function App() {
           <div className="hidden md:flex xl:hidden items-center gap-2 lg:gap-2.5 shrink-0 whitespace-nowrap">
             {/* Tablet Page Navigation Tabs */}
             <div className="flex items-center p-0.5 rounded-full bg-black/60 border border-[#D4AF37]/35 shrink-0">
-              <button
-                type="button"
-                onClick={() => navigateToTab('home')}
+              <a
+                href="/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigateTo('/');
+                }}
                 className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${
-                  activeTab === 'home' ? 'bg-[#D4AF37] text-[#180F08]' : 'text-[#FFF5E1]/80 hover:text-[#FFF5E1]'
+                  route.type === 'home' ? 'bg-[#D4AF37] text-[#180F08]' : 'text-[#FFF5E1]/80 hover:text-[#FFF5E1]'
                 }`}
               >
                 {isHindi ? 'होम' : 'Home'}
-              </button>
-              <button
-                type="button"
-                onClick={() => navigateToTab('songs')}
+              </a>
+              <a
+                href="/songs"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigateTo('/songs');
+                }}
                 className={`px-2.5 py-1 rounded-full text-[11px] font-bold ${
-                  activeTab === 'songs' ? 'bg-[#D4AF37] text-[#180F08]' : 'text-[#FFF5E1]/80 hover:text-[#FFF5E1]'
+                  route.type === 'songs' || route.type === 'song' || route.type === 'song_404'
+                    ? 'bg-[#D4AF37] text-[#180F08]'
+                    : 'text-[#FFF5E1]/80 hover:text-[#FFF5E1]'
                 }`}
               >
                 {isHindi ? `${songCount} गीत` : `${songCount} Songs`}
-              </button>
+              </a>
             </div>
 
             <LiveDevoteesCounter variant="navbar" />
@@ -425,63 +519,65 @@ export default function App() {
             >
               {/* Primary Mobile Navigation Links (Home & Sacred Songs Archive) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-semibold">
-                <button
-                  onClick={() => {
-                    navigateToTab('home');
-                    setIsMobileMenuOpen(false);
+                <a
+                  href="/"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigateTo('/');
                   }}
                   className={`p-3 rounded-2xl border flex items-center justify-between transition-all cursor-pointer ${
-                    activeTab === 'home'
+                    route.type === 'home'
                       ? 'bg-gradient-to-r from-[#D4AF37] via-[#F28C28] to-[#C87D32] text-[#180F08] border-[#D4AF37] font-bold shadow-lg'
                       : 'bg-black/60 border-[#D4AF37]/35 text-[#FFF5E1] hover:bg-[#D4AF37]/15 hover:text-[#D4AF37]'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <div className={`p-1.5 rounded-lg ${activeTab === 'home' ? 'bg-[#180F08]/20' : 'bg-[#D4AF37]/20'}`}>
-                      <Home className={`w-4 h-4 ${activeTab === 'home' ? 'text-[#180F08]' : 'text-[#D4AF37]'}`} />
+                    <div className={`p-1.5 rounded-lg ${route.type === 'home' ? 'bg-[#180F08]/20' : 'bg-[#D4AF37]/20'}`}>
+                      <Home className={`w-4 h-4 ${route.type === 'home' ? 'text-[#180F08]' : 'text-[#D4AF37]'}`} />
                     </div>
                     <div className="text-left">
                       <div className="font-bold text-xs sm:text-sm">{isHindi ? 'मुख्य पृष्ठ' : 'Home Overview'}</div>
-                      <div className={`text-[10px] ${activeTab === 'home' ? 'text-[#180F08]/80' : 'text-[#FFF5E1]/60'}`}>
+                      <div className={`text-[10px] ${route.type === 'home' ? 'text-[#180F08]/80' : 'text-[#FFF5E1]/60'}`}>
                         {isHindi ? 'पंचांग, मुहूर्त व दर्शन' : 'Rituals, Timings & Arghya'}
                       </div>
                     </div>
                   </div>
-                  {activeTab === 'home' && (
+                  {route.type === 'home' && (
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#180F08] text-[#D4AF37] font-bold">
                       {isHindi ? 'सक्रिय' : 'Active'}
                     </span>
                   )}
-                </button>
+                </a>
 
-                <button
-                  onClick={() => {
-                    navigateToTab('songs');
-                    setIsMobileMenuOpen(false);
+                <a
+                  href="/songs"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigateTo('/songs');
                   }}
                   className={`p-3 rounded-2xl border flex items-center justify-between transition-all cursor-pointer ${
-                    activeTab === 'songs'
+                    route.type === 'songs' || route.type === 'song' || route.type === 'song_404'
                       ? 'bg-gradient-to-r from-[#D4AF37] via-[#F28C28] to-[#C87D32] text-[#180F08] border-[#D4AF37] font-bold shadow-lg'
                       : 'bg-black/60 border-[#D4AF37]/35 text-[#FFF5E1] hover:bg-[#D4AF37]/15 hover:text-[#D4AF37]'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <div className={`p-1.5 rounded-lg ${activeTab === 'songs' ? 'bg-[#180F08]/20' : 'bg-[#D4AF37]/20'}`}>
-                      <Music className={`w-4 h-4 ${activeTab === 'songs' ? 'text-[#180F08]' : 'text-[#D4AF37]'}`} />
+                    <div className={`p-1.5 rounded-lg ${route.type === 'songs' || route.type === 'song' || route.type === 'song_404' ? 'bg-[#180F08]/20' : 'bg-[#D4AF37]/20'}`}>
+                      <Music className={`w-4 h-4 ${route.type === 'songs' || route.type === 'song' || route.type === 'song_404' ? 'text-[#180F08]' : 'text-[#D4AF37]'}`} />
                     </div>
                     <div className="text-left">
                       <div className="font-bold text-xs sm:text-sm">{isHindi ? `${songCount} छठ गीत संग्रह` : `${songCount} Chhath Geet Archive`}</div>
-                      <div className={`text-[10px] ${activeTab === 'songs' ? 'text-[#180F08]/80' : 'text-[#FFF5E1]/60'}`}>
+                      <div className={`text-[10px] ${route.type === 'songs' || route.type === 'song' || route.type === 'song_404' ? 'text-[#180F08]/80' : 'text-[#FFF5E1]/60'}`}>
                         {isHindi ? 'शारदा सिन्हा व पारंपरिक गीत' : 'Sharda Sinha, Lyrics & Audio'}
                       </div>
                     </div>
                   </div>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                    activeTab === 'songs' ? 'bg-[#180F08] text-[#D4AF37]' : 'bg-[#D4AF37]/25 text-[#D4AF37] border border-[#D4AF37]/40'
+                    route.type === 'songs' || route.type === 'song' || route.type === 'song_404' ? 'bg-[#180F08] text-[#D4AF37]' : 'bg-[#D4AF37]/25 text-[#D4AF37] border border-[#D4AF37]/40'
                   }`}>
                     {songCount} Songs
                   </span>
-                </button>
+                </a>
               </div>
 
               {/* Mobile UPI Support Button */}
@@ -573,7 +669,7 @@ export default function App() {
 
       {/* Main Content Body */}
       <main className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 md:px-8 pt-3 sm:pt-4 md:pt-6 space-y-8 sm:space-y-10 md:space-y-14">
-        {activeTab === 'home' ? (
+        {route.type === 'home' ? (
           <>
             {/* Hero Branding & 1st View Title Section */}
             <section id="hero-title-section" className="text-center space-y-2 sm:space-y-3 max-w-4xl mx-auto">
@@ -623,8 +719,9 @@ export default function App() {
                 currentSong={currentSong}
                 isPlaying={isPlaying}
                 onPlaySong={handlePlaySongFromDirectory}
-                onOpenSongsArchive={() => navigateToTab('songs')}
+                onOpenSongsArchive={() => navigateTo('/songs')}
                 onOpenSongDetail={handleOpenSongDetail}
+                onNavigateToSong={(s) => navigateTo(getSongPath(s))}
               />
             </section>
 
@@ -640,7 +737,7 @@ export default function App() {
 
             {/* 7. Comprehensive Chhath 2026 Guide & Vidhi Hub */}
             <ChhathGuide2026
-              onExploreSongs={() => navigateToTab('songs')}
+              onExploreSongs={() => navigateTo('/songs')}
             />
 
             {/* 8. Emotional Nostalgia, Train Journey & Community Unity */}
@@ -648,7 +745,7 @@ export default function App() {
               <NostalgicMemoriesBoard />
             </section>
           </>
-        ) : (
+        ) : route.type === 'songs' ? (
           /* Dedicated Separate Page: Sacred Chhath Geet, Lyrics & Devotional Archive */
           <div className="space-y-6">
             <SongDirectory
@@ -657,9 +754,29 @@ export default function App() {
               isPlaying={isPlaying}
               onPlaySong={handlePlaySongFromDirectory}
               onOpenSongDetail={handleOpenSongDetail}
-              onBackToHome={() => navigateToTab('home')}
+              onNavigateToSong={(s) => navigateTo(getSongPath(s))}
+              onBackToHome={() => navigateTo('/')}
             />
           </div>
+        ) : route.type === 'song' ? (
+          (() => {
+            const targetSong = findSongBySlug(route.slug, allSongs);
+            if (!targetSong) {
+              return <SongNotFoundPage onNavigate={navigateTo} />;
+            }
+            return (
+              <SongPage
+                song={targetSong}
+                allSongs={allSongs}
+                isPlaying={isPlaying}
+                currentPlayingId={currentSong.id}
+                onPlaySong={handlePlaySongFromDirectory}
+                onNavigate={navigateTo}
+              />
+            );
+          })()
+        ) : (
+          <SongNotFoundPage onNavigate={navigateTo} />
         )}
 
         {/* Production Footer */}
@@ -682,19 +799,27 @@ export default function App() {
 
           {/* Quick Footer Navigation Links */}
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs font-medium text-[#D4AF37]">
-            <button
-              onClick={() => navigateToTab('home')}
-              className={`hover:underline transition-all cursor-pointer font-bold ${activeTab === 'home' ? 'text-[#FFF5E1] underline' : 'text-[#D4AF37]'}`}
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo('/');
+              }}
+              className={`hover:underline transition-all cursor-pointer font-bold ${route.type === 'home' ? 'text-[#FFF5E1] underline' : 'text-[#D4AF37]'}`}
             >
               {isHindi ? 'होम (Home)' : 'Home'}
-            </button>
+            </a>
             <span>•</span>
-            <button
-              onClick={() => navigateToTab('songs')}
-              className={`hover:underline transition-all cursor-pointer font-bold ${activeTab === 'songs' ? 'text-[#FFF5E1] underline' : 'text-[#D4AF37]'}`}
+            <a
+              href="/songs"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateTo('/songs');
+              }}
+              className={`hover:underline transition-all cursor-pointer font-bold ${route.type === 'songs' ? 'text-[#FFF5E1] underline' : 'text-[#D4AF37]'}`}
             >
               {isHindi ? `${songCount} छठ गीत संग्रह (All Songs)` : `${songCount} Songs Archive`}
-            </button>
+            </a>
             <span>•</span>
             <button
               onClick={() => setActiveModal('about')}
@@ -831,6 +956,10 @@ export default function App() {
             onSelectRelatedSong={(song) => {
               setSelectedSongDetail(song);
               handlePlaySongFromDirectory(song);
+            }}
+            onNavigateToSongPage={(song) => {
+              setSelectedSongDetail(null);
+              navigateTo(getSongPath(song));
             }}
           />
         )}

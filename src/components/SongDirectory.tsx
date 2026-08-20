@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Music2, Play, BookOpen, Mic2, Tag, Calendar, Sparkles, Filter, X, Volume2, Share2, Check, ArrowLeft, Home } from 'lucide-react';
+import { Search, Music2, Play, BookOpen, Mic2, Tag, Calendar, Sparkles, Filter, X, Volume2, Share2, Check, ArrowLeft, Home, ArrowRight, ExternalLink } from 'lucide-react';
 import { ChhathSong, SongCategory } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { getSongSlug, getSongPath, getSongCanonicalUrl } from '../utils/songSlug';
+import { trackEvent } from '../utils/analytics';
 
 interface SongDirectoryProps {
   songs: ChhathSong[];
@@ -10,6 +12,7 @@ interface SongDirectoryProps {
   isPlaying: boolean;
   onPlaySong: (song: ChhathSong) => void;
   onOpenSongDetail: (song: ChhathSong) => void;
+  onNavigateToSong?: (song: ChhathSong) => void;
   onBackToHome?: () => void;
 }
 
@@ -19,6 +22,7 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
   isPlaying,
   onPlaySong,
   onOpenSongDetail,
+  onNavigateToSong,
   onBackToHome
 }) => {
   const { isHindi } = useLanguage();
@@ -71,13 +75,27 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
 
   const handleShareSong = (song: ChhathSong, e: React.MouseEvent) => {
     e.stopPropagation();
-    const shareUrl = `${window.location.origin}/?song=${song.id}`;
+    trackEvent('song_share', {
+      song_id: song.id,
+      title: song.title
+    });
+    const canonicalUrl = getSongCanonicalUrl(song);
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(`${song.title} - Chhath Geet: ${shareUrl}`);
+      navigator.clipboard.writeText(`${song.title} - Chhath Geet: ${canonicalUrl}`);
       setCopiedId(song.id);
       setTimeout(() => setCopiedId(null), 2500);
     }
   };
+
+  const handlePlay = (song: ChhathSong) => {
+    trackEvent('song_play', {
+      song_id: song.id,
+      title: song.title,
+      singer: song.singer || song.artist || 'Unknown'
+    });
+    onPlaySong(song);
+  };
+
 
   return (
     <section id="chhath-songs-directory" className="w-full relative rounded-3xl bg-[#180F08]/90 border border-[#D4AF37]/30 p-5 sm:p-6 md:p-8 shadow-2xl space-y-6 font-sans">
@@ -242,10 +260,19 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
                     </div>
                   </div>
 
-                  {/* Song Title */}
-                  <h3 className="text-base font-serif font-bold text-[#FFF5E1] group-hover:text-[#FFE5B4] transition-colors leading-snug line-clamp-2">
+                  {/* Song Title (Crawlable Link to Dedicated Page) */}
+                  <a
+                    href={getSongPath(song)}
+                    onClick={(e) => {
+                      if (onNavigateToSong) {
+                        e.preventDefault();
+                        onNavigateToSong(song);
+                      }
+                    }}
+                    className="block text-base font-serif font-bold text-[#FFF5E1] group-hover:text-[#FFE5B4] transition-colors leading-snug line-clamp-2"
+                  >
                     {song.title}
-                  </h3>
+                  </a>
 
                   {/* Lyrics Highlight Quote */}
                   <div className="my-3 p-3 rounded-xl bg-black/35 border border-[#D4AF37]/15 relative">
@@ -260,11 +287,11 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
                   </p>
                 </div>
 
-                {/* Bottom Action Buttons */}
+                {/* Bottom Action Buttons: Play Song, Dedicated Page Link, Quick Modal */}
                 <div className="pt-3 border-t border-[#D4AF37]/15 flex items-center justify-between gap-2 mt-auto">
                   <button
-                    onClick={() => onPlaySong(song)}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    onClick={() => handlePlay(song)}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       isCurrentPlaying
                         ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20'
                         : isCurrent
@@ -275,23 +302,37 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
                     {isCurrentPlaying ? (
                       <>
                         <Volume2 className="w-3.5 h-3.5 animate-pulse" />
-                        <span>{isHindi ? 'चल रहा है...' : 'Now Playing'}</span>
+                        <span>{isHindi ? 'बज रहा है' : 'Playing'}</span>
                       </>
                     ) : (
                       <>
                         <Play className="w-3.5 h-3.5 fill-current" />
-                        <span>{isHindi ? 'गीत सुनें' : 'Play Song'}</span>
+                        <span>{isHindi ? 'गीत सुनें' : 'Play'}</span>
                       </>
                     )}
                   </button>
 
-                  <button
-                    onClick={() => onOpenSongDetail(song)}
-                    className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-semibold bg-black/50 text-[#FFF5E1]/85 hover:text-white hover:bg-black/80 border border-[#D4AF37]/25 transition-all cursor-pointer"
-                    title={isHindi ? 'गीत के बोल एवं संपूर्ण अर्थ' : 'View full lyrics, meaning, and cultural story'}
+                  <a
+                    href={getSongPath(song)}
+                    onClick={(e) => {
+                      if (onNavigateToSong) {
+                        e.preventDefault();
+                        onNavigateToSong(song);
+                      }
+                    }}
+                    className="flex items-center justify-center gap-1 py-2 px-3 rounded-xl text-xs font-semibold bg-black/50 text-[#FFF5E1]/85 hover:text-white hover:bg-black/80 border border-[#D4AF37]/25 transition-all"
+                    title={isHindi ? 'समर्पित गीत पृष्ठ खोलें' : 'Open permanent song page with lyrics & meaning'}
                   >
                     <BookOpen className="w-3.5 h-3.5 text-[#D4AF37]" />
-                    <span>{isHindi ? 'बोल व भावार्थ' : 'Lyrics & Story'}</span>
+                    <span>{isHindi ? 'पेज खोलें' : 'View Page'}</span>
+                  </a>
+
+                  <button
+                    onClick={() => onOpenSongDetail(song)}
+                    className="p-2 rounded-xl text-xs font-semibold bg-black/40 text-[#FFF5E1]/60 hover:text-[#D4AF37] hover:bg-black/70 border border-white/5 transition-all cursor-pointer shrink-0"
+                    title={isHindi ? 'त्वरित विवरण पॉपअप' : 'Quick Preview Modal'}
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
                   </button>
                 </div>
               </article>

@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Music, Play, ArrowRight, Sparkles, Disc3, Mic2, Heart, Volume2 } from 'lucide-react';
+import { Music, Play, ArrowRight, Sparkles, Disc3, Mic2, Heart, Volume2, ExternalLink } from 'lucide-react';
 import { ChhathSong } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { getSongPath } from '../utils/songSlug';
 
 interface FeaturedSongsBannerProps {
   songs: ChhathSong[];
@@ -11,6 +12,7 @@ interface FeaturedSongsBannerProps {
   onPlaySong: (song: ChhathSong) => void;
   onOpenSongsArchive: () => void;
   onOpenSongDetail: (song: ChhathSong) => void;
+  onNavigateToSong?: (song: ChhathSong) => void;
 }
 
 export const FeaturedSongsBanner: React.FC<FeaturedSongsBannerProps> = ({
@@ -19,7 +21,8 @@ export const FeaturedSongsBanner: React.FC<FeaturedSongsBannerProps> = ({
   isPlaying,
   onPlaySong,
   onOpenSongsArchive,
-  onOpenSongDetail
+  onOpenSongDetail,
+  onNavigateToSong
 }) => {
   const { isHindi } = useLanguage();
 
@@ -50,14 +53,18 @@ export const FeaturedSongsBanner: React.FC<FeaturedSongsBannerProps> = ({
         </div>
 
         {/* Primary CTA Button to open dedicated page */}
-        <button
-          onClick={onOpenSongsArchive}
+        <a
+          href="/songs"
+          onClick={(e) => {
+            e.preventDefault();
+            onOpenSongsArchive();
+          }}
           className="px-5 py-3.5 rounded-2xl bg-gradient-to-r from-[#D4AF37] via-[#F28C28] to-[#C87D32] hover:opacity-95 text-[#180F08] font-bold text-sm sm:text-base flex items-center gap-2.5 transition-all shadow-lg hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] hover:scale-[1.02] cursor-pointer shrink-0 group w-full sm:w-auto justify-center"
         >
           <Disc3 className="w-5 h-5 text-[#180F08] animate-spin-slow" />
           <span>{isHindi ? `सम्पूर्ण ${songs.length} छठ गीत देखें` : `Explore All ${songs.length} Songs`}</span>
           <ArrowRight className="w-4 h-4 text-[#180F08] group-hover:translate-x-1 transition-transform" />
-        </button>
+        </a>
       </div>
 
       {/* Quick Play Highlight Grid (4 Iconic Tracks Preview) */}
@@ -67,12 +74,16 @@ export const FeaturedSongsBanner: React.FC<FeaturedSongsBannerProps> = ({
             <Sparkles className="w-3.5 h-3.5" />
             {isHindi ? 'शीर्ष लोकप्रिय छठ गीत (Quick Play):' : 'Popular Devotional Classics:'}
           </span>
-          <button
-            onClick={onOpenSongsArchive}
+          <a
+            href="/songs"
+            onClick={(e) => {
+              e.preventDefault();
+              onOpenSongsArchive();
+            }}
             className="hover:underline text-[#FFF5E1]/70 hover:text-[#D4AF37] transition-colors cursor-pointer hidden sm:inline"
           >
             {isHindi ? `सभी ${songs.length} गीत खोजें →` : `Search all ${songs.length} songs →`}
-          </button>
+          </a>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -103,9 +114,19 @@ export const FeaturedSongsBanner: React.FC<FeaturedSongsBannerProps> = ({
                 </div>
 
                 <div>
-                  <h3 className="text-xs sm:text-sm font-serif font-bold text-[#FFF5E1] line-clamp-1 group-hover:text-[#D4AF37] transition-colors">
+                  <a
+                    href={getSongPath(song)}
+                    onClick={(e) => {
+                      if (onNavigateToSong) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onNavigateToSong(song);
+                      }
+                    }}
+                    className="text-xs sm:text-sm font-serif font-bold text-[#FFF5E1] line-clamp-1 group-hover:text-[#D4AF37] transition-colors hover:underline block"
+                  >
                     {song.title}
-                  </h3>
+                  </a>
                   <p className="text-[11px] text-[#FFF5E1]/60 line-clamp-1 mt-0.5">
                     {song.singer || song.artist}
                   </p>
@@ -113,15 +134,32 @@ export const FeaturedSongsBanner: React.FC<FeaturedSongsBannerProps> = ({
 
                 <div className="flex items-center justify-between pt-1 border-t border-[#D4AF37]/10 text-[10px] text-[#D4AF37]">
                   <span className="line-clamp-1 italic text-[#FFF5E1]/50">{song.whenSung || 'छठ पूजा अर्घ्य'}</span>
-                  <span
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onOpenSongDetail(song);
-                    }}
-                    className="hover:underline font-semibold text-[#D4AF37] cursor-pointer"
-                  >
-                    {isHindi ? 'बोल' : 'Lyrics'}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onOpenSongDetail(song);
+                      }}
+                      className="hover:underline font-semibold text-[#D4AF37] cursor-pointer"
+                    >
+                      {isHindi ? 'बोल' : 'Lyrics'}
+                    </span>
+                    <a
+                      href={getSongPath(song)}
+                      onClick={(e) => {
+                        if (onNavigateToSong) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onNavigateToSong(song);
+                        }
+                      }}
+                      className="text-[#D4AF37]/80 hover:text-[#D4AF37] hover:underline flex items-center gap-0.5 font-semibold"
+                      title="Open dedicated page"
+                    >
+                      <ExternalLink className="w-2.5 h-2.5" />
+                      <span>{isHindi ? 'पेज' : 'Page'}</span>
+                    </a>
+                  </div>
                 </div>
               </motion.div>
             );

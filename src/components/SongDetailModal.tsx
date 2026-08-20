@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { X, Play, Volume2, Mic2, Calendar, Share2, Check, Sparkles, BookOpen, Music, Heart, ArrowRight } from 'lucide-react';
+import { X, Play, Volume2, Mic2, Calendar, Share2, Check, Sparkles, BookOpen, Music, Heart, ArrowRight, ExternalLink } from 'lucide-react';
 import { ChhathSong } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { getSongSlug, getSongPath, getSongCanonicalUrl } from '../utils/songSlug';
 
 interface SongDetailModalProps {
   song: ChhathSong | null;
@@ -12,6 +13,7 @@ interface SongDetailModalProps {
   onClose: () => void;
   onPlaySong: (song: ChhathSong) => void;
   onSelectRelatedSong: (song: ChhathSong) => void;
+  onNavigateToSongPage?: (song: ChhathSong) => void;
 }
 
 export const SongDetailModal: React.FC<SongDetailModalProps> = ({
@@ -21,7 +23,8 @@ export const SongDetailModal: React.FC<SongDetailModalProps> = ({
   currentPlayingId,
   onClose,
   onPlaySong,
-  onSelectRelatedSong
+  onSelectRelatedSong,
+  onNavigateToSongPage
 }) => {
   const { isHindi } = useLanguage();
   const [copied, setCopied] = useState(false);
@@ -34,6 +37,9 @@ export const SongDetailModal: React.FC<SongDetailModalProps> = ({
   if (!song) return null;
 
   const isCurrentPlaying = song.id === currentPlayingId && isPlaying;
+  const songSlug = getSongSlug(song);
+  const songPath = getSongPath(song);
+  const canonicalUrl = getSongCanonicalUrl(song);
 
   // Find related songs
   const relatedSongs: ChhathSong[] = (song.relatedSongIds || [])
@@ -41,9 +47,8 @@ export const SongDetailModal: React.FC<SongDetailModalProps> = ({
     .filter((s): s is ChhathSong => Boolean(s));
 
   const handleShare = () => {
-    const shareUrl = `${window.location.origin}/?song=${song.id}`;
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(`${song.title} - Chhath Geet Lyrics & Meaning: ${shareUrl}`);
+      navigator.clipboard.writeText(`${song.title} - Chhath Geet: ${canonicalUrl}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     }
@@ -119,7 +124,21 @@ export const SongDetailModal: React.FC<SongDetailModalProps> = ({
               )}
             </button>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
+              {onNavigateToSongPage && (
+                <a
+                  href={songPath}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onNavigateToSongPage(song);
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-[#D4AF37]/20 hover:bg-[#D4AF37] hover:text-[#180F08] border border-[#D4AF37]/40 text-xs font-bold text-[#D4AF37] flex items-center gap-1.5 transition-all"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>{isHindi ? 'समर्पित पृष्ठ खोलें' : 'Open Full Song Page'}</span>
+                </a>
+              )}
+
               <button
                 onClick={() => setShowEmbedVideo(!showEmbedVideo)}
                 className="px-4 py-2.5 rounded-xl bg-black/40 hover:bg-black/70 border border-[#D4AF37]/30 text-xs font-semibold text-[#D4AF37] transition-colors"

@@ -2,6 +2,8 @@ import express from 'express';
 import path from 'path';
 import compression from 'compression';
 import { createServer as createViteServer } from 'vite';
+import { CHHATH_SONGS } from './src/data/chhathData';
+import { getSongSlug } from './src/utils/songSlug';
 
 async function startServer() {
   const app = express();
@@ -475,20 +477,30 @@ async function startServer() {
   });
 
   // Technical SEO: Dynamic & Maintainable Sitemap Endpoint
-  // Only includes genuine public crawlable documents (currently root homepage).
-  // Prepared for future individual song URLs once permanent routes exist in Step 3.
+  // Dynamically includes root homepage, /songs directory, and all 107 individual song pages
   app.get('/sitemap.xml', (req, res) => {
     const canonicalBaseUrl = 'https://www.chhathsong.in';
-    const publicRoutes = [{ path: '/' }];
+    const publicRoutes: { path: string; priority: string; changefreq: string }[] = [
+      { path: '/', priority: '1.0', changefreq: 'daily' },
+      { path: '/songs', priority: '0.9', changefreq: 'daily' },
+      ...CHHATH_SONGS.map((song) => ({
+        path: `/songs/${getSongSlug(song)}`,
+        priority: '0.8',
+        changefreq: 'weekly'
+      }))
+    ];
 
     const xmlUrls = publicRoutes
-      .map((route) => `  <url>\n    <loc>${canonicalBaseUrl}${route.path}</loc>\n  </url>`)
+      .map(
+        (route) =>
+          `  <url>\n    <loc>${canonicalBaseUrl}${route.path}</loc>\n    <changefreq>${route.changefreq}</changefreq>\n    <priority>${route.priority}</priority>\n  </url>`
+      )
       .join('\n');
 
     const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${xmlUrls}\n</urlset>\n`;
 
     res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
     res.status(200).send(sitemapXml);
   });
 
