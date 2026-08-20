@@ -183,20 +183,55 @@ export const SongDetailModal: React.FC<SongDetailModalProps> = ({
 
         {/* Sacred Lyrics Section */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2 pb-1 text-[#D4AF37] font-bold text-sm uppercase tracking-wider">
-            <BookOpen className="w-4 h-4" />
-            <span>{isHindi ? 'पावन बोल (Sacred Lyrics)' : 'Sacred Lyrics Snippet'}</span>
+          <div className="flex items-center justify-between pb-1 flex-wrap gap-2">
+            <div className="flex items-center gap-2 text-[#D4AF37] font-bold text-sm uppercase tracking-wider">
+              <BookOpen className="w-4 h-4" />
+              <span>{song.lyrics ? (isHindi ? 'पावन बोल (Full Lyrics)' : 'Sacred Song Lyrics') : (isHindi ? 'पावन बोल (Sacred Lyrics)' : 'Sacred Lyrics Snippet')}</span>
+            </div>
+
+            {song.lyrics && onNavigateToSongPage && (
+              <a
+                href={songPath}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onNavigateToSongPage(song);
+                }}
+                className="text-xs text-[#D4AF37] hover:text-[#FFE5B4] font-semibold flex items-center gap-1"
+              >
+                <span>{isHindi ? 'संपूर्ण बोल पृष्ठ खोलें' : 'View Full Lyrics Page'}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </a>
+            )}
           </div>
 
           <div className="p-5 rounded-2xl bg-black/50 border border-[#D4AF37]/25 space-y-3">
-            <p className="text-base md:text-lg font-serif font-semibold text-[#FFE5B4] leading-relaxed italic">
-              "{song.lyricsSnippetHindi || song.lyricsHighlight || 'केलवा के पात पर उगेलन सुरुज देव झाँके-झुके...'}"
-            </p>
+            {song.lyrics ? (
+              <div className="max-h-60 overflow-y-auto space-y-1 font-serif text-sm md:text-base text-[#FFF5E1] leading-relaxed pr-2">
+                {song.lyrics.split('\n').map((line, idx) => {
+                  const trimmed = line.trim();
+                  if (trimmed === '--- Music ---' || trimmed.startsWith('--- Music')) {
+                    return (
+                      <div key={idx} className="py-2 text-center text-xs text-[#D4AF37] font-sans">
+                        --- Music ---
+                      </div>
+                    );
+                  }
+                  if (!trimmed) return <div key={idx} className="h-2" />;
+                  return <p key={idx}>{line}</p>;
+                })}
+              </div>
+            ) : (
+              <>
+                <p className="text-base md:text-lg font-serif font-semibold text-[#FFE5B4] leading-relaxed italic">
+                  "{song.lyricsSnippetHindi || song.lyricsHighlight || 'केलवा के पात पर उगेलन सुरुज देव झाँके-झुके...'}"
+                </p>
 
-            {(song.lyricsSnippetEnglish || !isHindi) && (
-              <p className="text-xs md:text-sm text-[#FFF5E1]/70 font-sans italic border-t border-white/10 pt-2.5">
-                "{song.lyricsSnippetEnglish || 'Upon the sacred banana leaves, Lord Surya arises with radiant morning grace...'}"
-              </p>
+                {(song.lyricsSnippetEnglish || !isHindi) && (
+                  <p className="text-xs md:text-sm text-[#FFF5E1]/70 font-sans italic border-t border-white/10 pt-2.5">
+                    "{song.lyricsSnippetEnglish || 'Upon the sacred banana leaves, Lord Surya arises with radiant morning grace...'}"
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>

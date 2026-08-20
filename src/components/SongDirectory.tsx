@@ -107,7 +107,7 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
             className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/40 hover:bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-xs sm:text-sm font-semibold text-[#D4AF37] hover:text-[#FFF5E1] transition-all cursor-pointer group shadow-sm"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform text-[#D4AF37]" />
-            <span>{isHindi ? '← मुख्य पृष्ठ पर वापस जाएँ' : '← Back to Home Overview'}</span>
+            <span>{isHindi ? 'मुख्य पृष्ठ पर वापस जाएँ' : 'Back to Home Overview'}</span>
           </button>
 
           <span className="text-xs text-[#FFF5E1]/60 font-mono hidden sm:inline-block">
@@ -324,7 +324,15 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
                     title={isHindi ? 'समर्पित गीत पृष्ठ खोलें' : 'Open permanent song page with lyrics & meaning'}
                   >
                     <BookOpen className="w-3.5 h-3.5 text-[#D4AF37]" />
-                    <span>{isHindi ? 'पेज खोलें' : 'View Page'}</span>
+                    <span>
+                      {song.lyrics
+                        ? isHindi
+                          ? 'बोल पढ़ें'
+                          : 'Read Lyrics'
+                        : isHindi
+                        ? 'पेज खोलें'
+                        : 'View Page'}
+                    </span>
                   </a>
 
                   <button

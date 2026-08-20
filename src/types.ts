@@ -20,6 +20,7 @@ export interface ChhathSong {
   lyricsHighlight: string;
   lyricsSnippetHindi?: string;
   lyricsSnippetEnglish?: string;
+  lyrics?: string;
   meaning: string;
   tag: string;
   category?: SongCategory;

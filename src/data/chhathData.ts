@@ -13,6 +13,51 @@ export const CHHATH_SONGS: ChhathSong[] = [
     "lyricsHighlight": "Devo Chhath Uga Hey Surujdev | Kalpana Patowary | Dishum EXCLUSIVE",
     "lyricsSnippetHindi": "Devo Chhath Uga Hey Surujdev | Kalpana Patowary | Dishum EXCLUSIVE",
     "lyricsSnippetEnglish": "Sacred folk hymn honoring Chhathi Maiya and Lord Surya.",
+    "lyrics": `Om suryay namah
+Om gangay namah
+Om...
+Hmmmm
+Hmmmm
+Ahnn Ahnn
+Hmmm Hmmm
+Uje kerwa-je
+farela gafat-se
+Ohpar sugga me-da-ray
+Mare bore sugaba dhanukh-se
+Sugga gir murjhaye
+Uje sugani je  
+ro-vele viyog se  
+adit hoyee na sahay
+--- Music ---
+Uga he surujdeva bhaile bhinu-sarwa
+aragh kere berwa
+poojan kere berwa ho
+Varati pukare deva dono kar jorwa
+aragh kere berwa
+poojan kere berwa ho
+--- Music ---
+Bhukhiya piyas sahi rahi-ke upas ho  
+manwa me dorsan ke la-gal ba aas ho
+--- Music ---
+Ho Bhukhiya piyas sahi rahi-ke upas ho
+manwa me dorsan ke la-gal ba aas ho
+Baa-jhin pookare dev dunu kar jorwa
+aragh kere berwa
+poojan kere berwa ho...
+--- Music ---
+Deenanath deen hin-ke raue gosayi
+Mahima jane-la jag dela sab-duhai
+--- Music ---
+Deenanath deen hin-ke raue gosayi
+Mahima jane-la jag dela sab-duhai
+Niradhan pookare deva dunu kar jorwa
+aragh kere berwa
+poojan kere berwa ho...
+--- Music ---
+Uga he surujdeva bhaile bhinu-sarwa
+aragh ker berwa
+poojan ker berwa ho...
+--- Music ---`,
     "meaning": "छठ महापर्व की महिमा, सूर्यदेव व छठी मइया के प्रति अगाध श्रद्धा और लोक आस्था का पावन लोकगीत।",
     "tag": "लाइव प्लेलिस्ट गीत",
     "category": "morning_arghya",

@@ -7,6 +7,7 @@ import {
   Calendar,
   Share2,
   Check,
+  Copy,
   Sparkles,
   BookOpen,
   Music,
@@ -47,6 +48,7 @@ export const SongPage: React.FC<SongPageProps> = ({
 }) => {
   const { isHindi } = useLanguage();
   const [copied, setCopied] = useState(false);
+  const [copiedLyrics, setCopiedLyrics] = useState(false);
   const [showEmbedVideo, setShowEmbedVideo] = useState(false);
 
   const slug = getSongSlug(song);
@@ -97,7 +99,9 @@ export const SongPage: React.FC<SongPageProps> = ({
 
   // Set document title, canonical link, meta tags & structured data for SEO
   useEffect(() => {
-    const pageTitle = `${song.title} – Chhath Song, Singer & Meaning | ChhathSong.in`;
+    const pageTitle = song.lyrics
+      ? `${song.title} Lyrics – Chhath Song, Singer & Meaning | ChhathSong.in`
+      : `${song.title} – Chhath Song, Singer & Meaning | ChhathSong.in`;
     document.title = pageTitle;
 
     // 1. Strictly maintain one canonical link tag in document head
@@ -105,7 +109,9 @@ export const SongPage: React.FC<SongPageProps> = ({
 
     // 2. Meta description
     const singerName = song.singer || song.artist || 'पारंपरिक लोकगायक';
-    const rawDescription = song.meaning
+    const rawDescription = song.lyrics
+      ? `${song.title} - संपूर्ण बोल (Lyrics), स्वर: ${singerName}। ${song.meaning || 'छठ महापर्व की महिमा व लोक आस्था का पावन लोकगीत।'}`
+      : song.meaning
       ? `${song.title} - स्वर: ${singerName}। ${song.meaning}`
       : `${song.title} - पावन छठ महापर्व लोकगीत, स्वर: ${singerName}। जानें गीत का आध्यात्मिक भावार्थ व सांस्कृतिक महत्व।`;
     const metaDescription = rawDescription.length > 160 ? `${rawDescription.substring(0, 157)}...` : rawDescription;
@@ -137,6 +143,24 @@ export const SongPage: React.FC<SongPageProps> = ({
       updateOrCreateMeta('og:image', `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`);
     }
 
+    // Twitter Card tags
+    const updateOrCreateTwitterMeta = (name: string, content: string) => {
+      let el = document.querySelector(`meta[name="${name}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute('name', name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    updateOrCreateTwitterMeta('twitter:card', 'summary_large_image');
+    updateOrCreateTwitterMeta('twitter:title', pageTitle);
+    updateOrCreateTwitterMeta('twitter:description', metaDescription);
+    if (song.youtubeId) {
+      updateOrCreateTwitterMeta('twitter:image', `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg`);
+    }
+
     // 4. Structured Data: BreadcrumbList & MusicRecording
     const breadcrumbSchema = {
       '@context': 'https://schema.org',
@@ -163,7 +187,7 @@ export const SongPage: React.FC<SongPageProps> = ({
       ],
     };
 
-    const musicSchema = {
+    const musicSchema: any = {
       '@context': 'https://schema.org',
       '@type': 'MusicRecording',
       name: song.title,
@@ -177,6 +201,17 @@ export const SongPage: React.FC<SongPageProps> = ({
       ...(song.duration ? { duration: song.duration } : {}),
       description: song.meaning || song.culturalContext,
     };
+
+    if (song.lyrics) {
+      musicSchema.recordingOf = {
+        '@type': 'MusicComposition',
+        name: song.title,
+        lyrics: {
+          '@type': 'CreativeWork',
+          text: song.lyrics,
+        },
+      };
+    }
 
     let scriptTag = document.getElementById('song-jsonld-schema') as HTMLScriptElement | null;
     if (!scriptTag) {
@@ -208,6 +243,20 @@ export const SongPage: React.FC<SongPageProps> = ({
       navigator.clipboard.writeText(`${song.title} - Chhath Geet: ${canonicalUrl}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
+  const handleCopyLyrics = () => {
+    if (!song.lyrics) return;
+    trackEvent('lyrics_copy', {
+      song_id: song.id,
+      title: song.title
+    });
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(`${song.title}\n\n${song.lyrics}\n\nChhathSong.in: ${canonicalUrl}`);
+      setCopiedLyrics(true);
+      setTimeout(() => setCopiedLyrics(false), 2500);
     }
   };
 
@@ -425,10 +474,10 @@ export const SongPage: React.FC<SongPageProps> = ({
         )}
       </section>
 
-      {/* 4. Dedicated Lyrics Section (Prepared for Future Full Lyrics) */}
+      {/* 4. Dedicated Lyrics Section (Full Authentic Lyrics & Verses) */}
       <section
         id="song-lyrics-section"
-        className="rounded-3xl bg-[#180F08]/90 border border-[#D4AF37]/30 p-6 sm:p-8 shadow-xl space-y-4"
+        className="rounded-3xl bg-[#180F08]/90 border border-[#D4AF37]/30 p-6 sm:p-8 shadow-xl space-y-6"
       >
         <div className="flex items-center justify-between pb-3 border-b border-[#D4AF37]/15 flex-wrap gap-2">
           <div className="flex items-center gap-2.5">
@@ -443,38 +492,95 @@ export const SongPage: React.FC<SongPageProps> = ({
           </span>
         </div>
 
-        {/* Highlight verse if available */}
-        {song.lyricsSnippetHindi && (
-          <div className="p-5 rounded-2xl bg-black/40 border border-[#D4AF37]/20 space-y-2">
-            <div className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
-              {isHindi ? 'प्रमुख पंक्तियाँ (Highlight Verse)' : 'Key Verse'}
+        {/* Full Authentic Lyrics Display if Available */}
+        {song.lyrics ? (
+          <div className="space-y-4">
+            <div className="p-6 sm:p-8 rounded-2xl bg-black/45 border border-[#D4AF37]/30 shadow-inner space-y-5">
+              <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#D4AF37]/20 flex-wrap">
+                <div className="text-xs sm:text-sm font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-2">
+                  <Music className="w-4 h-4 text-[#D4AF37]" />
+                  <span>{isHindi ? 'संपूर्ण पारंपरिक बोल (Full Lyrics)' : 'Authentic Hymn Lyrics'}</span>
+                </div>
+
+                <button
+                  onClick={handleCopyLyrics}
+                  className="px-3.5 py-1.5 rounded-xl bg-black/60 hover:bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-xs font-semibold text-[#FFF5E1] hover:text-[#D4AF37] flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                  title={isHindi ? 'बोल कॉपी करें' : 'Copy Full Lyrics'}
+                >
+                  {copiedLyrics ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>
+                    {copiedLyrics
+                      ? isHindi
+                        ? 'बोल कॉपी हुए'
+                        : 'Lyrics Copied'
+                      : isHindi
+                      ? 'बोल कॉपी करें'
+                      : 'Copy Lyrics'}
+                  </span>
+                </button>
+              </div>
+
+              {/* Render structured lyrics with preserved lines, stanzas, and visual music markers */}
+              <div className="font-serif text-base sm:text-lg text-[#FFF5E1] leading-relaxed select-text space-y-1">
+                {song.lyrics.split('\n').map((line, idx) => {
+                  const trimmed = line.trim();
+                  if (trimmed === '--- Music ---' || trimmed.startsWith('--- Music')) {
+                    return (
+                      <div key={idx} className="py-3 my-1 flex items-center justify-center">
+                        <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/25 text-[#D4AF37] text-xs font-sans tracking-wide">
+                          <Music className="w-3 h-3 text-[#D4AF37]" />
+                          <span>--- Music ---</span>
+                        </div>
+                      </div>
+                    );
+                  }
+                  if (!trimmed) {
+                    return <div key={idx} className="h-3.5" />;
+                  }
+                  return (
+                    <p key={idx} className="leading-relaxed hover:text-[#FFE5B4] transition-colors">
+                      {line}
+                    </p>
+                  );
+                })}
+              </div>
             </div>
-            <p className="text-base sm:text-lg font-serif text-[#FFE5B4] leading-relaxed whitespace-pre-line">
-              {song.lyricsSnippetHindi}
-            </p>
-            {song.lyricsSnippetEnglish && (
-              <p className="text-xs sm:text-sm text-[#FFF5E1]/70 italic pt-1 border-t border-white/5">
-                {song.lyricsSnippetEnglish}
-              </p>
+          </div>
+        ) : (
+          /* Highlight verse fallback & Future notice if full lyrics pending */
+          <div className="space-y-4">
+            {song.lyricsSnippetHindi && (
+              <div className="p-5 rounded-2xl bg-black/40 border border-[#D4AF37]/20 space-y-2">
+                <div className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider">
+                  {isHindi ? 'प्रमुख पंक्तियाँ (Highlight Verse)' : 'Key Verse'}
+                </div>
+                <p className="text-base sm:text-lg font-serif text-[#FFE5B4] leading-relaxed whitespace-pre-line">
+                  {song.lyricsSnippetHindi}
+                </p>
+                {song.lyricsSnippetEnglish && (
+                  <p className="text-xs sm:text-sm text-[#FFF5E1]/70 italic pt-1 border-t border-white/5">
+                    {song.lyricsSnippetEnglish}
+                  </p>
+                )}
+              </div>
             )}
+
+            <div className="p-4 rounded-2xl bg-black/25 border border-white/10 text-center space-y-2">
+              <p className="text-xs sm:text-sm text-[#FFF5E1]/75">
+                {isHindi
+                  ? 'इस पावन छठ गीत के संपूर्ण पारंपरिक बोल एवं छंद शीघ्र ही यहाँ जोड़े जा रहे हैं। इसी स्थाई पृष्ठ पर आप पूर्ण बोल पढ़ सकेंगे।'
+                  : 'Full verse-by-verse authentic lyrics for this hymn are being curated and will be available right on this permanent page soon.'}
+              </p>
+              <div className="inline-flex items-center gap-1.5 text-xs text-[#D4AF37]">
+                <Disc3 className="w-3.5 h-3.5 animate-spin-slow" />
+                <span>{isHindi ? 'स्थाई यूआरएल (Permanent URL): ' : 'Permanent URL: '}</span>
+                <code className="bg-black/50 px-2 py-0.5 rounded text-[11px] font-mono text-[#FFF5E1]/80">
+                  /songs/{slug}
+                </code>
+              </div>
+            </div>
           </div>
         )}
-
-        {/* Future Lyrics State Notice (Non-misleading & cleanly prepared) */}
-        <div className="p-4 rounded-2xl bg-black/25 border border-white/10 text-center space-y-2">
-          <p className="text-xs sm:text-sm text-[#FFF5E1]/75">
-            {isHindi
-              ? 'इस पावन छठ गीत के संपूर्ण पारंपरिक बोल एवं छंद शीघ्र ही यहाँ जोड़े जा रहे हैं। इसी स्थाई पृष्ठ पर आप पूर्ण बोल पढ़ सकेंगे।'
-              : 'Full verse-by-verse authentic lyrics for this hymn are being curated and will be available right on this permanent page soon.'}
-          </p>
-          <div className="inline-flex items-center gap-1.5 text-xs text-[#D4AF37]">
-            <Disc3 className="w-3.5 h-3.5 animate-spin-slow" />
-            <span>{isHindi ? 'स्थाई यूआरएल (Permanent URL): ' : 'Permanent URL: '}</span>
-            <code className="bg-black/50 px-2 py-0.5 rounded text-[11px] font-mono text-[#FFF5E1]/80">
-              /songs/{slug}
-            </code>
-          </div>
-        </div>
       </section>
 
       {/* 5. Strong "Continue Listening" Experience — Next Track Spotlight */}
