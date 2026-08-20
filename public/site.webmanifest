@@ -1,16 +1,28 @@
 {
-  "name": "Chhath: The Pride of Bihar",
-  "short_name": "Chhath Puja",
-  "description": "A cultural and devotional tribute to Chhath Puja - the festival of Bihar.",
+  "name": "छठ पूजा महापर्व | ChhathSong.in",
+  "short_name": "ChhathSong.in",
+  "description": "लोक आस्था का महापर्व छठ 2026: 107+ अमर छठ गीत, शारदा सिन्हा के पावन लोकगीत, सम्पूर्ण बोल, विधि एवं गंगा घाट की पावन परंपरा।",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#2D1B0D",
-  "theme_color": "#2D1B0D",
+  "background_color": "#180F08",
+  "theme_color": "#180F08",
   "icons": [
     {
       "src": "/favicon.svg",
-      "sizes": "64x64 128x128 256x256 512x512",
+      "sizes": "512x512",
       "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]

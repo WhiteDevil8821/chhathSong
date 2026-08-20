@@ -135,8 +135,8 @@ export default function App() {
   useEffect(() => {
     if (route.type === 'home') {
       document.title = isHindi
-        ? `छठ पूजा 2026 महापर्व: ${allSongs.length} अमर छठ गीत, नहाय-खाय, खरना, अर्घ्य व लोक आस्था | ChhathSong.in`
-        : `Chhath Puja 2026: ${allSongs.length} Sacred Chhath Songs, Timings, Arghya & Rituals | ChhathSong.in`;
+        ? `छठ पूजा 2026: ${allSongs.length} अमर छठ गीत, नहाय-खाय, खरना, अर्घ्य व विधि | ChhathSong.in`
+        : `Chhath Puja 2026: ${allSongs.length} Sacred Songs, Arghya Timings & Rituals | ChhathSong.in`;
       updateCanonicalUrl('https://www.chhathsong.in/');
     } else if (route.type === 'songs') {
       document.title = isHindi
@@ -672,30 +672,41 @@ export default function App() {
         {route.type === 'home' ? (
           <>
             {/* Hero Branding & 1st View Title Section */}
-            <section id="hero-title-section" className="text-center space-y-2 sm:space-y-3 max-w-4xl mx-auto">
-              {/* Eyebrow Label */}
-              <div>
-                <h2 className="text-[10px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.35em] text-[#D4AF37] font-semibold">
-                  {isHindi ? 'मिथिला • मगध • अंग • भोजपुरिया माटी' : 'Mithila • Magadh • Anga • Bhojpuriya Heritage'}
+            <section id="hero-title-section" className="text-center space-y-2.5 sm:space-y-3.5 max-w-4xl mx-auto">
+              {/* Eyebrow Tag */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/40 border border-[#D4AF37]/35 shadow-sm">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
+                <h2 className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#D4AF37] font-semibold">
+                  {isHindi ? 'मिथिला • मगध • अंग • भोजपुरी माटी' : 'Mithila • Magadh • Anga • Bhojpuri Soul'}
                 </h2>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
               </div>
 
-              {/* Large Memorable Title */}
-              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-light tracking-tight leading-none text-[#FFF5E1]">
-                CHHATH <span className="italic font-normal text-[#D4AF37]">PUJA</span>
+              {/* Majestic Main Headline */}
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-light tracking-tight leading-tight text-[#FFF5E1]">
+                {isHindi ? (
+                  <>
+                    लोक आस्था का <span className="font-normal text-[#D4AF37] italic">महापर्व छठ</span>
+                  </>
+                ) : (
+                  <>
+                    CHHATH <span className="italic font-normal text-[#D4AF37]">MAHAPARV</span>
+                  </>
+                )}
               </h1>
 
-              <div className="text-sm sm:text-lg md:text-xl font-serif font-semibold text-[#D4AF37] tracking-wide">
+              {/* Sub-headline / Cultural Tagline */}
+              <div className="text-sm sm:text-lg md:text-xl font-serif font-medium text-[#FFE5B4] tracking-wide">
                 {isHindi
-                  ? 'द प्राइड ऑफ बिहार • लोक आस्था का महापर्व'
-                  : 'The Pride of Bihar • Mahaparv of Folk Faith'}
+                  ? 'अमर छठ गीत, पावन घाट, सजीव अर्घ्य व बिहार की सांस्कृतिक धरोहर'
+                  : 'The Pride of Bihar • Eternal Sun Hymns, Sacred Ghats & Divine Arghya'}
               </div>
 
-              {/* Cultural Statement */}
-              <p className="text-xs sm:text-sm opacity-85 max-w-xl mx-auto font-sans font-light leading-relaxed text-[#FFF5E1]">
+              {/* Devotional Narrative */}
+              <p className="text-xs sm:text-sm md:text-base opacity-90 max-w-2xl mx-auto font-sans font-light leading-relaxed text-[#FFF5E1]/90">
                 {isHindi
-                  ? 'ब्रह्मांडीय ऊर्जा और सूर्य-प्रकृति के पावन संगम का महापर्व। जहाँ उगते और डूबते दोनों सूर्यों को नमन किया जाता है।'
-                  : 'The timeless celebration of cosmic energy and nature. Bowing with reverence to both the setting and rising Sun.'}
+                  ? 'सूर्यदेव और प्रकृति की उपासना का एकमात्र पावन महापर्व, जहाँ अस्ताचलगामी और उदीयमान दोनों सूर्यों को संपूर्ण श्रद्धा से अर्घ्य अर्पित किया जाता है।'
+                  : 'The eternal celebration of cosmic energy and Sun worship, revering both the setting and rising Sun with timeless folk melodies and pure devotion.'}
               </p>
             </section>
 

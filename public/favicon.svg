@@ -1,48 +1,61 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <!-- Sacred Sun Gradient -->
-    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#FFD700" />
-      <stop offset="60%" stop-color="#F28C28" />
-      <stop offset="100%" stop-color="#9B3D12" />
+    <radialGradient id="bgGrad" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#4A1200" />
+      <stop offset="60%" stop-color="#200700" />
+      <stop offset="100%" stop-color="#0F0200" />
     </radialGradient>
-    <!-- Sacred Diya Flame Gradient -->
-    <radialGradient id="flameGlow" cx="50%" cy="40%" r="60%">
-      <stop offset="0%" stop-color="#FFFDF0" />
-      <stop offset="35%" stop-color="#FFD700" />
-      <stop offset="70%" stop-color="#F28C28" />
-      <stop offset="100%" stop-color="#E34234" />
+    <radialGradient id="sunAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFF9C4" />
+      <stop offset="30%" stop-color="#FFD54F" />
+      <stop offset="65%" stop-color="#FF8F00" />
+      <stop offset="100%" stop-color="#D84315" stop-opacity="0" />
     </radialGradient>
-    <linearGradient id="earthenPot" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#D96826" />
-      <stop offset="100%" stop-color="#5C1E06" />
+    <linearGradient id="goldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#8D6E14" />
+    </linearGradient>
+    <linearGradient id="flameGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#FF3D00" />
+      <stop offset="40%" stop-color="#FF9100" />
+      <stop offset="80%" stop-color="#FFEA00" />
+      <stop offset="100%" stop-color="#FFFFFF" />
     </linearGradient>
   </defs>
 
-  <!-- Dark Sacred Earthen Background Disc -->
-  <circle cx="32" cy="32" r="30" fill="#2D1B0D" stroke="#F28C28" stroke-width="2.5" />
-
-  <!-- 12 Radiating Sun Rays (Surya Mandala) -->
-  <g stroke="#F28C28" stroke-width="2" stroke-linecap="round" opacity="0.85">
-    <line x1="32" y1="6" x2="32" y2="11" />
-    <line x1="32" y1="53" x2="32" y2="58" />
-    <line x1="6" y1="32" x2="11" y2="32" />
-    <line x1="53" y1="32" x2="58" y2="32" />
-    <line x1="13.6" y1="13.6" x2="17.2" y2="17.2" />
-    <line x1="46.8" y1="46.8" x2="50.4" y2="50.4" />
-    <line x1="13.6" y1="50.4" x2="17.2" y2="46.8" />
-    <line x1="46.8" y1="17.2" x2="50.4" y2="13.6" />
+  <!-- Circular Base with Divine Gold Border -->
+  <circle cx="256" cy="256" r="244" fill="url(#bgGrad)" stroke="url(#goldBorder)" stroke-width="16" />
+  
+  <!-- Sacred Rising Sun Glow -->
+  <circle cx="256" cy="200" r="130" fill="url(#sunAura)" />
+  
+  <!-- Surya Rays -->
+  <g stroke="#FFD54F" stroke-width="6" stroke-linecap="round" opacity="0.85">
+    <line x1="256" y1="55" x2="256" y2="80" />
+    <line x1="256" y1="320" x2="256" y2="345" />
+    <line x1="111" y1="200" x2="136" y2="200" />
+    <line x1="376" y1="200" x2="401" y2="200" />
+    <line x1="153" y1="97" x2="171" y2="115" />
+    <line x1="341" y1="285" x2="359" y2="303" />
+    <line x1="153" y1="303" x2="171" y2="285" />
+    <line x1="341" y1="115" x2="359" y2="97" />
   </g>
 
-  <!-- Golden Sun Core -->
-  <circle cx="32" cy="30" r="18" fill="url(#sunGlow)" opacity="0.9" />
+  <!-- Sun Disc -->
+  <circle cx="256" cy="200" r="65" fill="#FFB300" stroke="#FFE082" stroke-width="6" />
 
-  <!-- Traditional Sacred Clay Diya Bowl -->
-  <path d="M 17 38 C 17 48, 47 48, 47 38 C 47 36, 17 36, 17 38 Z" fill="url(#earthenPot)" stroke="#FFD700" stroke-width="1.2" />
+  <!-- Sacred Ganga River Arghya Waves -->
+  <path d="M80 370 Q168 335 256 370 T432 370" fill="none" stroke="#FFB300" stroke-width="14" stroke-linecap="round" />
+  <path d="M110 410 Q183 380 256 410 T402 410" fill="none" stroke="#FF8F00" stroke-width="10" stroke-linecap="round" opacity="0.85" />
+  <path d="M150 445 Q203 425 256 445 T362 445" fill="none" stroke="#D4AF37" stroke-width="7" stroke-linecap="round" opacity="0.7" />
 
-  <!-- Sacred Diya Flame (Jyoti) -->
-  <path d="M 32 14 C 27 24, 25 29, 32 37 C 39 29, 37 24, 32 14 Z" fill="url(#flameGlow)" />
-
-  <!-- Flame Inner Bright Core -->
-  <ellipse cx="32" cy="30" rx="3" ry="5" fill="#FFFFFF" opacity="0.9" />
+  <!-- Auspicious Diya (Deepak) in center of devotion -->
+  <g transform="translate(256, 310)">
+    <!-- Diya Base -->
+    <path d="M-55 15 C-50 45, 50 45, 55 15 C35 25, -35 25, -55 15 Z" fill="#C87D32" stroke="#FFD54F" stroke-width="4" />
+    <!-- Divine Flame -->
+    <path d="M0 -35 Q18 0 0 15 Q-18 0 0 -35 Z" fill="url(#flameGrad)" />
+    <circle cx="0" cy="0" r="6" fill="#FFFFFF" />
+  </g>
 </svg>
