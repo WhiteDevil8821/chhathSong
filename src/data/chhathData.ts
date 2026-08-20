@@ -69,17 +69,70 @@ poojan ker berwa ho...
     "id": "BKoD7bTLc2k",
     "title": "पवन सिंह का सबसे ज्यादा बजने वाला छठ गीत - जोड़े जोड़े फलवा T-Series #chhathpuja Jode Jode Falwa",
     "singer": "T-Series Hamaar Bhojpuri",
-    "artist": "T-Series Hamaar Bhojpuri",
+    "artist": "पवन सिंह & पलक (T-Series)",
     "era": "Chhath Mahaparv Folk",
     "duration": "16 क॰ व्यू",
     "youtubeId": "BKoD7bTLc2k",
-    "lyricsHighlight": "पवन सिंह का सबसे ज्यादा बजने वाला छठ गीत - जोड़े जोड़े फलवा T-Series #chhathpuja Jode Jode Falwa",
-    "lyricsSnippetHindi": "पवन सिंह का सबसे ज्यादा बजने वाला छठ गीत - जोड़े जोड़े फलवा T-Series #chhathpuja Jode Jode Falwa",
-    "lyricsSnippetEnglish": "Sacred folk hymn honoring Chhathi Maiya and Lord Surya.",
-    "meaning": "छठ महापर्व की महिमा, सूर्यदेव व छठी मइया के प्रति अगाध श्रद्धा और लोक आस्था का पावन लोकगीत।",
+    "lyricsHighlight": "जोड़े जोड़े फलवा सुरुज देव घटवा पे तियवई चढ़ावेले हो, जल बीच खड़ा होई दर्शन ला असरा लगावेले हो",
+    "lyricsSnippetHindi": "जोड़े जोड़े फलवा सुरुज देव घटवा पे तियवई चढ़ावेले हो, जल बीच खड़ा होई दर्शन ला असरा लगावेले हो",
+    "lyricsSnippetEnglish": "With pairs of fruits offered at the ghat, standing deep in the sacred water, the devotee yearns for the divine vision of the Sun God.",
+    "lyrics": `Jode Jode Falwa Suruj Dev
+Ghatwa Pe Tiwai Chadhawele Ho
+Jode Jode Falwa Suruj Dev
+Ghatwa Pe Tiwai Chadhawele Ho
+
+Jal Beech Khada Hoi Darshan La
+Asra Lagawele Ho
+Jal Beech Khada Hoi Darshan La
+Asra Lagawele Ho
+
+Shitali Beariya Shital Dooje Paniya
+Kab Dev Devta Tu Aake Darshniya
+Haan Shitali Beariya Shital Dooje Paniya
+Kab Dev Devta Tu Aake Darshniya
+
+Jode Jode Supawa Adit Dev
+Ghatwa Pe Tiwai Chadhawele Ho
+Jal Beech Khada Hoi Darshan La
+Asra Lagawele Ho
+
+Jal Beech Khada Hoi Darshan La
+Asra Lagawele Ho
+
+Bhukhli Shareeriya Sajal Shubhe Manva
+Purube Lagal Baduve Sabke Dhyanva
+Haan Bhukhli Shareeriya Sajal Shubhe Manva
+Purube Lagal Baduve Sabke Dhyanva
+
+Jode Jode Daura Ae Dinanath
+Ghatwa Pe Tiwai Chadhawele Ho
+Jal Beech Khada Hoi Darshan La
+Asra Lagawele Ho
+
+Jal Beech Khada Hoi Darshan La
+Asra Lagawele Ho
+
+Vinay Bihari Likhle
+Maai Ke Bhajanawa
+Gaveli Palak Beti
+Dhai Ke Dhyanva
+
+Vinay Bihari Likhle
+Maai Ke Bhajanawa
+Gaveli Palak Beti
+Dhai Ke Dhyanva
+
+Jode Jode Piyari Ae Ganga Maiya
+Ghatwa Pe Tiwai Chadhawele Ho
+Jal Beech Khada Hoi Darshan La
+Asra Lagawele Ho
+
+Jal Beech Khada Hoi Darshan La
+Asra Lagawele Ho`,
+    "meaning": "पवन सिंह द्वारा स्वरबद्ध यह छठ गीत व्रती महिलाओं द्वारा गंगा घाट पर जोड़े-जोड़े फल, सूप, दउरा व पीयरी अर्पित करते हुए सूर्य देव के दर्शन की प्रतीक्षा और श्रद्धा का पावन वर्णन करता है।",
     "tag": "लाइव प्लेलिस्ट गीत",
     "category": "bhojpuri_folk",
-    "culturalContext": "छठ महापर्व के पावन चार दिनों के अनुष्ठान व गंगा घाट की आध्यात्मिक ऊर्जा का लोकगीत।",
+    "culturalContext": "संध्या व उषा अर्घ्य के समय गंगा तट पर व्रतियों द्वारा सूप में फल सजाकर जल में खड़े होकर सूर्यदेव की आराधना का पारंपरिक लोकगीत।",
     "whenSung": "छठ पूजा के पावन अनुष्ठान, अर्घ्य व घाट यात्रा के समय",
     "festivalPhase": "all"
   },
