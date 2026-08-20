@@ -1,0 +1,4 @@
+# SPA fallback for static hosting providers (Netlify, Cloudflare Pages, etc.)
+/songs          /songs/index.html   200
+/songs/*        /songs/:splat/index.html 200
+/*              /index.html         200
