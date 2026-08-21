@@ -357,57 +357,247 @@ Asra Lagawele Ho`,
   },
   {
     "id": "Eyq7vfxu4iA",
-    "title": "छठ पूजा: काँच ही बाँस के बहंगिया WITH LYRICS I Kaanch Hi Baans Ke Bahangiya I ANURADHA PAUDWAL",
-    "singer": "T-Series Bhakti Sagar",
-    "artist": "T-Series Bhakti Sagar",
+    "title": "कांच ही बांस के बहंगिया - अनुराधा पौडवाल | Kaanch Hi Baans Ke Bahangiya",
+    "singer": "अनुराधा पौडवाल (Anuradha Paudwal)",
+    "artist": "अनुराधा पौडवाल (Anuradha Paudwal)",
     "era": "Chhath Mahaparv Folk",
-    "duration": "10 क॰ व्यू",
+    "duration": "10 लाख व्यू",
     "youtubeId": "Eyq7vfxu4iA",
-    "lyricsHighlight": "छठ पूजा: काँच ही बाँस के बहंगिया WITH LYRICS I Kaanch Hi Baans Ke Bahangiya I ANURADHA PAUDWAL",
-    "lyricsSnippetHindi": "छठ पूजा: काँच ही बाँस के बहंगिया WITH LYRICS I Kaanch Hi Baans Ke Bahangiya I ANURADHA PAUDWAL",
-    "lyricsSnippetEnglish": "Sacred folk hymn honoring Chhathi Maiya and Lord Surya.",
-    "meaning": "छठ महापर्व की महिमा, सूर्यदेव व छठी मइया के प्रति अगाध श्रद्धा और लोक आस्था का पावन लोकगीत।",
-    "tag": "लाइव प्लेलिस्ट गीत",
+    "lyricsHighlight": "कांच ही बांस के बहंगिया, बहंगी लचकत जाय... होई ना बलम जी कहरिया, बहंगी घाटे पहुंचाय",
+    "lyricsSnippetHindi": "कांच ही बांस के बहंगिया, बहंगी लचकत जाय... होई ना बलम जी कहरिया, बहंगी घाटे पहुंचाय",
+    "lyricsSnippetEnglish": "Carrying the fresh bamboo bahangi laden with sacred offerings to the holy ghats for Chhathi Maiya.",
+    "lyrics": `कांच ही बांस के बहंगिया,
+बहंगी लचकत जाय
+बहंगी लचकत जाय
+होई ना बलम जी कहरिया,
+बहंगी घाटे पहुंचाय
+कांच ही बांस के बहंगिया,
+बहंगी लचकत जाय
+बहंगी लचकत जाय
+
+बाट जे पूछेला बटोहिया,
+बहंगी केकरा के जाय
+बहंगी केकरा के जाय
+तू तो आन्हर होवे रे बटोहिया,
+बहंगी छठ मैया के जाय
+बहंगी छठ मैया के जाय
+ओहरे जे बारी छठि मैया,
+बहंगी उनका के जाय
+बहंगी उनका के जाय
+
+कांच ही बांस के बहंगिया,
+बहंगी लचकत जाय
+बहंगी लचकत जाय
+होई ना देवर जी कहरिया,
+बहंगी घाटे पहुंचाय
+बहंगी घाटे पहुंचाय
+ऊंहवे जे बारि छठि मैया
+बहंगी के उनके के जाय
+बहंगी उनका के जाय
+
+बाट जे पूछेला बटोहिया
+बहंगी केकरा के जाय
+बहंगी केकरा के जाय
+तू तो आन्हर होवे रे बटोहिया
+बहंगी छठ मैया के जाय
+बहंगी छठ मैया के जाय
+ऊंहवे जे बारी छठि मैया
+बहंगी उनका के जाय
+बहंगी उनका के जाय`,
+    "meaning": "अनुराधा पौडवाल द्वारा स्वरबद्ध यह अत्यंत लोकप्रिय पारंपरिक छठ गीत बांस की बहंगी में पूजा-प्रसाद लेकर पवित्र गंगा घाट जाने की सुंदर लोक परंपरा को दर्शाता है। राहगीर (बटोहिया) जब पूछता है कि यह बहंगी किसके लिए जा रही है, तो व्रती श्रद्धापूर्वक बताते हैं कि यह परम पावन बहंगी साक्षात षष्ठी मइया (छठी मैया) के अर्घ्य के लिए जा रही है।",
+    "tag": "पारंपरिक छठ लोकगीत",
     "category": "traditional",
-    "culturalContext": "छठ महापर्व के पावन चार दिनों के अनुष्ठान व गंगा घाट की आध्यात्मिक ऊर्जा का लोकगीत।",
-    "whenSung": "छठ पूजा के पावन अनुष्ठान, अर्घ्य व घाट यात्रा के समय",
-    "festivalPhase": "all"
+    "culturalContext": "छठ महापर्व के संध्या अर्घ्य और उषा अर्घ्य के समय सिर या कंधे पर बहंगी उठाकर गंगा घाट जाते समय गाया जाने वाला सबसे लोकप्रिय व भावपूर्ण लोकगीत।",
+    "whenSung": "घाट यात्रा, बहंगी प्रस्थान व अर्घ्य अर्पण के समय",
+    "festivalPhase": "sandhya_arghya"
   },
   {
     "id": "jRsXRee52xw",
-    "title": "Maarbo Re Sugva Dhanukh Se Bhojpuri Chhath Songs I ANURADHA PAUDWAL I Bahangi Chhath Mayee Ke Jaay",
-    "singer": "T-Series Bhakti Sagar",
-    "artist": "T-Series Bhakti Sagar",
+    "title": "नारियरवा जे फरेला धवद से (मारबो रे सुगवा धनुख से) - अनुराधा पौडवाल",
+    "singer": "अनुराधा पौडवाल (Anuradha Paudwal)",
+    "artist": "अनुराधा पौडवाल (Anuradha Paudwal)",
     "era": "Chhath Mahaparv Folk",
-    "duration": "6.5 क॰ व्यू",
+    "duration": "6.5 लाख व्यू",
     "youtubeId": "jRsXRee52xw",
-    "lyricsHighlight": "Maarbo Re Sugva Dhanukh Se Bhojpuri Chhath Songs I ANURADHA PAUDWAL I Bahangi Chhath Mayee Ke Jaay",
-    "lyricsSnippetHindi": "Maarbo Re Sugva Dhanukh Se Bhojpuri Chhath Songs I ANURADHA PAUDWAL I Bahangi Chhath Mayee Ke Jaay",
-    "lyricsSnippetEnglish": "Sacred folk hymn honoring Chhathi Maiya and Lord Surya.",
-    "meaning": "छठ महापर्व की महिमा, सूर्यदेव व छठी मइया के प्रति अगाध श्रद्धा और लोक आस्था का पावन लोकगीत।",
-    "tag": "लाइव प्लेलिस्ट गीत",
+    "lyricsHighlight": "नारियरवा जे फरेला धवद से ओह पर सुगा मिरराय... ऊ जे मारबो रे सुगवा धनुख से सुगा गिरे मुरछाय",
+    "lyricsSnippetHindi": "नारियरवा जे फरेला धवद से ओह पर सुगा मिरराय... ऊ जे मारबो रे सुगवा धनुख से सुगा गिरे मुरछाय",
+    "lyricsSnippetEnglish": "The coconut and sacred fruits hang laden for Sun God; we guard the arghya offerings with purity so no parrot defiles them.",
+    "lyrics": `नारियरवा जे फरेला धवद से 
+ओह पर सुगा मिरराय
+ओह पर सुगा मिरराय
+उ जे खबरि जनैबो आदित से 
+सुगा दिहेन जुठियाय
+सुगा दिहेन जुठियाय
+ऊ जे मारबो रे सुगवा धनुख से 
+सुगा गिरे मुरछाय
+सुगा गिरे मुरछाय
+
+ऊ जे केरवा जे फरेला धवद से 
+ओह पर सुगा मिरराय
+ओह पर सुगा मिरराय
+ऊ जे खबरि जनैबो आदित से 
+सुगा दिले जुठियाय
+सुगा दिले जुठियाय
+ऊ जे मारबो रे सुगवा धनुख से 
+सुगा गिरे मुरछाय
+सुगा गिरे मुरछाय
+
+अमरूदवा जे फरेला धवद से 
+ओह पर सुगा मिरराय
+ओह पर सुगा मिरराय
+ऊ जे खबरि जनैबो आदित से 
+सुगा दिले जुठियाय
+सुगा दिले जुठियाय
+ऊ जे मारबो रे सुगवा धनुख से 
+सुगा गिरे मुरछाय
+सुगा गिरे मुरछाय
+
+ऊ जे सेउवा जे फरेला धवद से 
+ओह पर सुगा मिरराय
+ओह पर सुगा मिरराय
+ऊ जे खबरि जनैबो आदित से 
+सुगा दिले जुठियाय
+सुगा दिले जुठियाय
+ऊ जे मारबो रे सुगवा धनुख से 
+सुगा गिरे मुरछाय
+सुगा गिरे मुरछाय
+
+सबे फल जे फरेलन धवद से 
+ओह पर सुगा मिरराय
+ओह पर सुगा मिरराय
+ऊ जे मारबो रे सुगवा धनुख से 
+सुगा गिरे मुरछाय
+सुगा गिरे मुरछाय
+ऊ जे सुगिनी जे रोवेले वियोग से 
+आदित होई ना सहाय
+आदित होई ना सहाय
+आदित होई ना सहाय
+देव होई ना सहाय
+आदित होई ना सहाय 
+देव होई ना सहाय`,
+    "meaning": "अनुराधा पौडवाल जी द्वारा स्वरबद्ध 'मारबो रे सुगवा धनुख से / नारियरवा जे फरेला धवद से' छठ महापर्व का अत्यंत लोकप्रिय पारंपरिक लोकगीत है। इसमें सूर्यदेव व छठी मइया के प्रसाद के रूप में नारियल, केला, अमरूद, सेब व समस्त फलों की पवित्रता की रक्षा करने और सुगवा (तोते) द्वारा फल को जूठा करने से बचाने का मार्मिक व आध्यात्मिक लोक वर्णन है।",
+    "tag": "पारंपरिक छठ लोकगीत",
     "category": "traditional",
-    "culturalContext": "छठ महापर्व के पावन चार दिनों के अनुष्ठान व गंगा घाट की आध्यात्मिक ऊर्जा का लोकगीत।",
-    "whenSung": "छठ पूजा के पावन अनुष्ठान, अर्घ्य व घाट यात्रा के समय",
-    "festivalPhase": "all"
+    "culturalContext": "छठ पूजा की सामग्री व प्रसाद तैयार करते समय, सूप-डाला सजाने और गंगा घाट पर अर्घ्य अर्पण के दौरान घर-घर में गाया जाने वाला परम पावन लोकगीत।",
+    "whenSung": "छठ प्रसाद व डाला तैयारी, संध्या व उषा अर्घ्य के समय",
+    "festivalPhase": "sandhya_arghya"
   },
   {
     "id": "FGQ0SCK1AtE",
-    "title": "Ugi He Dinanath | उगी हे दीनानाथ | Ugi Hey Dinanath || Kalpna || Bhojpuri Chhath Geet 2025",
-    "singer": "Wave Music Bhakti ",
-    "artist": "Wave Music Bhakti ",
+    "title": "उगी हे दीनानाथ (कलपेली भीजल तिवइया) - कल्पना पटवारी | Ugi Hey Dinanath",
+    "singer": "कल्पना पटवारी (Kalpana Patowary)",
+    "artist": "कल्पना पटवारी (Kalpana Patowary)",
     "era": "Chhath Mahaparv Folk",
-    "duration": "2.8 क॰ व्यू",
+    "duration": "2.8 लाख व्यू",
     "youtubeId": "FGQ0SCK1AtE",
-    "lyricsHighlight": "Ugi He Dinanath | उगी हे दीनानाथ | Ugi Hey Dinanath || Kalpna || Bhojpuri Chhath Geet 2025",
-    "lyricsSnippetHindi": "Ugi He Dinanath | उगी हे दीनानाथ | Ugi Hey Dinanath || Kalpna || Bhojpuri Chhath Geet 2025",
-    "lyricsSnippetEnglish": "Sacred folk hymn honoring Chhathi Maiya and Lord Surya.",
-    "meaning": "छठ महापर्व की महिमा, सूर्यदेव व छठी मइया के प्रति अगाध श्रद्धा और लोक आस्था का पावन लोकगीत।",
-    "tag": "लाइव प्लेलिस्ट गीत",
-    "category": "bhojpuri_folk",
-    "culturalContext": "छठ महापर्व के पावन चार दिनों के अनुष्ठान व गंगा घाट की आध्यात्मिक ऊर्जा का लोकगीत।",
-    "whenSung": "छठ पूजा के पावन अनुष्ठान, अर्घ्य व घाट यात्रा के समय",
-    "festivalPhase": "all"
+    "lyricsHighlight": "कलपेली भीजल तिवइया हो उगी हे दीनानाथ... तीन दिन भूखी एके आसरा लगाके, कल से निहारी राह घटिया पे आके",
+    "lyricsSnippetHindi": "कलपेली भीजल तिवइया हो उगी हे दीनानाथ... तीन दिन भूखी एके आसरा लगाके, कल से निहारी राह घटिया पे आके",
+    "lyricsSnippetEnglish": "Standing drenched in cold water, the devout vrati prays: O Lord Surya, please arise as we await Your divine light.",
+    "lyrics": `कलपेली भीजल तिवइया हो
+उगी हे दीनानाथ
+कलपेली भीजल तिवइया हो
+उगी हे दीनानाथ
+
+उगी हे दीनानाथ
+उगी हे दीनानाथ
+
+कटलो से कटेना समइया हो
+उगी हे दीनानाथ
+
+उगी हे दीनानाथ
+उगी हे दीनानाथ
+
+तीन दिन भूखी एके आसरा लगाके
+कल से निहारी राह घटिया पे आके
+तीन दिन भूखी एके आसरा लगाके
+कल से निहारी राह घटिया पे आके
+बड़ी देर भईले गोसइया हो
+उगी हे दीनानाथ
+
+उगी हे दीनानाथ
+उगी हे दीनानाथ
+
+लालकी ललइया से होई ना इशारा
+केहू नाही जागी सुतल रही जग सारा
+लालकी ललइया से होई ना इशारा
+केहू नाही जागी सुतल रही जग सारा
+जोहे राह फुलवो पतइया हो
+उगी हे दीनानाथ
+
+उगी हे दीनानाथ
+उगी हे दीनानाथ
+
+मनवा में सोची सोची काहे गोहरावे
+देहिया अचेत होंठ कुल नाही पावे
+मनवा में सोची सोची काहे गोहरावे
+देहिया अचेत होंठ कुल नाही पावे
+होइहा सूरज मल सहइया हो
+उगी हे दीनानाथ
+
+उगी हे दीनानाथ
+उगी हे दीनानाथ
+कलपेली भीजल तिवइया हो
+उगी हे दीनानाथ
+
+उगी हे दीनानाथ
+उगी हे दीनानाथ
+
+---
+
+Kalpeli bhijal tiwaiya ho
+Ugi hey dinanath
+Kalpeli bhijal tiwaiya ho
+Ugi hey dinanath
+
+Ugi hey dinanath
+Ugi hey dinanath
+
+Katalo se katena samaiya ho
+Ugi hey dinanath
+
+Ugi hey dinaath
+Ugi hey dinanath
+
+Tin din bhukhi eke asra lagake
+Kal se nihari rah ghathiya pa aake
+Tin din bhukhi eke asra lagake
+Kal se nihari rah ghathiya pa aake
+Badi der bhaile gosaiya ho
+Ugi hey dinanath
+
+Ugi hey dinanath
+Ugi hey dinanath
+
+Lalki lalaiya se hoi na ishara
+Kehu naahi jaagi sutal rahi jag sara
+Lalki lalaiya se hoi na ishara
+Kehu naahi jaagi sutal rahi jag sara
+Johe rah fulwo pataiya ho
+Ugi hey dinanath
+
+Ugi hey dinanath
+Ugi hey dinanath
+
+Manwa mei sochi sochi kahe gohrawe
+Dehiya achet hoth kul nahi paawe
+Manwa mei sochi sochi kahe gohrawe
+Dehiya achet hoth kul nahi paawe
+Hoiha suraj mal sahaiya ho
+Ugi hey dinanath
+
+Ugi hey dinanath
+Ugi hey dinanath
+Kalpeli bhijal tiwaiya ho
+Ugi hey dinanath
+
+Ugi hey dinanath
+Ugi hey dinanath`,
+    "meaning": "कल्पना पटवारी द्वारा स्वरबद्ध 'उगी हे दीनानाथ (कलपेली भीजल तिवइया)' उषा अर्घ्य के पावन और कठिन क्षणों का अत्यंत मार्मिक वर्णन है। तीन दिनों तक निर्जला व्रत रखकर जब व्रती शीतल जल में खड़े होकर भगवान सूर्य के उदय होने की प्रतीक्षा करते हैं, तब भक्त भावविभोर होकर सूर्यदेव (गोसाईं) से शीघ्र उदित होकर अर्घ्य स्वीकार करने और समस्त संसार पर अपनी कृपा बरसाने की गुहार लगाते हैं।",
+    "tag": "उषा अर्घ्य विशेष",
+    "category": "morning_arghya",
+    "culturalContext": "छठ महापर्व के चौथे दिन उषा अर्घ्य (सुबह के अर्घ्य) के समय गंगा घाटों पर ठंडे पानी में खड़े होकर सूर्योदय की प्रतीक्षा में गाए जाने वाला भावपूर्ण लोकगीत।",
+    "whenSung": "प्रातःकालीन उषा अर्घ्य, भोर व सूर्योदय की प्रतीक्षा के समय",
+    "festivalPhase": "usha_arghya"
   },
   {
     "id": "T_YXL_blE3A",
