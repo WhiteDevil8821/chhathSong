@@ -1,0 +1,490 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <!-- Sky Dawn/Dusk Atmospheric Gradients -->
+    <linearGradient id="skyAtmosphere" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#241007" />
+      <stop offset="25%" stop-color="#4A1C0B" />
+      <stop offset="50%" stop-color="#9C3B14" />
+      <stop offset="70%" stop-color="#D97706" />
+      <stop offset="88%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#FEF08A" />
+    </linearGradient>
+
+    <!-- Cloud Tint Gradients -->
+    <linearGradient id="cloudGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7C2D12" stop-opacity="0.4" />
+      <stop offset="50%" stop-color="#EA580C" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#FBBF24" stop-opacity="0.2" />
+    </linearGradient>
+
+    <!-- Sun Disc & Radiant Flare -->
+    <radialGradient id="sunGlowBig" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="20%" stop-color="#FEF3C7" stop-opacity="0.9" />
+      <stop offset="45%" stop-color="#FDE047" stop-opacity="0.6" />
+      <stop offset="70%" stop-color="#F59E0B" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#D97706" stop-opacity="0" />
+    </radialGradient>
+
+    <radialGradient id="sunDiscReal" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="60%" stop-color="#FFFBEB" />
+      <stop offset="90%" stop-color="#FEF08A" />
+      <stop offset="100%" stop-color="#FBBF24" />
+    </radialGradient>
+
+    <!-- Holy Ganga Water Gradient -->
+    <linearGradient id="gangaWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#9A3412" stop-opacity="0.9" />
+      <stop offset="20%" stop-color="#78350F" />
+      <stop offset="55%" stop-color="#451A03" />
+      <stop offset="85%" stop-color="#250E04" />
+      <stop offset="100%" stop-color="#120502" />
+    </linearGradient>
+
+    <!-- Sun Trail on Holy Ganga Water -->
+    <linearGradient id="waterSunGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FEF08A" stop-opacity="0" />
+      <stop offset="35%" stop-color="#FBBF24" stop-opacity="0.4" />
+      <stop offset="50%" stop-color="#FFFBEB" stop-opacity="0.95" />
+      <stop offset="65%" stop-color="#FBBF24" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#FEF08A" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Ghat Stone Shading -->
+    <linearGradient id="ghatStairs" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5C2612" />
+      <stop offset="50%" stop-color="#3C1508" />
+      <stop offset="100%" stop-color="#1F0803" />
+    </linearGradient>
+
+    <!-- Lush Banana Tree Leaves -->
+    <linearGradient id="bananaLeaf1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4ADE80" />
+      <stop offset="40%" stop-color="#15803D" />
+      <stop offset="100%" stop-color="#064E3B" />
+    </linearGradient>
+    <linearGradient id="bananaLeaf2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#86EFAC" />
+      <stop offset="60%" stop-color="#16A34A" />
+      <stop offset="100%" stop-color="#065F46" />
+    </linearGradient>
+
+    <!-- Red and Yellow Saree Silhouettes -->
+    <linearGradient id="vratiSareeRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF4444" />
+      <stop offset="40%" stop-color="#B91C1C" />
+      <stop offset="100%" stop-color="#581010" />
+    </linearGradient>
+    <linearGradient id="vratiSareeYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047" />
+      <stop offset="50%" stop-color="#D97706" />
+      <stop offset="100%" stop-color="#78350F" />
+    </linearGradient>
+
+    <!-- Brass / Bamboo Soop Shading -->
+    <linearGradient id="soopBrass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFBEB" />
+      <stop offset="35%" stop-color="#FBBF24" />
+      <stop offset="75%" stop-color="#B45309" />
+      <stop offset="100%" stop-color="#451A03" />
+    </linearGradient>
+
+    <!-- Diya Flame -->
+    <linearGradient id="flameHero" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#EA580C" />
+      <stop offset="30%" stop-color="#F59E0B" />
+      <stop offset="80%" stop-color="#FEF08A" />
+      <stop offset="100%" stop-color="#FFFFFF" />
+    </linearGradient>
+  </defs>
+
+  <!-- ========================================================================= -->
+  <!-- 1. EXPANSIVE DAWN SKY                                                     -->
+  <!-- ========================================================================= -->
+  <rect width="1920" height="1080" fill="url(#skyAtmosphere)" />
+
+  <!-- Soft Horizon Clouds -->
+  <g opacity="0.6">
+    <ellipse cx="400" cy="420" rx="350" ry="45" fill="url(#cloudGrad1)" />
+    <ellipse cx="850" cy="380" rx="420" ry="50" fill="url(#cloudGrad1)" />
+    <ellipse cx="1450" cy="410" rx="380" ry="55" fill="url(#cloudGrad1)" />
+    <ellipse cx="1750" cy="360" rx="220" ry="35" fill="url(#cloudGrad1)" />
+  </g>
+
+  <!-- Distant Birds Flying in Sacred Morning -->
+  <g fill="#451A03" opacity="0.7">
+    <!-- Flock 1 near Sun -->
+    <path d="M1420 380 Q1427 372 1435 380 Q1443 372 1450 380 Q1443 376 1435 384 Q1427 376 1420 380 Z" transform="scale(0.85)" />
+    <path d="M1455 350 Q1462 342 1470 350 Q1478 342 1485 350 Q1478 346 1470 354 Q1462 346 1455 350 Z" transform="scale(0.7)" />
+    <path d="M1480 395 Q1486 388 1493 395 Q1500 388 1506 395 Q1500 391 1493 399 Q1486 391 1480 395 Z" transform="scale(0.6)" />
+    <path d="M1640 320 Q1648 310 1656 320 Q1664 310 1672 320 Q1664 315 1656 325 Q1648 315 1640 320 Z" transform="scale(0.9)" />
+    <path d="M1680 340 Q1687 332 1694 340 Q1701 332 1708 340 Q1701 336 1694 344 Q1687 336 1680 340 Z" transform="scale(0.75)" />
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- 2. GLORIOUS RISING SUN OVER GANGES & DISTANT BRIDGE / CITY SILHOUETTE     -->
+  <!-- ========================================================================= -->
+  <!-- Distant Ghat & City Silhouette (Patna / Mithila / Varanasi Horizon) -->
+  <g fill="#2A1006" opacity="0.75">
+    <!-- Distant Ganga Bridge Pillars and Deck -->
+    <rect x="1200" y="535" width="720" height="12" rx="2" />
+    <rect x="1260" y="547" width="16" height="48" />
+    <rect x="1390" y="547" width="16" height="48" />
+    <rect x="1520" y="547" width="16" height="48" />
+    <rect x="1650" y="547" width="16" height="48" />
+    <rect x="1780" y="547" width="16" height="48" />
+    <!-- Distant temple spires & city structures -->
+    <path d="M1050 560 L1080 540 L1095 505 L1110 540 L1140 560 Z" />
+    <path d="M1170 560 L1185 530 L1200 495 L1215 530 L1230 560 Z" />
+    <path d="M1250 560 L1280 520 L1310 560 Z" opacity="0.6" />
+    <rect x="1000" y="550" width="180" height="25" />
+    <rect x="1800" y="520" width="120" height="40" />
+    <polygon points="1860,490 1880,520 1840,520" />
+  </g>
+
+  <!-- Glorious Sun Ball & Golden Radiance -->
+  <g transform="translate(1530, 545)">
+    <!-- Expansive Golden Corona -->
+    <circle cx="0" cy="0" r="320" fill="url(#sunGlowBig)" />
+    <circle cx="0" cy="0" r="180" fill="url(#sunGlowBig)" />
+    <circle cx="0" cy="0" r="90" fill="url(#sunGlowBig)" />
+
+    <!-- Solid Sun Disc -->
+    <circle cx="0" cy="0" r="48" fill="url(#sunDiscReal)" filter="drop-shadow(0 0 20px #F59E0B)" />
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- 3. SACRED GANGA RIVER WATERS & LIGHT REFLECTION TRAIL                     -->
+  <!-- ========================================================================= -->
+  <path d="M0 560 Q480 550 960 560 Q1440 570 1920 560 L1920 1080 L0 1080 Z" fill="url(#gangaWaterGrad)" />
+
+  <!-- Shimmering Golden Sun Trail on River -->
+  <path d="M1420 560 L1640 560 L1780 1080 L1280 1080 Z" fill="url(#waterSunGlow)" />
+  <!-- Water ripples -->
+  <g stroke="#FEF08A" stroke-linecap="round" opacity="0.8">
+    <line x1="1490" y1="575" x2="1570" y2="575" stroke-width="2.5" />
+    <line x1="1470" y1="595" x2="1590" y2="595" stroke-width="3" />
+    <line x1="1440" y1="625" x2="1620" y2="625" stroke-width="3.5" />
+    <line x1="1400" y1="665" x2="1660" y2="665" stroke-width="4.5" />
+    <line x1="1360" y1="715" x2="1700" y2="715" stroke-width="5" />
+    <line x1="1310" y1="775" x2="1750" y2="775" stroke-width="6" />
+    <line x1="1260" y1="845" x2="1800" y2="845" stroke-width="7" />
+    <line x1="1210" y1="930" x2="1860" y2="930" stroke-width="8" />
+  </g>
+
+  <!-- Distant Traditional Wooden Boats on River -->
+  <!-- Boat 1 (Mid Distance Right) -->
+  <g transform="translate(1450, 680) scale(0.65)">
+    <path d="M0 10 Q40 25 90 12 L85 0 Q40 8 0 0 Z" fill="#260C03" />
+    <rect x="42" y="-22" width="4" height="26" fill="#180702" />
+    <path d="M35 -14 L42 -22 L49 -14 Z" fill="#D97706" opacity="0.8" />
+    <circle cx="28" cy="-5" r="7" fill="#78350F" />
+    <circle cx="65" cy="-6" r="7" fill="#78350F" />
+  </g>
+  <!-- Boat 2 (Far Distance Center) -->
+  <g transform="translate(1120, 620) scale(0.45)">
+    <path d="M0 10 Q40 25 90 12 L85 0 Q40 8 0 0 Z" fill="#1C0902" />
+    <circle cx="45" cy="-5" r="7" fill="#581C0C" />
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- 4. LEFT GHAT SHORES, STONE STAIRS & DECORATED PUJA PAVILION               -->
+  <!-- ========================================================================= -->
+  <!-- Terraced Stone Ghat Stairs -->
+  <path d="M0 520 L420 540 L450 630 L0 650 Z" fill="url(#ghatStairs)" />
+  <path d="M0 645 L480 625 L520 740 L0 770 Z" fill="url(#ghatStairs)" />
+  <path d="M0 760 L560 730 L610 880 L0 920 Z" fill="url(#ghatStairs)" />
+  <path d="M0 910 L680 860 L730 1080 L0 1080 Z" fill="url(#ghatStairs)" />
+
+  <!-- Subtle Stone Step Edges & Lighting -->
+  <g stroke="#F59E0B" stroke-width="2" opacity="0.3" stroke-linecap="round">
+    <line x1="0" y1="522" x2="420" y2="542" />
+    <line x1="0" y1="647" x2="480" y2="627" />
+    <line x1="0" y1="762" x2="560" y2="732" />
+    <line x1="0" y1="912" x2="680" y2="862" />
+  </g>
+
+  <!-- Sacred Banana Tree (केला का पेड़) & Sugarcane Stalks (ईख का समूह) on Left -->
+  <g id="ghatGreeneryLeft">
+    <!-- Big Banana Plant Stalks -->
+    <path d="M120 780 Q100 450 80 160" stroke="#15803D" stroke-width="28" stroke-linecap="round" fill="none" />
+    <path d="M140 780 Q160 480 180 180" stroke="#166534" stroke-width="22" stroke-linecap="round" fill="none" />
+
+    <!-- Lush Banana Leaves (Large Fan Foliage on Top Left) -->
+    <!-- Leaf 1 pointing Top Right -->
+    <path d="M80 160 Q220 120 380 220 Q240 280 80 160 Z" fill="url(#bananaLeaf1)" />
+    <path d="M80 160 Q220 120 380 220" stroke="#86EFAC" stroke-width="3" fill="none" />
+
+    <!-- Leaf 2 pointing Right-Down -->
+    <path d="M90 220 Q280 240 440 380 Q260 390 90 220 Z" fill="url(#bananaLeaf2)" />
+    <path d="M90 220 Q280 240 440 380" stroke="#86EFAC" stroke-width="3" fill="none" />
+
+    <!-- Leaf 3 pointing Left -->
+    <path d="M70 180 Q-80 120 -180 240 Q-40 290 70 180 Z" fill="url(#bananaLeaf1)" />
+
+    <!-- Sugarcane Pillars & Canopy Tied with Top Knot -->
+    <path d="M180 880 Q240 520 280 180" stroke="#15803D" stroke-width="14" fill="none" />
+    <path d="M320 860 Q340 540 280 180" stroke="#166534" stroke-width="14" fill="none" />
+    <path d="M420 840 Q380 500 280 180" stroke="#15803D" stroke-width="12" fill="none" />
+
+    <!-- Sugarcane Leaves at Crown -->
+    <path d="M280 180 Q360 120 460 160" stroke="#4ADE80" stroke-width="7" fill="none" stroke-linecap="round" />
+    <path d="M280 180 Q320 80 400 90" stroke="#86EFAC" stroke-width="6" fill="none" stroke-linecap="round" />
+    <path d="M280 180 Q220 100 160 120" stroke="#4ADE80" stroke-width="7" fill="none" stroke-linecap="round" />
+
+    <!-- Red Sacred Cloth at Sugarcane Top -->
+    <circle cx="280" cy="180" r="18" fill="#DC2626" stroke="#FEF08A" stroke-width="3" />
+  </g>
+
+  <!-- Glowing Festive String Fairy Lights (छठ पूजा की जगमगाती लड़ियाँ) -->
+  <g id="fairyLights">
+    <!-- Light String 1 -->
+    <path d="M80 190 Q220 320 380 340 Q520 360 680 480" stroke="#451A03" stroke-width="2" fill="none" />
+    <!-- Bulbs -->
+    <circle cx="120" cy="240" r="7" fill="#FEF08A" filter="drop-shadow(0 0 8px #F59E0B)" />
+    <circle cx="170" cy="280" r="7" fill="#F87171" filter="drop-shadow(0 0 8px #EF4444)" />
+    <circle cx="230" cy="315" r="7" fill="#FEF08A" filter="drop-shadow(0 0 8px #F59E0B)" />
+    <circle cx="290" cy="335" r="7" fill="#60A5FA" filter="drop-shadow(0 0 8px #3B82F6)" />
+    <circle cx="350" cy="340" r="7" fill="#34D399" filter="drop-shadow(0 0 8px #10B981)" />
+    <circle cx="420" cy="355" r="7" fill="#FEF08A" filter="drop-shadow(0 0 8px #F59E0B)" />
+    <circle cx="490" cy="380" r="7" fill="#F87171" filter="drop-shadow(0 0 8px #EF4444)" />
+    <circle cx="560" cy="415" r="7" fill="#FEF08A" filter="drop-shadow(0 0 8px #F59E0B)" />
+    <circle cx="630" cy="455" r="7" fill="#FBBF24" filter="drop-shadow(0 0 8px #F59E0B)" />
+
+    <!-- Light String 2 -->
+    <path d="M280 190 Q440 280 600 300 Q780 320 920 490" stroke="#451A03" stroke-width="2" fill="none" opacity="0.8" />
+    <circle cx="340" cy="230" r="6" fill="#FEF08A" filter="drop-shadow(0 0 6px #F59E0B)" />
+    <circle cx="420" cy="275" r="6" fill="#F472B6" filter="drop-shadow(0 0 6px #EC4899)" />
+    <circle cx="510" cy="295" r="6" fill="#FEF08A" filter="drop-shadow(0 0 6px #F59E0B)" />
+    <circle cx="600" cy="305" r="6" fill="#4ADE80" filter="drop-shadow(0 0 6px #22C55E)" />
+    <circle cx="700" cy="335" r="6" fill="#FEF08A" filter="drop-shadow(0 0 6px #F59E0B)" />
+    <circle cx="800" cy="395" r="6" fill="#F87171" filter="drop-shadow(0 0 6px #EF4444)" />
+  </g>
+
+  <!-- People Seated on Ghat Preparing Daura & Prasad (Left Side Family) -->
+  <g id="ghatFamilyLeft">
+    <!-- Man in Kurta seated preparing offerings -->
+    <g transform="translate(240, 720)">
+      <!-- Body -->
+      <path d="M0 60 Q-20 15 5 -10 Q30 -10 40 60 Z" fill="#F3F4F6" />
+      <circle cx="20" cy="-28" r="15" fill="#A16207" />
+      <!-- Hands arranging daura -->
+      <path d="M-5 25 L35 45" stroke="#A16207" stroke-width="8" stroke-linecap="round" />
+      <!-- Kurta fold / Gamchha -->
+      <path d="M5 -10 Q-15 20 5 40" stroke="#DC2626" stroke-width="5" fill="none" />
+    </g>
+
+    <!-- Devotee Boy in Red T-shirt seated -->
+    <g transform="translate(380, 770)">
+      <path d="M0 50 Q-15 10 5 -5 Q25 -5 30 50 Z" fill="#DC2626" />
+      <circle cx="16" cy="-20" r="12" fill="#9A3412" />
+    </g>
+
+    <!-- Devotee Woman in Orange Saree preparing Thekua & Daura -->
+    <g transform="translate(480, 710)">
+      <path d="M0 70 Q-30 20 0 -10 Q30 20 25 70 Z" fill="url(#vratiSareeYellow)" />
+      <circle cx="8" cy="-24" r="14" fill="#B45309" />
+      <path d="M-6 -18 Q8 -36 22 -18 Q20 20 0 35 Z" fill="#DC2626" opacity="0.9" />
+    </g>
+
+    <!-- Traditional Chhath Daura (बांस का दौरा) overflowing with fruits & Prasad -->
+    <g transform="translate(290, 830)">
+      <!-- Woven Bamboo Daura Basket -->
+      <ellipse cx="40" cy="30" rx="60" ry="24" fill="#B45309" stroke="#78350F" stroke-width="3" />
+      <!-- Bananas & Coconut inside Daura -->
+      <circle cx="20" cy="18" r="15" fill="#15803D" />
+      <path d="M35 12 Q55 5 70 20 Q55 26 35 12 Z" fill="#FACC15" />
+      <path d="M45 10 Q65 2 80 18 Q65 24 45 10 Z" fill="#EAB308" />
+      <!-- Sugarcane piece -->
+      <rect x="0" y="5" width="80" height="8" rx="4" fill="#166534" transform="rotate(-15 40 10)" />
+      <!-- Earthen Diya in Daura -->
+      <ellipse cx="40" cy="26" rx="9" ry="4" fill="#9A3412" />
+      <path d="M40 24 C36 20 37 12 40 8 C43 12 44 20 40 24 Z" fill="url(#flameHero)" />
+    </g>
+  </g>
+
+  <!-- Glowing Earthen Diyas on Ghat Stone Steps -->
+  <g id="ghatDiyas">
+    <!-- Diya 1 -->
+    <g transform="translate(180, 640)">
+      <ellipse cx="0" cy="6" rx="14" ry="5" fill="#78350F" />
+      <circle cx="0" cy="0" r="16" fill="#FEF08A" opacity="0.4" />
+      <path d="M0 4 C-4 0 -3 -8 0 -14 C3 -8 4 0 0 4 Z" fill="url(#flameHero)" />
+    </g>
+    <!-- Diya 2 -->
+    <g transform="translate(280, 755)">
+      <ellipse cx="0" cy="6" rx="14" ry="5" fill="#78350F" />
+      <circle cx="0" cy="0" r="16" fill="#FEF08A" opacity="0.4" />
+      <path d="M0 4 C-4 0 -3 -8 0 -14 C3 -8 4 0 0 4 Z" fill="url(#flameHero)" />
+    </g>
+    <!-- Diya 3 -->
+    <g transform="translate(420, 875)">
+      <ellipse cx="0" cy="6" rx="16" ry="5.5" fill="#78350F" />
+      <circle cx="0" cy="0" r="18" fill="#FEF08A" opacity="0.4" />
+      <path d="M0 4 C-5 0 -4 -9 0 -16 C4 -9 5 0 0 4 Z" fill="url(#flameHero)" />
+    </g>
+    <!-- Diya 4 near water edge -->
+    <g transform="translate(620, 870)">
+      <ellipse cx="0" cy="6" rx="16" ry="5.5" fill="#78350F" />
+      <circle cx="0" cy="0" r="18" fill="#FEF08A" opacity="0.4" />
+      <path d="M0 4 C-5 0 -4 -9 0 -16 C4 -9 5 0 0 4 Z" fill="url(#flameHero)" />
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- 5. MAIN FOREGROUND DEVOTEES (VRATIS) STANDING IN SACRED WATER WITH SOOP   -->
+  <!-- ========================================================================= -->
+  <!-- Background Devotees waist-deep in water (Subtle depth silhouettes) -->
+  <g id="midWaterDevotees" opacity="0.85">
+    <!-- Devotee 1 (Distance center left) -->
+    <g transform="translate(740, 740) scale(0.7)">
+      <path d="M0 60 Q-20 20 0 -10 Q20 20 15 60 Z" fill="url(#vratiSareeYellow)" />
+      <circle cx="6" cy="-22" r="12" fill="#B45309" />
+      <!-- Hands folded in prayer to Sun -->
+      <path d="M-8 15 L22 5" stroke="#B45309" stroke-width="5" stroke-linecap="round" />
+    </g>
+    <!-- Devotee 2 (Distance center) -->
+    <g transform="translate(860, 720) scale(0.65)">
+      <path d="M0 60 Q-20 20 0 -10 Q20 20 15 60 Z" fill="url(#vratiSareeRed)" />
+      <circle cx="6" cy="-22" r="12" fill="#9A3412" />
+    </g>
+    <!-- Devotee 3 (Distance right) -->
+    <g transform="translate(970, 730) scale(0.6)">
+      <path d="M0 60 Q-15 15 0 -10 Q20 15 10 60 Z" fill="#F3F4F6" />
+      <circle cx="4" cy="-22" r="11" fill="#78350F" />
+    </g>
+  </g>
+
+  <!-- Central Foreground Vrati Woman 1 in Traditional Red Chunri / Saree -->
+  <g id="mainVratiRed" transform="translate(1040, 720)">
+    <!-- Lower Body Submerged in Sacred Water -->
+    <path d="M-55 240 C-50 120 -35 40 0 30 C40 40 55 120 60 240 Z" fill="url(#vratiSareeRed)" />
+    <!-- Yellow Saree Border & Zari Drape -->
+    <path d="M-35 80 Q0 120 40 80 Q50 180 30 240 Q0 230 -35 240 Z" fill="url(#vratiSareeYellow)" opacity="0.85" />
+
+    <!-- Head & Long Traditional Orange Sindoor Streak (मांग का पावन सिन्दूर) -->
+    <ellipse cx="0" cy="-35" rx="22" ry="26" fill="#F59E0B" />
+    <path d="M0 -58 L0 -16" stroke="#EA580C" stroke-width="4.5" stroke-linecap="round" />
+
+    <!-- Traditional Saree Head Drape (आँचल / घूँघट) -->
+    <path d="M-30 -25 Q0 -65 30 -25 Q40 20 26 60 Q0 45 -26 60 Q-40 20 -30 -25 Z" fill="url(#vratiSareeRed)" stroke="#FEF08A" stroke-width="2.5" />
+    <path d="M-30 -25 Q0 -58 30 -25" stroke="#FEF08A" stroke-width="3" fill="none" stroke-dasharray="4 3" />
+
+    <!-- Devotee Hands holding the Sacred Soop Offering -->
+    <path d="M-30 50 Q-55 20 -15 0" stroke="#F59E0B" stroke-width="12" stroke-linecap="round" fill="none" />
+    <path d="M30 50 Q55 20 15 0" stroke="#F59E0B" stroke-width="12" stroke-linecap="round" fill="none" />
+    <!-- Red Auspicious Bangles (कंगन / चूड़ियाँ) -->
+    <ellipse cx="-26" cy="24" rx="6" ry="10" fill="#DC2626" stroke="#FEF08A" stroke-width="1.5" />
+    <ellipse cx="26" cy="24" rx="6" ry="10" fill="#DC2626" stroke="#FEF08A" stroke-width="1.5" />
+
+    <!-- Sacred Brass Soop (सूप) with Incense, Fruits & Diya -->
+    <g transform="translate(0, -30)">
+      <!-- Soop Body -->
+      <path d="M-80 -12 L80 -12 L70 48 C60 60 25 65 0 65 C-25 65 -60 60 -70 48 Z" fill="url(#soopBrass)" stroke="#78350F" stroke-width="3.5" />
+      <path d="M-78 -12 L78 -12" stroke="#FFFBEB" stroke-width="4" stroke-linecap="round" />
+
+      <!-- Auspicious Aipan / Swastik Marking on Soop -->
+      <path d="M-50 15 Q0 28 50 15" stroke="#DC2626" stroke-width="4" fill="none" stroke-linecap="round" />
+      <circle cx="0" cy="22" r="5" fill="#DC2626" />
+      <circle cx="0" cy="22" r="2" fill="#FEF08A" />
+
+      <!-- Prasad Offerings inside Soop -->
+      <!-- Green Apple / Coconut -->
+      <circle cx="-38" cy="6" r="15" fill="#15803D" stroke="#166534" stroke-width="2" />
+      <!-- Bananas -->
+      <path d="M20 -6 C32 -5 42 4 38 16 C30 14 24 5 20 -6 Z" fill="#FACC15" stroke="#CA8A04" stroke-width="1.5" />
+      <path d="M28 -8 C40 -6 50 2 46 14 C38 12 32 3 28 -8 Z" fill="#EAB308" stroke="#CA8A04" stroke-width="1.5" />
+      <!-- Thekua Stack -->
+      <ellipse cx="-6" cy="12" rx="15" ry="9" fill="#B45309" stroke="#F59E0B" stroke-width="1.5" />
+      <path d="M-16 12 L4 12 M-10 8 Q-6 12 -2 8 M-10 16 Q-6 12 -2 16" stroke="#FEF08A" stroke-width="1.2" stroke-linecap="round" fill="none" />
+
+      <!-- Glowing Earthen Diya in Soop -->
+      <ellipse cx="0" cy="38" rx="12" ry="5.5" fill="#78350F" stroke="#EA580C" stroke-width="1.5" />
+      <circle cx="0" cy="28" r="18" fill="#F59E0B" opacity="0.4" />
+      <path d="M0 35 C-6 30 -6 18 0 10 C6 18 6 30 0 35 Z" fill="url(#flameHero)" />
+      <circle cx="0" cy="25" r="3" fill="#FFFFFF" />
+
+      <!-- Incense Sticks (अगरबत्ती) with subtle smoke -->
+      <line x1="45" y1="10" x2="65" y2="-45" stroke="#78350F" stroke-width="2.5" stroke-linecap="round" />
+      <line x1="50" y1="12" x2="72" y2="-40" stroke="#78350F" stroke-width="2.5" stroke-linecap="round" />
+      <line x1="55" y1="14" x2="78" y2="-35" stroke="#78350F" stroke-width="2.5" stroke-linecap="round" />
+      <circle cx="65" cy="-45" r="2.5" fill="#EF4444" />
+      <circle cx="72" cy="-40" r="2.5" fill="#EF4444" />
+      <circle cx="78" cy="-35" r="2.5" fill="#EF4444" />
+      <!-- Gentle holy smoke swirls -->
+      <path d="M65 -45 Q55 -70 70 -95 Q85 -120 75 -145" stroke="#FFFBEB" stroke-width="2" fill="none" opacity="0.4" />
+      <path d="M72 -40 Q62 -65 78 -90 Q92 -115 82 -140" stroke="#FFFBEB" stroke-width="1.8" fill="none" opacity="0.35" />
+    </g>
+
+    <!-- Divine Golden Aura around Vrati -->
+    <circle cx="0" cy="0" r="120" fill="#FEF08A" opacity="0.12" />
+  </g>
+
+  <!-- Foreground Vrati Woman 2 in Saffron/Yellow Saree (Right Side) -->
+  <g id="mainVratiYellow" transform="translate(1260, 760) scale(0.92)">
+    <path d="M-50 230 C-45 110 -30 35 0 25 C35 35 50 110 55 230 Z" fill="url(#vratiSareeYellow)" />
+    <!-- Red chunri border -->
+    <path d="M-30 70 Q0 110 35 70 Q45 170 25 230 Q0 220 -30 230 Z" fill="url(#vratiSareeRed)" opacity="0.85" />
+
+    <!-- Head & Sindoor -->
+    <ellipse cx="0" cy="-32" rx="20" ry="24" fill="#F59E0B" />
+    <path d="M0 -52 L0 -14" stroke="#EA580C" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Head Saree -->
+    <path d="M-26 -22 Q0 -60 26 -22 Q35 20 22 55 Q0 40 -22 55 Q-35 20 -26 -22 Z" fill="url(#vratiSareeYellow)" stroke="#DC2626" stroke-width="2" />
+
+    <!-- Arms & Soop Offering with Pineapple (अनन्नास) & Cane -->
+    <path d="M-26 45 Q-50 15 -12 -5" stroke="#F59E0B" stroke-width="11" stroke-linecap="round" fill="none" />
+    <path d="M26 45 Q50 15 12 -5" stroke="#F59E0B" stroke-width="11" stroke-linecap="round" fill="none" />
+
+    <g transform="translate(0, -32)">
+      <path d="M-70 -10 L70 -10 L60 42 C50 52 20 56 0 56 C-20 56 -50 52 -60 42 Z" fill="url(#soopBrass)" stroke="#78350F" stroke-width="3" />
+      <path d="M-68 -10 L68 -10" stroke="#FFFBEB" stroke-width="3.5" stroke-linecap="round" />
+
+      <!-- Pineapple (अनन्नास) Offering -->
+      <ellipse cx="-25" cy="8" rx="14" ry="20" fill="#CA8A04" stroke="#854D0E" stroke-width="1.5" />
+      <path d="M-25 -12 L-35 -28 M-25 -12 L-25 -32 M-25 -12 L-15 -28" stroke="#15803D" stroke-width="3" stroke-linecap="round" />
+
+      <!-- Diya in Soop -->
+      <ellipse cx="10" cy="24" rx="10" ry="4.5" fill="#78350F" />
+      <circle cx="10" cy="16" r="14" fill="#F59E0B" opacity="0.4" />
+      <path d="M10 22 C6 18 6 8 10 2 C14 8 14 18 10 22 Z" fill="url(#flameHero)" />
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- 6. FLOATING DIYAS & MARIGOLD FLOWER RIPPLES IN RIVER FOREGROUND           -->
+  <!-- ========================================================================= -->
+  <!-- Floating Diya 1 (Center Foreground) -->
+  <g transform="translate(860, 940)">
+    <!-- Betel Leaf Plate Base (पत्ता) -->
+    <ellipse cx="0" cy="18" rx="34" ry="9" fill="#15803D" opacity="0.85" />
+    <path d="M-22 10 C-22 24 22 24 22 10 Z" fill="#9A3412" stroke="#451A03" stroke-width="2" />
+    <ellipse cx="0" cy="9" rx="18" ry="5" fill="#C2410C" stroke="#FEF08A" stroke-width="1" />
+    <!-- Flame & Reflection -->
+    <circle cx="0" cy="0" r="18" fill="#F59E0B" opacity="0.4" />
+    <path d="M0 8 C-7 0 -6 -10 0 -18 C6 -10 7 0 0 8 Z" fill="url(#flameHero)" />
+    <!-- Water Ripple -->
+    <ellipse cx="0" cy="26" rx="42" ry="7" fill="#FEF08A" opacity="0.35" />
+  </g>
+
+  <!-- Floating Diya 2 (Right Foreground) -->
+  <g transform="translate(1720, 980)">
+    <ellipse cx="0" cy="16" rx="30" ry="8" fill="#15803D" opacity="0.85" />
+    <path d="M-18 9 C-18 22 18 22 18 9 Z" fill="#9A3412" stroke="#451A03" stroke-width="1.8" />
+    <ellipse cx="0" cy="8" rx="15" ry="4.5" fill="#C2410C" stroke="#FEF08A" stroke-width="1" />
+    <circle cx="0" cy="-1" r="16" fill="#F59E0B" opacity="0.4" />
+    <path d="M0 6 C-6 -1 -5 -9 0 -16 C5 -9 6 -1 0 6 Z" fill="url(#flameHero)" />
+    <ellipse cx="0" cy="24" rx="36" ry="6" fill="#FEF08A" opacity="0.35" />
+  </g>
+
+  <!-- Floating Marigold Blossoms (गेंदे के फूल) on Water -->
+  <g fill="#F59E0B" opacity="0.9">
+    <circle cx="980" cy="920" r="8" fill="#EA580C" />
+    <circle cx="1020" cy="960" r="9" />
+    <circle cx="1180" cy="910" r="8" fill="#FBBF24" />
+    <circle cx="1380" cy="950" r="9" fill="#EA580C" />
+    <circle cx="1520" cy="920" r="8" />
+  </g>
+</svg>

@@ -34,6 +34,7 @@ import { CulturalArtifactsGrid } from './components/CulturalArtifactsGrid';
 import { NostalgicMemoriesBoard } from './components/NostalgicMemoriesBoard';
 import { NostalgicMusicPlayer } from './components/NostalgicMusicPlayer';
 import { ChhathCountdown2026 } from './components/ChhathCountdown2026';
+import { ChhathHeroSection } from './components/ChhathHeroSection';
 import { SongDirectory } from './components/SongDirectory';
 import { FeaturedSongsBanner } from './components/FeaturedSongsBanner';
 import { SongDetailModal } from './components/SongDetailModal';
@@ -60,18 +61,27 @@ export type AppRoute =
 function parseCurrentRoute(songs: ChhathSong[]): AppRoute {
   if (typeof window === 'undefined') return { type: 'home' };
 
-  const rawPath = window.location.pathname.replace(/\/+$/, '') || '/';
+  let rawPath = window.location.pathname || '/';
+  rawPath = rawPath.replace(/\/+$/, '') || '/';
 
   // 1. Direct song path: /songs/<slug>
   if (rawPath.startsWith('/songs/')) {
     const rawSlug = rawPath.substring(7); // Remove '/songs/'
-    const decodedSlug = decodeURIComponent(rawSlug).trim();
-    if (decodedSlug) {
-      const song = findSongBySlug(decodedSlug, songs);
+    try {
+      const decodedSlug = decodeURIComponent(rawSlug).trim();
+      if (decodedSlug) {
+        const song = findSongBySlug(decodedSlug, songs);
+        if (song) {
+          return { type: 'song', slug: getSongSlug(song) };
+        }
+        return { type: 'song_404', slug: decodedSlug };
+      }
+    } catch {
+      const song = findSongBySlug(rawSlug, songs);
       if (song) {
         return { type: 'song', slug: getSongSlug(song) };
       }
-      return { type: 'song_404', slug: decodedSlug };
+      return { type: 'song_404', slug: rawSlug };
     }
   }
 
@@ -82,14 +92,16 @@ function parseCurrentRoute(songs: ChhathSong[]): AppRoute {
 
   // 3. Root URL or legacy hash / query (?song=...)
   if (rawPath === '/' || rawPath === '') {
-    const params = new URLSearchParams(window.location.search);
-    const songParam = params.get('song');
-    if (songParam) {
-      const song = songs.find((s) => s.id === songParam || s.youtubeId === songParam);
-      if (song) {
-        return { type: 'song', slug: getSongSlug(song) };
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const songParam = params.get('song');
+      if (songParam) {
+        const song = songs.find((s) => s.id === songParam || s.youtubeId === songParam);
+        if (song) {
+          return { type: 'song', slug: getSongSlug(song) };
+        }
       }
-    }
+    } catch {}
 
     if (window.location.hash === '#songs' || window.location.hash === '#geet') {
       return { type: 'songs' };
@@ -135,12 +147,12 @@ export default function App() {
   useEffect(() => {
     if (route.type === 'home') {
       document.title = isHindi
-        ? `छठ पूजा 2026: अमर छठ गीत, नहाय-खाय, खरना व अर्घ्य | ChhathSong.in`
+        ? `छठ पूजा 2026: अमर छठ गीत व सम्पूर्ण विधि | ChhathSong.in`
         : `Chhath Puja 2026: 107+ Sacred Songs & Rituals | ChhathSong.in`;
       updateCanonicalUrl('https://www.chhathsong.in/');
     } else if (route.type === 'songs') {
       document.title = isHindi
-        ? `107+ अमर छठ गीत संग्रह, बोल, भावार्थ व शारदा सिन्हा लोकगीत | ChhathSong.in`
+        ? `107+ अमर छठ गीत संग्रह, बोल व भावार्थ | ChhathSong.in`
         : `107+ Sacred Chhath Songs, Lyrics & Sharda Sinha Classics | ChhathSong.in`;
       updateCanonicalUrl('https://www.chhathsong.in/songs');
     }
@@ -151,7 +163,7 @@ export default function App() {
       window.history.pushState({}, '', path);
       const nextRoute = parseCurrentRoute(allSongs);
       setRoute(nextRoute);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo(0, 0);
       setIsMobileMenuOpen(false);
     }
   };
@@ -225,6 +237,22 @@ export default function App() {
     });
 
     setAllSongs(merged);
+  };
+
+  const handlePlayPauseToggle = () => {
+    setIsPlaying(prev => !prev);
+  };
+
+  const handleNextTrack = () => {
+    const total = allSongs.length || 1;
+    setCurrentTrackIndex(prev => (prev + 1) % total);
+    setIsPlaying(true);
+  };
+
+  const handlePrevTrack = () => {
+    const total = allSongs.length || 1;
+    setCurrentTrackIndex(prev => (prev - 1 + total) % total);
+    setIsPlaying(true);
   };
 
   const handlePlaySongFromDirectory = (song: ChhathSong) => {
@@ -668,88 +696,49 @@ export default function App() {
       </header>
 
       {/* Main Content Body */}
+      {route.type === 'home' && (
+        /* Full-Width Panoramic Hero Section spanning edge-to-edge across desktop */
+        <div className="w-full">
+          <ChhathHeroSection
+            songs={allSongs}
+            currentSong={currentSong}
+            isPlaying={isPlaying}
+            onPlaySong={handlePlaySongFromDirectory}
+            onNavigateTo={navigateTo}
+            onOpenSongDetail={handleOpenSongDetail}
+          />
+        </div>
+      )}
+
       <main className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 md:px-8 pt-3 sm:pt-4 md:pt-6 space-y-8 sm:space-y-10 md:space-y-14">
         {route.type === 'home' ? (
           <>
-            {/* Hero Branding & 1st View Title Section */}
-            <section id="hero-title-section" className="text-center space-y-2.5 sm:space-y-3.5 max-w-4xl mx-auto">
-              {/* Eyebrow Tag */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/40 border border-[#D4AF37]/35 shadow-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
-                <h2 className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#D4AF37] font-semibold">
-                  {isHindi ? 'मिथिला • मगध • अंग • भोजपुरी माटी' : 'Mithila • Magadh • Anga • Bhojpuri Soul'}
-                </h2>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
-              </div>
-
-              {/* Majestic Main Headline */}
-              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-light tracking-tight leading-tight text-[#FFF5E1]">
-                {isHindi ? (
-                  <>
-                    लोक आस्था का <span className="font-normal text-[#D4AF37] italic">महापर्व छठ</span>
-                  </>
-                ) : (
-                  <>
-                    CHHATH <span className="italic font-normal text-[#D4AF37]">MAHAPARV</span>
-                  </>
-                )}
-              </h1>
-
-              {/* Sub-headline / Cultural Tagline */}
-              <div className="text-sm sm:text-lg md:text-xl font-serif font-medium text-[#FFE5B4] tracking-wide">
-                {isHindi
-                  ? 'अमर छठ गीत, पावन घाट, सजीव अर्घ्य व बिहार की सांस्कृतिक धरोहर'
-                  : 'The Pride of Bihar • Eternal Sun Hymns, Sacred Ghats & Divine Arghya'}
-              </div>
-
-              {/* Devotional Narrative */}
-              <p className="text-xs sm:text-sm md:text-base opacity-90 max-w-2xl mx-auto font-sans font-light leading-relaxed text-[#FFF5E1]/90">
-                {isHindi
-                  ? 'सूर्यदेव और प्रकृति की उपासना का एकमात्र पावन महापर्व, जहाँ अस्ताचलगामी और उदीयमान दोनों सूर्यों को संपूर्ण श्रद्धा से अर्घ्य अर्पित किया जाता है।'
-                  : 'The eternal celebration of cosmic energy and Sun worship, revering both the setting and rising Sun with timeless folk melodies and pure devotion.'}
-              </p>
-            </section>
-
-            {/* 1. Chhath Puja 2026 Live Countdown & Complete Tithi (Directly in 1st view for all screens) */}
-            <ChhathCountdown2026 />
-
-            {/* 2. Rotating Nostalgic Quotes & Verses */}
+            {/* 2. Rotating Nostalgic Quotes & Sacred Verses */}
             <section aria-label="Nostalgic Quotes and Memories">
               <QuotesTicker />
             </section>
 
             {/* 3. Interactive Sacred Arghya Ritual */}
-            <section aria-label="Interactive Arghya Ritual">
+            <section id="interactive-arghya-section" aria-label="Interactive Arghya Ritual">
               <InteractiveArghya onArghyaOffered={handleOfferArghya} count={arghyaCount} />
             </section>
 
-            {/* 4. Compact Featured Songs Banner with Quick Play & CTA to full songs archive */}
-            <section aria-label="Featured Chhath Geet">
-              <FeaturedSongsBanner
-                songs={allSongs}
-                currentSong={currentSong}
-                isPlaying={isPlaying}
-                onPlaySong={handlePlaySongFromDirectory}
-                onOpenSongsArchive={() => navigateTo('/songs')}
-                onOpenSongDetail={handleOpenSongDetail}
-                onNavigateToSong={(s) => navigateTo(getSongPath(s))}
-              />
-            </section>
-
-            {/* 5. The 4 Sacred Days of Chhath Puja Timeline */}
-            <section aria-label="Four Sacred Days of Chhath">
+            {/* 4. The 4 Sacred Days of Chhath Puja Timeline */}
+            <section id="four-days-timeline-section" aria-label="Four Sacred Days of Chhath">
               <FourDaysTimeline />
             </section>
 
-            {/* 6. Authentic Artifacts: Daura, Soop, Thekua, Ganna Mandap, Sindoor */}
+            {/* 5. Authentic Artifacts: Daura, Soop, Thekua, Ganna Mandap, Sindoor */}
             <section aria-label="Sacred Cultural Artifacts">
               <CulturalArtifactsGrid />
             </section>
 
-            {/* 7. Comprehensive Chhath 2026 Guide & Vidhi Hub */}
-            <ChhathGuide2026
-              onExploreSongs={() => navigateTo('/songs')}
-            />
+            {/* 6. Comprehensive Chhath 2026 Guide & Vidhi Hub */}
+            <div id="chhath-guide-section">
+              <ChhathGuide2026
+                onExploreSongs={() => navigateTo('/songs')}
+              />
+            </div>
 
             {/* 8. Emotional Nostalgia, Train Journey & Community Unity */}
             <section aria-label="Bihari Diaspora Memories">

@@ -98,41 +98,41 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
 
 
   return (
-    <section id="chhath-songs-directory" className="w-full relative rounded-3xl bg-[#180F08]/90 border border-[#D4AF37]/30 p-5 sm:p-6 md:p-8 shadow-2xl space-y-6 font-sans">
+    <section id="chhath-songs-directory" className="w-full relative rounded-3xl bg-[#261208] border-2 border-[#E5A93C] p-5 sm:p-6 md:p-8 shadow-[0_12px_40px_rgba(0,0,0,0.85),0_0_20px_rgba(229,169,60,0.3)] space-y-6 font-sans">
       {/* Back to Home Navigation Bar if rendered as a dedicated page */}
       {onBackToHome && (
-        <div className="flex items-center justify-between pb-3 border-b border-[#D4AF37]/15">
+        <div className="flex items-center justify-between pb-3 border-b-2 border-[#E5A93C]/30">
           <button
             onClick={onBackToHome}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/40 hover:bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-xs sm:text-sm font-semibold text-[#D4AF37] hover:text-[#FFF5E1] transition-all cursor-pointer group shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1A0A03] hover:bg-[#FFD54F] border-2 border-[#E5A93C] hover:border-[#FFD54F] text-xs sm:text-sm font-extrabold text-[#FFD54F] hover:text-[#1A0A03] transition-all cursor-pointer group shadow-md"
           >
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform text-[#D4AF37]" />
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
             <span>{isHindi ? 'मुख्य पृष्ठ पर वापस जाएँ' : 'Back to Home Overview'}</span>
           </button>
 
-          <span className="text-xs text-[#FFF5E1]/60 font-mono hidden sm:inline-block">
+          <span className="text-xs text-[#FFE082] font-mono font-bold hidden sm:inline-block">
             {isHindi ? 'अमर छठ संगीत धरोहर' : 'Sacred Folk Music Heritage'}
           </span>
         </div>
       )}
 
       {/* Header & Dynamic Song Counter */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#D4AF37]/20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b-2 border-[#E5A93C]/40">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 border border-[#D4AF37]/35 text-[#D4AF37] text-xs font-bold uppercase tracking-widest mb-1.5">
-            <Music2 className="w-3.5 h-3.5 text-[#D4AF37]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFD54F] text-[#1A0A03] text-xs font-black uppercase tracking-wider mb-2 shadow-md">
+            <Music2 className="w-4 h-4 text-[#1A0A03]" />
             <span>
               {isHindi
                 ? `पावन छठ गीत संग्रह • कुल ${songs.length} गीत`
                 : `Sacred Chhath Folk Collection • ${songs.length} Songs`}
             </span>
           </div>
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold text-[#FFF5E1]">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-black text-white drop-shadow-md">
             {isHindi ? 'पारंपरिक छठ गीत, भजन व संपूर्ण भावार्थ' : 'Traditional Chhath Geet, Lyrics & Devotional Archive'}
           </h1>
         </div>
 
-        <p className="text-xs md:text-sm text-[#FFF5E1]/70 max-w-md">
+        <p className="text-xs md:text-sm text-[#FFE082] font-semibold max-w-md">
           {isHindi
             ? 'पद्म भूषण शारदा सिन्हा, अनुराधा पौडवाल एवं लोक गायकों के अमर स्वर में रचे-बसे छठ गीतों का संग्रह, बोल और अर्थ।'
             : 'Explore timeless devotional hymns by Sharda Sinha, Anuradha Paudwal, and folk masters with original lyrics and spiritual meanings.'}
@@ -143,7 +143,7 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
       <div className="space-y-4">
         {/* Search Input Box */}
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#D4AF37]/70">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#FFD54F]">
             <Search className="w-5 h-5" />
           </div>
           <input
@@ -156,12 +156,12 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
                 ? 'गीत, गायक (शारदा सिन्हा, अनुराधा पौडवाल, पवन सिंह), या बोल के शब्द खोजें...'
                 : 'Search by song title, singer (Sharda Sinha, Anuradha Paudwal), lyrics snippet, or festival ritual...'
             }
-            className="w-full pl-11 pr-10 py-3.5 bg-black/60 border border-[#D4AF37]/30 rounded-2xl text-sm md:text-base text-[#FFF5E1] placeholder-[#FFF5E1]/40 focus:outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all shadow-inner"
+            className="w-full pl-11 pr-10 py-3.5 bg-[#1A0A03] border-2 border-[#E5A93C] rounded-2xl text-sm md:text-base text-white placeholder-[#FFE082]/50 focus:outline-none focus:border-[#FFD700] focus:ring-2 focus:ring-[#FFD700] transition-all shadow-inner font-medium"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#FFF5E1]/50 hover:text-[#FFF5E1] transition-colors"
+              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-[#FFE082] hover:text-white transition-colors"
               title="Clear search"
             >
               <X className="w-4 h-4" />
@@ -171,7 +171,7 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
 
         {/* Category Pills with Dynamic Counts */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-          <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-wider flex items-center gap-1 shrink-0 pl-1">
+          <span className="text-xs font-black text-[#FFD54F] uppercase tracking-wider flex items-center gap-1 shrink-0 pl-1">
             <Filter className="w-3.5 h-3.5" />
             <span>{isHindi ? 'श्रेणी:' : 'Category:'}</span>
           </span>
@@ -182,15 +182,15 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 cursor-pointer flex items-center gap-1.5 shadow-sm ${
                   isSelected
-                    ? 'bg-[#D4AF37] text-[#180F08] shadow-md shadow-[#D4AF37]/20 font-bold'
-                    : 'bg-black/40 text-[#FFF5E1]/75 border border-[#D4AF37]/20 hover:border-[#D4AF37]/45 hover:text-white'
+                    ? 'bg-[#FFD54F] text-[#1A0A03] border-2 border-[#FFE57F] shadow-md font-black scale-105'
+                    : 'bg-[#1A0A03] text-[#FFE082] border-2 border-[#E5A93C]/70 hover:border-[#FFD54F] hover:text-white'
                 }`}
               >
                 <span>{isHindi ? cat.labelHi : cat.labelEn}</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                  isSelected ? 'bg-black/20 text-[#180F08]' : 'bg-black/50 text-[#D4AF37]'
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-extrabold ${
+                  isSelected ? 'bg-[#1A0A03] text-[#FFD54F]' : 'bg-[#2D1408] text-[#FFD54F]'
                 }`}>
                   {count}
                 </span>
@@ -201,14 +201,14 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
       </div>
 
       {/* Results Stats Info */}
-      <div className="flex items-center justify-between text-xs text-[#FFF5E1]/60 px-1">
+      <div className="flex items-center justify-between text-xs text-[#FFE082] font-semibold px-1">
         <span>
           {isHindi
             ? `प्रदर्शित गीत: ${filteredSongs.length} / कुल ${songs.length}`
             : `Showing ${filteredSongs.length} of ${songs.length} Sacred Songs`}
         </span>
         {searchQuery && (
-          <span className="text-[#D4AF37]">
+          <span className="text-[#FFD54F] font-bold">
             {isHindi ? `"${searchQuery}" के परिणाम` : `Filtered by "${searchQuery}"`}
           </span>
         )}
@@ -216,88 +216,109 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
 
       {/* Songs Grid */}
       {filteredSongs.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredSongs.map((song) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          {filteredSongs.map((song, idx) => {
             const isCurrent = currentSong.id === song.id;
             const isCurrentPlaying = isCurrent && isPlaying;
+            const thumbUrl = song.youtubeId
+              ? `https://img.youtube.com/vi/${song.youtubeId}/mqdefault.jpg`
+              : '/favicon.svg';
 
             return (
               <article
-                key={song.id}
+                key={song.id || idx}
                 id={`song-card-${song.id}`}
-                className={`rounded-2xl p-5 transition-all duration-300 border flex flex-col justify-between relative overflow-hidden group ${
-                  isCurrent
-                    ? 'bg-black/75 border-[#D4AF37] shadow-xl shadow-black/60 ring-1 ring-[#D4AF37]/40'
-                    : 'bg-black/40 border-[#D4AF37]/20 hover:border-[#D4AF37]/50 hover:bg-black/60 shadow-md'
+                className={`rounded-2xl p-5 transition-all duration-300 border-2 flex flex-col justify-between relative overflow-hidden group ${
+                  isCurrentPlaying
+                    ? 'bg-gradient-to-br from-[#542612] to-[#381608] border-[#FFE57F] shadow-[0_0_30px_rgba(255,215,0,0.6)] scale-[1.02]'
+                    : isCurrent
+                    ? 'bg-gradient-to-br from-[#4E2412] to-[#2F1306] border-[#FFD54F] shadow-lg ring-2 ring-[#FFD54F]/50'
+                    : 'bg-gradient-to-br from-[#38180A] to-[#220D05] hover:from-[#4E2412] hover:to-[#2F1306] border-[#F59E0B] hover:border-[#FFE57F] shadow-[0_8px_20px_rgba(0,0,0,0.7)] hover:shadow-[0_12px_28px_rgba(255,215,0,0.5)] hover:-translate-y-1'
                 }`}
               >
-                {/* Top Row: Category tag and Action buttons */}
+                {/* Top Row: Thumbnail + Category tag and Action buttons */}
                 <div>
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/60 border border-[#D4AF37]/30 text-[10px] font-bold text-[#D4AF37] uppercase tracking-wider">
-                      <Tag className="w-3 h-3 text-[#D4AF37]" />
-                      <span>{song.singer || song.artist}</span>
-                    </span>
-
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        onClick={(e) => handleShareSong(song, e)}
-                        className="p-1.5 rounded-lg bg-black/40 hover:bg-black/70 text-[#FFF5E1]/60 hover:text-[#D4AF37] border border-white/5 transition-colors"
-                        title={isHindi ? 'गीत लिंक कॉपी करें' : 'Share / Copy Song Link'}
-                      >
-                        {copiedId === song.id ? (
-                          <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <div className="flex items-start gap-3.5 mb-3">
+                    {/* Thumbnail with Play Overlay */}
+                    <div
+                      onClick={() => handlePlay(song)}
+                      className="relative w-14 h-14 rounded-xl overflow-hidden bg-[#180F08] border-2 border-[#F59E0B] group-hover:border-[#FFE57F] shrink-0 cursor-pointer shadow-md"
+                    >
+                      <img
+                        src={thumbUrl}
+                        alt={song.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/10 transition-colors">
+                        {isCurrentPlaying ? (
+                          <div className="w-8 h-8 rounded-full bg-[#FFD54F] flex items-center justify-center shadow-lg">
+                            <Volume2 className="w-4 h-4 text-[#1A0A03] animate-pulse" />
+                          </div>
                         ) : (
-                          <Share2 className="w-3.5 h-3.5" />
+                          <div className="w-8 h-8 rounded-full bg-[#FFD54F] group-hover:bg-[#FFE57F] flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <Play className="w-4 h-4 text-[#1A0A03] fill-current ml-0.5" />
+                          </div>
                         )}
-                      </button>
+                      </div>
+                    </div>
 
-                      {song.whenSung && (
-                        <span className="text-[10px] text-[#FFF5E1]/60 bg-black/30 px-2 py-0.5 rounded-md border border-white/5 truncate max-w-[120px]">
-                          {song.whenSung}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#FFD54F] text-[10px] font-black text-[#1A0A03] uppercase tracking-wider truncate max-w-[130px] shadow-sm">
+                          <Tag className="w-3 h-3 text-[#1A0A03] shrink-0" />
+                          <span className="truncate">{song.singer || song.artist}</span>
                         </span>
-                      )}
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            onClick={(e) => handleShareSong(song, e)}
+                            className="p-1.5 rounded-lg bg-[#1A0A03] hover:bg-[#FFD54F] text-[#FFE082] hover:text-[#1A0A03] border border-[#F59E0B]/60 transition-colors cursor-pointer"
+                            title={isHindi ? 'गीत लिंक कॉपी करें' : 'Share / Copy Song Link'}
+                          >
+                            {copiedId === song.id ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            ) : (
+                              <Share2 className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Song Title (Crawlable Link to Dedicated Page) */}
+                      <a
+                        href={getSongPath(song)}
+                        onClick={(e) => {
+                          if (onNavigateToSong) {
+                            e.preventDefault();
+                            onNavigateToSong(song);
+                          }
+                        }}
+                        className="block text-base font-serif font-black text-white group-hover:text-[#FFE57F] transition-colors leading-snug line-clamp-1 cursor-pointer drop-shadow-sm"
+                      >
+                        {song.title}
+                      </a>
                     </div>
                   </div>
 
-                  {/* Song Title (Crawlable Link to Dedicated Page) */}
-                  <a
-                    href={getSongPath(song)}
-                    onClick={(e) => {
-                      if (onNavigateToSong) {
-                        e.preventDefault();
-                        onNavigateToSong(song);
-                      }
-                    }}
-                    className="block text-base font-serif font-bold text-[#FFF5E1] group-hover:text-[#FFE5B4] transition-colors leading-snug line-clamp-2"
-                  >
-                    {song.title}
-                  </a>
-
                   {/* Lyrics Highlight Quote */}
-                  <div className="my-3 p-3 rounded-xl bg-black/35 border border-[#D4AF37]/15 relative">
-                    <p className="text-xs font-serif italic text-[#FFE5B4]/90 line-clamp-2 leading-relaxed">
+                  <div className="my-3 p-3 rounded-xl bg-[#1A0A03] border border-[#F59E0B]/40 relative">
+                    <p className="text-xs font-serif italic text-[#FFE5B4] line-clamp-2 leading-relaxed">
                       "{song.lyricsHighlight}"
                     </p>
                   </div>
 
                   {/* Meaning Preview */}
-                  <p className="text-xs text-[#FFF5E1]/70 line-clamp-2 mb-4 leading-relaxed">
+                  <p className="text-xs text-[#FFF5E1] line-clamp-2 mb-4 leading-relaxed font-normal">
                     {song.meaning}
                   </p>
                 </div>
 
                 {/* Bottom Action Buttons: Play Song, Dedicated Page Link, Quick Modal */}
-                <div className="pt-3 border-t border-[#D4AF37]/15 flex items-center justify-between gap-2 mt-auto">
+                <div className="pt-3 border-t-2 border-[#F59E0B]/40 flex items-center justify-between gap-2 mt-auto">
                   <button
                     onClick={() => handlePlay(song)}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                      isCurrentPlaying
-                        ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20'
-                        : isCurrent
-                        ? 'bg-[#D4AF37] text-[#180F08] shadow-md shadow-[#D4AF37]/20'
-                        : 'bg-[#D4AF37]/20 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#180F08] border border-[#D4AF37]/40'
-                    }`}
+                    className="flex-1 py-2 px-3 rounded-xl bg-gradient-to-r from-[#FFD54F] to-[#FFB300] hover:from-[#FFE57F] hover:to-[#FFA000] text-[#1A0A03] text-xs font-black flex items-center justify-center gap-1.5 shadow-md hover:scale-105 transition-all cursor-pointer border border-[#FFE57F]"
                   >
                     {isCurrentPlaying ? (
                       <>
@@ -320,27 +341,27 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
                         onNavigateToSong(song);
                       }
                     }}
-                    className="flex items-center justify-center gap-1 py-2 px-3 rounded-xl text-xs font-semibold bg-black/50 text-[#FFF5E1]/85 hover:text-white hover:bg-black/80 border border-[#D4AF37]/25 transition-all"
+                    className="py-2 px-3 rounded-xl bg-[#1A0A03] hover:bg-[#FFD54F] text-[#FFD54F] hover:text-[#1A0A03] border-2 border-[#F59E0B] hover:border-[#FFD54F] text-xs font-black flex items-center justify-center gap-1 transition-all"
                     title={isHindi ? 'समर्पित गीत पृष्ठ खोलें' : 'Open permanent song page with lyrics & meaning'}
                   >
-                    <BookOpen className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    <BookOpen className="w-3.5 h-3.5" />
                     <span>
                       {song.lyrics
                         ? isHindi
-                          ? 'बोल पढ़ें'
-                          : 'Read Lyrics'
+                          ? 'बोल'
+                          : 'Lyrics'
                         : isHindi
-                        ? 'पेज खोलें'
-                        : 'View Page'}
+                        ? 'पेज'
+                        : 'Page'}
                     </span>
                   </a>
 
                   <button
                     onClick={() => onOpenSongDetail(song)}
-                    className="p-2 rounded-xl text-xs font-semibold bg-black/40 text-[#FFF5E1]/60 hover:text-[#D4AF37] hover:bg-black/70 border border-white/5 transition-all cursor-pointer shrink-0"
+                    className="p-2 rounded-xl bg-[#1A0A03] hover:bg-[#FFD54F] text-[#FFD54F] hover:text-[#1A0A03] border border-[#F59E0B] text-xs font-black transition-all cursor-pointer shrink-0"
                     title={isHindi ? 'त्वरित विवरण पॉपअप' : 'Quick Preview Modal'}
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    <Sparkles className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </article>
@@ -349,12 +370,12 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
         </div>
       ) : (
         /* Empty Search State */
-        <div className="p-8 rounded-2xl bg-black/40 border border-[#D4AF37]/20 text-center space-y-3">
-          <Music2 className="w-10 h-10 text-[#D4AF37]/40 mx-auto" />
-          <h4 className="text-lg font-serif font-bold text-[#FFF5E1]">
+        <div className="p-8 rounded-2xl bg-[#1A0A03] border-2 border-[#E5A93C] text-center space-y-3">
+          <Music2 className="w-10 h-10 text-[#FFD54F] mx-auto" />
+          <h4 className="text-lg font-serif font-black text-white">
             {isHindi ? 'कोई गीत नहीं मिला' : 'No Sacred Songs Found'}
           </h4>
-          <p className="text-xs md:text-sm text-[#FFF5E1]/60 max-w-md mx-auto">
+          <p className="text-xs md:text-sm text-[#FFE082] max-w-md mx-auto font-medium">
             {isHindi
               ? `"${searchQuery}" के लिए कोई परिणाम नहीं मिला। कृपया अन्य शब्द या श्रेणी चुनकर खोजें।`
               : `No songs matched "${searchQuery}". Try searching by singer name like "Sharda Sinha", or reset the filter.`}
@@ -364,7 +385,7 @@ export const SongDirectory: React.FC<SongDirectoryProps> = ({
               setSearchQuery('');
               setSelectedCategory('all');
             }}
-            className="px-4 py-2 rounded-xl bg-[#D4AF37] text-[#180F08] text-xs font-bold uppercase tracking-wider hover:bg-[#FFE5B4] transition-colors cursor-pointer"
+            className="px-5 py-2.5 rounded-xl bg-[#FFD54F] hover:bg-[#FFE57F] text-[#1A0A03] text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-md"
           >
             {isHindi ? 'सभी गीत देखें' : 'View All Sacred Songs'}
           </button>

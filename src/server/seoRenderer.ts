@@ -84,9 +84,9 @@ function injectHeadMetadata(
  * Generates crawl-ready pre-rendered HTML for the Homepage (/).
  */
 export function renderHomepageHtml(baseHtml: string): string {
-  const title = 'छठ पूजा 2026: अमर छठ गीत, नहाय-खाय, खरना व अर्घ्य | ChhathSong.in';
+  const title = 'छठ पूजा 2026: अमर छठ गीत व सम्पूर्ण विधि | ChhathSong.in';
   const description =
-    'लोक आस्था का महापर्व छठ 2026: 107+ अमर छठ गीत, शारदा सिन्हा के पावन लोकगीत, संध्या व उषा अर्घ्य का शुभ मुहूर्त, विधि एवं गंगा घाट की परंपरा।';
+    'छठ पूजा 2026 के पावन अवसर पर सुनें 107+ अमर छठ गीत, शारदा सिन्हा के लोकगीत, सम्पूर्ण बोल (Lyrics), नहाय-खाय, खरना व अर्घ्य का शुभ मुहूर्त।';
   const canonicalUrl = `${CANONICAL_DOMAIN}/`;
 
   const websiteSchema = {
@@ -182,9 +182,9 @@ export function renderHomepageHtml(baseHtml: string): string {
  * Generates crawl-ready pre-rendered HTML for the Songs Directory (/songs).
  */
 export function renderSongsDirectoryHtml(baseHtml: string): string {
-  const title = `${CHHATH_SONGS.length} अमर छठ गीत संग्रह, बोल, भावार्थ व शारदा सिन्हा लोकगीत | ChhathSong.in`;
+  const title = '107+ अमर छठ गीत संग्रह, बोल व भावार्थ | ChhathSong.in';
   const description =
-    'संपूर्ण 107+ पारंपरिक छठ गीतों का विशाल संग्रह: शारदा सिन्हा, अनुराधा पौडवाल के अमर स्वर, संपूर्ण बोल (Lyrics), भावार्थ व संध्या-उषा अर्घ्य के पावन भजन।';
+    'शारदा सिन्हा, अनुराधा पौडवाल व लोकगायकों के 107+ पारंपरिक छठ गीतों का संपूर्ण संग्रह, बोल (Lyrics) व भावार्थ सुनें।';
   const canonicalUrl = `${CANONICAL_DOMAIN}/songs`;
 
   const songItemsSchema = CHHATH_SONGS.map((song, idx) => ({

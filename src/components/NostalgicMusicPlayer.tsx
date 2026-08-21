@@ -191,64 +191,80 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
     }
   };
 
-  // Initialize YouTube Iframe API with the user's specific playlist once
-  useEffect(() => {
-    let interval: any;
-
-    const setupYT = () => {
-      if (window.YT && window.YT.Player && playerContainerRef.current) {
-        if (!playerRef.current) {
-          playerRef.current = new window.YT.Player('yt-hidden-player', {
-            height: '200',
-            width: '200',
-            playerVars: {
-              listType: 'playlist',
-              list: playlistId,
-              autoplay: 0,
-              controls: 1,
-              enablejsapi: 1,
-              origin: window.location.origin,
-              playsinline: 1,
-              rel: 0
-            },
-            events: {
-              onReady: (event: any) => {
-                if (isMuted) event.target.mute();
-                syncLiveTrackInfo(event.target);
+  // Initialize YouTube Iframe API on-demand when playback is initiated
+  const ensureYouTubeLoaded = (autoPlayTrackIndex?: number) => {
+    const initPlayer = () => {
+      if (!window.YT || !window.YT.Player || !playerContainerRef.current) return;
+      if (!playerRef.current) {
+        playerRef.current = new window.YT.Player('yt-hidden-player', {
+          height: '200',
+          width: '200',
+          playerVars: {
+            listType: 'playlist',
+            list: playlistId,
+            autoplay: typeof autoPlayTrackIndex === 'number' ? 1 : 0,
+            controls: 1,
+            enablejsapi: 1,
+            origin: typeof window !== 'undefined' ? window.location.origin : '',
+            playsinline: 1,
+            rel: 0
+          },
+          events: {
+            onReady: (event: any) => {
+              if (isMuted) event.target.mute();
+              syncLiveTrackInfo(event.target);
+              if (typeof autoPlayTrackIndex === 'number' && autoPlayTrackIndex >= 0) {
                 try {
-                  if (typeof event.target.getPlaylist === 'function') {
-                    const videoIds = event.target.getPlaylist();
-                    if (Array.isArray(videoIds) && videoIds.length > 0) {
-                      console.log('YouTube Player playlist ready:', videoIds.length);
-                    }
-                  }
+                  event.target.playVideoAt(autoPlayTrackIndex);
                 } catch (e) {}
-              },
-              onStateChange: (event: any) => {
-                syncLiveTrackInfo(event.target);
-                // 1 = playing, 2 = paused, 0 = ended, 3 = buffering
-                if (event.data === 1 && !isPlayingRef.current) {
-                  onPlayPauseToggle();
-                } else if (event.data === 2 && isPlayingRef.current) {
-                  onPlayPauseToggle();
-                } else if (event.data === 0) {
-                  handleTrackEnded();
-                }
+              }
+            },
+            onStateChange: (event: any) => {
+              syncLiveTrackInfo(event.target);
+              // 1 = playing, 2 = paused, 0 = ended, 3 = buffering
+              if (event.data === 1 && !isPlayingRef.current) {
+                onPlayPauseToggle();
+              } else if (event.data === 2 && isPlayingRef.current) {
+                onPlayPauseToggle();
+              } else if (event.data === 0) {
+                handleTrackEnded();
               }
             }
-          });
-        }
+          }
+        });
+      } else if (typeof autoPlayTrackIndex === 'number') {
+        try {
+          if (typeof playerRef.current.playVideoAt === 'function') {
+            playerRef.current.playVideoAt(autoPlayTrackIndex);
+          }
+        } catch (e) {}
       }
     };
 
     if (window.YT && window.YT.Player) {
-      setupYT();
+      initPlayer();
     } else {
-      window.onYouTubeIframeAPIReady = setupYT;
+      if (!document.getElementById('youtube-iframe-api-script')) {
+        const tag = document.createElement('script');
+        tag.id = 'youtube-iframe-api-script';
+        tag.src = 'https://www.youtube.com/iframe_api';
+        tag.async = true;
+        document.head.appendChild(tag);
+      }
+      const existingCallback = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        if (typeof existingCallback === 'function') existingCallback();
+        initPlayer();
+      };
     }
+  };
 
-    return () => {};
-  }, [playlistId]);
+  // If isPlaying is triggered externally, make sure YouTube player is initialized
+  useEffect(() => {
+    if (isPlaying) {
+      ensureYouTubeLoaded(currentTrackIndex);
+    }
+  }, [isPlaying, currentTrackIndex]);
 
   // Interval for updating progress and info when playing
   useEffect(() => {

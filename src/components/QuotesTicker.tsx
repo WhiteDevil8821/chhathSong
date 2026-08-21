@@ -33,17 +33,17 @@ export const QuotesTicker: React.FC = () => {
       id="quotes-ticker-container"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
-      className="relative rounded-3xl bg-[#1C120B]/90 p-6 md:p-8 border border-[#D4AF37]/30 overflow-hidden shadow-2xl transition-all"
+      className="relative rounded-3xl bg-gradient-to-br from-[#2E160B] via-[#220F06] to-[#180903] p-6 md:p-8 border-2 border-[#D4AF37]/50 overflow-hidden shadow-2xl transition-all"
     >
       {/* Background Ambience */}
-      <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#8A3B14]/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#D4AF37]/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#F28C28]/15 rounded-full blur-3xl pointer-events-none" />
 
       {/* Header bar */}
-      <div className="flex items-center justify-between pb-3.5 border-b border-[#D4AF37]/20 mb-4">
+      <div className="flex items-center justify-between pb-3.5 border-b border-[#D4AF37]/30 mb-4">
         <div className="flex items-center gap-2">
-          <Quote className="w-5 h-5 text-[#D4AF37] rotate-180" />
-          <span className="text-xs md:text-sm font-sans font-bold text-[#D4AF37] uppercase tracking-widest">
+          <Quote className="w-5 h-5 text-[#FFD700] rotate-180" />
+          <span className="text-xs md:text-sm font-sans font-bold text-[#FFD700] uppercase tracking-widest">
             {isHindi ? 'छठ की स्मृतियाँ व लोक दर्शन • Folk Philosophy' : 'Folk Verses & Homeland Memories of Chhath'}
           </span>
         </div>
@@ -57,8 +57,8 @@ export const QuotesTicker: React.FC = () => {
                 onClick={() => setCurrentIndex(i)}
                 className={`h-1.5 rounded-full transition-all cursor-pointer ${
                   currentIndex === i
-                    ? 'w-6 bg-[#D4AF37]'
-                    : 'w-1.5 bg-[#FFF5E1]/20 hover:bg-[#D4AF37]'
+                    ? 'w-6 bg-[#FFD700]'
+                    : 'w-1.5 bg-[#FFF5E1]/30 hover:bg-[#FFD700]'
                 }`}
                 title={`Quote ${i + 1}`}
               />
@@ -67,14 +67,14 @@ export const QuotesTicker: React.FC = () => {
 
           <button
             onClick={handlePrev}
-            className="p-1 rounded-lg hover:bg-[#D4AF37]/20 text-[#FFF5E1] transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg hover:bg-[#D4AF37]/25 text-[#FFD700] transition-colors cursor-pointer border border-[#D4AF37]/30"
             title="Previous Quote"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={handleNext}
-            className="p-1 rounded-lg hover:bg-[#D4AF37]/20 text-[#FFF5E1] transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg hover:bg-[#D4AF37]/25 text-[#FFD700] transition-colors cursor-pointer border border-[#D4AF37]/30"
             title="Next Quote"
           >
             <ChevronRight className="w-4 h-4" />
