@@ -175,7 +175,10 @@ export function renderHomepageHtml(baseHtml: string): string {
     jsonLd: [websiteSchema, orgSchema]
   });
 
-  return htmlWithHead.replace(/<div\s+id=["']root["']>([\s\S]*?)<\/div>/i, `<div id="root">${preRenderedBody}</div>`);
+  return htmlWithHead.replace(
+    /<div\s+id=["']root["']>([\s\S]*?)<\/div>/i,
+    `<div id="root"></div>\n    <noscript>${preRenderedBody}</noscript>`
+  );
 }
 
 /**
@@ -274,7 +277,10 @@ export function renderSongsDirectoryHtml(baseHtml: string): string {
     jsonLd: [breadcrumbsSchema, collectionSchema]
   });
 
-  return htmlWithHead.replace(/<div\s+id=["']root["']>([\s\S]*?)<\/div>/i, `<div id="root">${preRenderedBody}</div>`);
+  return htmlWithHead.replace(
+    /<div\s+id=["']root["']>([\s\S]*?)<\/div>/i,
+    `<div id="root"></div>\n    <noscript>${preRenderedBody}</noscript>`
+  );
 }
 
 /**
@@ -442,7 +448,10 @@ export function renderSongPageHtml(song: ChhathSong, baseHtml: string): string {
     jsonLd: [breadcrumbSchema, musicSchema]
   });
 
-  return htmlWithHead.replace(/<div\s+id=["']root["']>([\s\S]*?)<\/div>/i, `<div id="root">${preRenderedBody}</div>`);
+  return htmlWithHead.replace(
+    /<div\s+id=["']root["']>([\s\S]*?)<\/div>/i,
+    `<div id="root"></div>\n    <noscript>${preRenderedBody}</noscript>`
+  );
 }
 
 /**
@@ -481,5 +490,8 @@ export function renderNotFoundHtml(slug: string, baseHtml: string): string {
     canonicalUrl
   });
 
-  return htmlWithHead.replace(/<div\s+id=["']root["']>([\s\S]*?)<\/div>/i, `<div id="root">${preRenderedBody}</div>`);
+  return htmlWithHead.replace(
+    /<div\s+id=["']root["']>([\s\S]*?)<\/div>/i,
+    `<div id="root"></div>\n    <noscript>${preRenderedBody}</noscript>`
+  );
 }
