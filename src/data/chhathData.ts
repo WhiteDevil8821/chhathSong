@@ -177,56 +177,182 @@ Asra Lagawele Ho`,
   },
   {
     "id": "KWvgJvM2zT0",
-    "title": "Ho Deenanath New Version I Chhath Pooja Geet I SHARDA SINHA I Chhath Pooja I Chhathi Maiya",
-    "singer": "T-Series Bhakti Sagar",
-    "artist": "T-Series Bhakti Sagar",
-    "era": "Chhath Mahaparv Folk",
-    "duration": "5.3 क॰ व्यू",
+    "title": "हो दीनानाथ (Ho Deenanath) - शारदा सिन्हा | Chhath Pooja Geet | Sharda Sinha",
+    "singer": "शारदा सिन्हा (Sharda Sinha)",
+    "artist": "शारदा सिन्हा (Sharda Sinha)",
+    "era": "Sharda Sinha Classics",
+    "duration": "5.3 लाख व्यू",
     "youtubeId": "KWvgJvM2zT0",
-    "lyricsHighlight": "Ho Deenanath New Version I Chhath Pooja Geet I SHARDA SINHA I Chhath Pooja I Chhathi Maiya",
-    "lyricsSnippetHindi": "Ho Deenanath New Version I Chhath Pooja Geet I SHARDA SINHA I Chhath Pooja I Chhathi Maiya",
-    "lyricsSnippetEnglish": "Sacred folk hymn honoring Chhathi Maiya and Lord Surya.",
-    "meaning": "छठ महापर्व की महिमा, सूर्यदेव व छठी मइया के प्रति अगाध श्रद्धा और लोक आस्था का पावन लोकगीत।",
-    "tag": "लाइव प्लेलिस्ट गीत",
+    "lyricsHighlight": "सोना सट कुनिया हो दीनानाथ हे घूमइछा संसार... आजू के दिनवा हो दीनानाथ हे लागल एती बेर",
+    "lyricsSnippetHindi": "सोना सट कुनिया हो दीनानाथ हे घूमइछा संसार... आजू के दिनवा हो दीनानाथ हे लागल एती बेर",
+    "lyricsSnippetEnglish": "O Deenanath touring the universe on Your golden chariot, why has it taken so long to rise on this auspicious day of arghya?",
+    "lyrics": `सोना सट कुनिया हो दीनानाथ
+हे घूमइछा संसार
+हे घूमइछा संसार
+सोना सट कुनिया हो दीनानाथ
+हे घूमइछा संसार
+हे घूमइछा संसार
+आन दिन उगइ छा हो दीनानाथ
+आहे भोर भिनसार
+आहे भोर भिनसार
+
+आजू के दिनवा हो दीनानाथ
+हे लागल एती बेर
+हे लागल एती बेर
+
+बाट में भेटिए गेल गे अबला
+एकटा अन्हरा पुरुष
+एकटा अन्हरा पुरुष
+
+अंखिया दिएइते गे अबला
+हे लागल एती बेर
+हे लागल एती बेर
+
+बाट में भेटिए गेल गे अबला
+एकटा बाझिनिया
+एकटा बाझिनिया
+
+बालक दिएइते गे अबला
+हे लागल एती बेर
+हे लागल एती बेर
+
+बाट में भेटिए गेल गे अबला
+एकटा कोडिया पुरुष
+एकटा कोडिया पुरुष
+
+कायावा की एइते गे अबला
+हे लागल एती बेर
+हे लागल एती बेर
+हे लागल एती बेर
+हे लागल एती बेर
+हे लागल एती बेर`,
+    "meaning": "पद्म भूषण शारदा सिन्हा जी द्वारा स्वरबद्ध यह कालजयी मैथिली छठ गीत सूर्यदेव (दीनानाथ) के स्वर्णिम सात घोड़ों के रथ और उनकी सर्व-कल्याणकारी कृपा का अनुपम वर्णन करता है। भक्त पूछते हैं कि आज अर्घ्य के पावन दिन उदित होने में इतनी देर क्यों लगी, तब भगवान बताते हैं कि मार्ग में अंधों को नेत्र, निःसंतानों को संतान और दुखियों को आरोग्य का वरदान देते हुए आने में विलंब हुआ।",
+    "tag": "शारदा सिन्हा कालजयी",
     "category": "sharda_sinha",
-    "culturalContext": "छठ महापर्व के पावन चार दिनों के अनुष्ठान व गंगा घाट की आध्यात्मिक ऊर्जा का लोकगीत।",
-    "whenSung": "छठ पूजा के पावन अनुष्ठान, अर्घ्य व घाट यात्रा के समय",
+    "culturalContext": "छठ महापर्व में उषा अर्घ्य व संध्या अर्घ्य के समय गंगा घाटों और घर-घर में गूंजने वाला सबसे भावपूर्ण व कालजयी मैथिली छठ गीत।",
+    "whenSung": "संध्या अर्घ्य, उषा अर्घ्य व सूर्य वंदना के समय",
     "festivalPhase": "all"
   },
   {
     "id": "OrlnX9zM5-k",
-    "title": "Chhathi Maiya Bulaye - Vishal Mishra | Kaushal Kishore | Desh Unplugged | Chhath Song 2021",
-    "singer": "CLIK RECORDS",
-    "artist": "CLIK RECORDS",
+    "title": "ऊ जे केरवा जे फरेला खबद से (मारबो रे सुगवा धनुख से) | Chhathi Maiya Bulaye",
+    "singer": "विशाल मिश्रा / पारंपरिक छठ लोकगीत",
+    "artist": "विशाल मिश्रा (Vishal Mishra)",
     "era": "Chhath Mahaparv Folk",
-    "duration": "1.7 क॰ व्यू",
+    "duration": "1.7 लाख व्यू",
     "youtubeId": "OrlnX9zM5-k",
-    "lyricsHighlight": "Chhathi Maiya Bulaye - Vishal Mishra | Kaushal Kishore | Desh Unplugged | Chhath Song 2021",
-    "lyricsSnippetHindi": "Chhathi Maiya Bulaye - Vishal Mishra | Kaushal Kishore | Desh Unplugged | Chhath Song 2021",
-    "lyricsSnippetEnglish": "Sacred folk hymn honoring Chhathi Maiya and Lord Surya.",
-    "meaning": "छठ महापर्व की महिमा, सूर्यदेव व छठी मइया के प्रति अगाध श्रद्धा और लोक आस्था का पावन लोकगीत।",
-    "tag": "लाइव प्लेलिस्ट गीत",
+    "lyricsHighlight": "ऊ जे केरवा जे फरेला खबद से, ओह पर सुगा मेड़राए... मारबो रे सुगवा धनुख से, सुगा गिरे मुरझाए",
+    "lyricsSnippetHindi": "ऊ जे केरवा जे फरेला खबद से, ओह पर सुगा मेड़राए... मारबो रे सुगवा धनुख से, सुगा गिरे मुरझाए",
+    "lyricsSnippetEnglish": "The bananas and sacred fruits hang laden on branches where parrots hover; we guard the sacred offerings for Sun God and Chhathi Maiya with utmost purity.",
+    "lyrics": `ऊ जे केरवा जे फरेला खबद से,
+ओह पर सुगा मेड़राए।
+मारबो रे सुगवा धनुख से,
+सुगा गिरे मुरझाए।
+ऊ जे सुगनी जे रोएली वियोग से,
+आदित होई ना सहाय॥
+
+ऊ जे नारियर जे फरेला खबद से,
+ओह पर सुगा मेड़राए।
+मारबो रे सुगवा धनुख से,
+सुगा गिरे मुरझाए।
+
+ऊ जे सुगनी जे रोएली वियोग से,
+आदित होई ना सहाय॥
+
+अमरुदवा जे फरेला खबद से,
+ओह पर सुगा मेड़राए।
+मारबो रे सुगवा धनुख से,
+सुगा गिरे मुरझाए।
+
+ऊ जे सुगनी जे रोएली वियोग से,
+आदित होई ना सहाय॥
+
+शरीफवा जे फरेला खबद से,
+ओह पर सुगा मेड़राए।
+मारबो रे सुगवा धनुख से,
+सुगा गिरे मुरझाए।
+
+ऊ जे सुगनी जे रोएली वियोग से,
+आदित होई ना सहाय॥
+
+ऊ जे सेववा जे फरेला खबद से,
+ओह पर सुगा मेड़राए।
+मारबो रे सुगवा धनुख से,
+सुगा गिरे मुरझाए।
+
+ऊ जे सुगनी जे रोएली वियोग से,
+आदित होई ना सहाय॥
+
+सभे फलवा जे फरेला खबद से,
+ओह पर सुगा मेड़राए।
+मारबो रे सुगवा धनुख से,
+सुगा गिरे मुरझाए।
+
+ऊ जे सुगनी जे रोएली वियोग से,
+आदित होई ना सहाय॥`,
+    "meaning": "छठ पूजा के सूप और डाला में भगवान सूर्य व छठी मइया को अर्पित करने वाले फलों (केला, नारियल, शरीफा, सेब, अमरूद) की पवित्रता और शुचिता का यह सबसे प्रसिद्ध पारंपरिक लोकगीत है। इसमें व्रती कहते हैं कि सूर्यदेव के प्रसाद के फलों को कोई पक्षी जूठा न करे, ताकि अगाध पवित्रता से अर्घ्य समर्पित किया जा सके।",
+    "tag": "पारंपरिक छठ लोकगीत",
     "category": "bhojpuri_folk",
-    "culturalContext": "छठ महापर्व के पावन चार दिनों के अनुष्ठान व गंगा घाट की आध्यात्मिक ऊर्जा का लोकगीत।",
-    "whenSung": "छठ पूजा के पावन अनुष्ठान, अर्घ्य व घाट यात्रा के समय",
-    "festivalPhase": "all"
+    "culturalContext": "छठ पूजा की सामग्री व प्रसाद तैयार करते समय, सूप-डाला सजाने और गंगा घाट पर अर्घ्य अर्पण के दौरान घर-घर में गाया जाने वाला परम पावन लोकगीत।",
+    "whenSung": "छठ प्रसाद व डाला तैयारी, संध्या व उषा अर्घ्य के समय",
+    "festivalPhase": "sandhya_arghya"
   },
   {
     "id": "f-WsraDBPnY",
-    "title": "Ho Dinaanaath By Sharda Sinha  Bhojpuri Chhath Songs [Full HD Song] I Chhathi Maiya",
-    "singer": "T-Series Bhakti Sagar",
-    "artist": "T-Series Bhakti Sagar",
-    "era": "Chhath Mahaparv Folk",
-    "duration": "3.5 क॰ व्यू",
+    "title": "हो दीनानाथ - शारदा सिन्हा | Ho Dinaanaath By Sharda Sinha (Full HD)",
+    "singer": "शारदा सिन्हा (Sharda Sinha)",
+    "artist": "शारदा सिन्हा (Sharda Sinha)",
+    "era": "Sharda Sinha Classics",
+    "duration": "3.5 लाख व्यू",
     "youtubeId": "f-WsraDBPnY",
-    "lyricsHighlight": "Ho Dinaanaath By Sharda Sinha  Bhojpuri Chhath Songs [Full HD Song] I Chhathi Maiya",
-    "lyricsSnippetHindi": "Ho Dinaanaath By Sharda Sinha  Bhojpuri Chhath Songs [Full HD Song] I Chhathi Maiya",
-    "lyricsSnippetEnglish": "Sacred folk hymn honoring Chhathi Maiya and Lord Surya.",
-    "meaning": "छठ महापर्व की महिमा, सूर्यदेव व छठी मइया के प्रति अगाध श्रद्धा और लोक आस्था का पावन लोकगीत।",
-    "tag": "लाइव प्लेलिस्ट गीत",
+    "lyricsHighlight": "सोना सट कुनिया हो दीनानाथ हे घूमइछा संसार... आजू के दिनवा हो दीनानाथ हे लागल एती बेर",
+    "lyricsSnippetHindi": "सोना सट कुनिया हो दीनानाथ हे घूमइछा संसार... आजू के दिनवा हो दीनानाथ हे लागल एती बेर",
+    "lyricsSnippetEnglish": "O Deenanath touring the universe on Your golden chariot, why has it taken so long to rise on this auspicious day of arghya?",
+    "lyrics": `सोना सट कुनिया हो दीनानाथ
+हे घूमइछा संसार
+हे घूमइछा संसार
+सोना सट कुनिया हो दीनानाथ
+हे घूमइछा संसार
+हे घूमइछा संसार
+आन दिन उगइ छा हो दीनानाथ
+आहे भोर भिनसार
+आहे भोर भिनसार
+
+आजू के दिनवा हो दीनानाथ
+हे लागल एती बेर
+हे लागल एती बेर
+
+बाट में भेटिए गेल गे अबला
+एकटा अन्हरा पुरुष
+एकटा अन्हरा पुरुष
+
+अंखिया दिएइते गे अबला
+हे लागल एती बेर
+हे लागल एती बेर
+
+बाट में भेटिए गेल गे अबला
+एकटा बाझिनिया
+एकटा बाझिनिया
+
+बालक दिएइते गे अबला
+हे लागल एती बेर
+हे लागल एती बेर
+
+बाट में भेटिए गेल गे अबला
+एकटा कोडिया पुरुष
+एकटा कोडिया पुरुष
+
+कायावा की एइते गे अबला
+हे लागल एती बेर
+हे लागल एती बेर
+हे लागल एती बेर
+हे लागल एती बेर
+हे लागल एती बेर`,
+    "meaning": "पद्म भूषण शारदा सिन्हा जी द्वारा स्वरबद्ध 'हो दीनानाथ' छठ महापर्व का सबसे प्रतिष्ठित व भावपूर्ण पारंपरिक मैथिली गीत है। इसमें भक्त सूर्यदेव से पूछते हैं कि आज अर्घ्य के पावन दिन उदित होने में इतनी देर क्यों लगी। भगवान भास्कर उत्तर देते हैं कि राह में दुखियों, अंधों, निःसंतानों और रोगियों को वरदान व जीवनदान देते हुए आने में विलंब हुआ।",
+    "tag": "शारदा सिन्हा कालजयी",
     "category": "sharda_sinha",
-    "culturalContext": "छठ महापर्व के पावन चार दिनों के अनुष्ठान व गंगा घाट की आध्यात्मिक ऊर्जा का लोकगीत।",
-    "whenSung": "छठ पूजा के पावन अनुष्ठान, अर्घ्य व घाट यात्रा के समय",
+    "culturalContext": "छठ महापर्व में उषा अर्घ्य व संध्या अर्घ्य के समय गंगा घाटों और घर-घर में गूंजने वाला सबसे भावपूर्ण व कालजयी मैथिली छठ गीत।",
+    "whenSung": "संध्या अर्घ्य, उषा अर्घ्य व सूर्य वंदना के समय",
     "festivalPhase": "all"
   },
   {
