@@ -239,8 +239,8 @@ export default function App() {
     setAllSongs(merged);
   };
 
-  const handlePlayPauseToggle = () => {
-    setIsPlaying(prev => !prev);
+  const handlePlayPauseToggle = (forceState?: boolean) => {
+    setIsPlaying(prev => (typeof forceState === 'boolean' ? forceState : !prev));
   };
 
   const handleNextTrack = () => {

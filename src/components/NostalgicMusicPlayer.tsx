@@ -7,6 +7,7 @@ import {
   SkipForward,
   Repeat,
   Repeat1,
+  RotateCcw,
   ListMusic,
   Disc,
   ExternalLink,
@@ -34,7 +35,7 @@ interface NostalgicMusicPlayerProps {
   currentTrackIndex: number;
   onTrackChange: (index: number) => void;
   isPlaying: boolean;
-  onPlayPauseToggle: () => void;
+  onPlayPauseToggle: (forceState?: boolean) => void;
   onSongsLoaded?: (songs: any[]) => void;
 }
 
@@ -55,6 +56,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
   const [playlistSongs, setPlaylistSongs] = useState<any[]>(CHHATH_SONGS);
   const [isLoadingSongs, setIsLoadingSongs] = useState(false);
   const [lastSyncedAt, setLastSyncedAt] = useState<string>('Live');
+  const [isPlayerReady, setIsPlayerReady] = useState<boolean>(false);
 
   const playerRef = useRef<any>(null);
   const isPlayingRef = useRef<boolean>(isPlaying);
@@ -70,18 +72,129 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
   const playlistSongsRef = useRef<any[]>(playlistSongs);
   playlistSongsRef.current = playlistSongs;
 
+  // Track switching guard to prevent race conditions during track transitions
+  const isSwitchingTrackRef = useRef<boolean>(false);
+  const switchingTimeoutRef = useRef<any>(null);
+
   // The exact YouTube Playlist ID requested by user
   const playlistId = 'PLenw-C64yBCo';
   const playlistUrl = `https://youtube.com/playlist?list=${playlistId}`;
 
   const currentSong = playlistSongs[currentTrackIndex] || playlistSongs[0] || CHHATH_SONGS[0];
 
-  // Fetch live playlist tracks dynamically from backend API (with multi-page pagination for 100+ songs)
+  // Helper to play a song by its video ID or playlist index
+  const executePlayTrack = (trackIndex: number, autoPlay: boolean = true) => {
+    const songs = playlistSongsRef.current;
+    const song = songs[trackIndex] || songs[0] || CHHATH_SONGS[0];
+    const videoId = song.youtubeId || song.videoId || song.id;
+
+    if (switchingTimeoutRef.current) clearTimeout(switchingTimeoutRef.current);
+    isSwitchingTrackRef.current = true;
+    switchingTimeoutRef.current = setTimeout(() => {
+      isSwitchingTrackRef.current = false;
+    }, 1500);
+
+    if (playerRef.current) {
+      try {
+        if (videoId && typeof playerRef.current.loadVideoById === 'function') {
+          if (autoPlay) {
+            playerRef.current.loadVideoById(videoId);
+            if (typeof playerRef.current.playVideo === 'function') {
+              playerRef.current.playVideo();
+            }
+          } else {
+            playerRef.current.cueVideoById(videoId);
+          }
+        } else if (typeof playerRef.current.playVideoAt === 'function') {
+          playerRef.current.playVideoAt(trackIndex);
+        }
+      } catch (e) {
+        console.warn('Execute play track error:', e);
+      }
+    }
+  };
+
+  // Eagerly initialize YouTube Iframe API on mount so player is ready before user touches play
+  useEffect(() => {
+    const initPlayer = () => {
+      if (!window.YT || !window.YT.Player || !playerContainerRef.current || playerRef.current) return;
+      try {
+        const firstSong = CHHATH_SONGS[0];
+        const firstVideoId = firstSong?.youtubeId || firstSong?.id || '0fZt65tj6L8';
+
+        playerRef.current = new window.YT.Player('yt-hidden-player', {
+          height: '200',
+          width: '200',
+          videoId: firstVideoId,
+          playerVars: {
+            autoplay: 0,
+            controls: 1,
+            enablejsapi: 1,
+            origin: typeof window !== 'undefined' ? window.location.origin : '',
+            playsinline: 1,
+            rel: 0
+          },
+          events: {
+            onReady: (event: any) => {
+              setIsPlayerReady(true);
+              if (isMuted) event.target.mute();
+              syncLiveTrackInfo(event.target);
+              if (isPlayingRef.current) {
+                executePlayTrack(currentTrackIndexRef.current, true);
+              }
+            },
+            onStateChange: (event: any) => {
+              syncLiveTrackInfo(event.target);
+              // 1 = playing, 2 = paused, 0 = ended, 3 = buffering
+              if (event.data === 1) {
+                isSwitchingTrackRef.current = false;
+                if (!isPlayingRef.current) {
+                  onPlayPauseToggle(true);
+                }
+              } else if (event.data === 2) {
+                // Only register pause if we're not actively transitioning tracks
+                if (!isSwitchingTrackRef.current && isPlayingRef.current) {
+                  onPlayPauseToggle(false);
+                }
+              } else if (event.data === 0) {
+                handleTrackEnded();
+              }
+            }
+          }
+        });
+      } catch (err) {
+        console.warn('YT Player init error:', err);
+      }
+    };
+
+    if (window.YT && window.YT.Player) {
+      initPlayer();
+    } else {
+      if (!document.getElementById('youtube-iframe-api-script')) {
+        const tag = document.createElement('script');
+        tag.id = 'youtube-iframe-api-script';
+        tag.src = 'https://www.youtube.com/iframe_api';
+        tag.async = true;
+        document.head.appendChild(tag);
+      }
+      const existingCallback = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        if (typeof existingCallback === 'function') existingCallback();
+        initPlayer();
+      };
+    }
+
+    return () => {
+      if (switchingTimeoutRef.current) clearTimeout(switchingTimeoutRef.current);
+    };
+  }, []);
+
+  // Fetch live playlist tracks dynamically from backend API
   const fetchLivePlaylist = async () => {
     setIsLoadingSongs(true);
     let success = false;
 
-    // Tier 1: Try full-stack Express API route (supports full pagination > 100 songs)
+    // Tier 1: Try full-stack Express API route
     try {
       const res = await fetch(`/api/playlist?list=${playlistId}&t=${Date.now()}`);
       const contentType = res.headers.get('content-type') || '';
@@ -114,6 +227,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
               return {
                 id: videoId,
                 videoId: videoId,
+                youtubeId: videoId,
                 title: item.title || 'छठ महापर्व गीत',
                 artist: item.author || 'छठ महापर्व लोकगायक',
                 tag: 'लाइव प्लेलिस्ट गीत',
@@ -122,7 +236,6 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
             }).filter((s: any) => s.id && s.title);
 
             if (mappedSongs.length > 0) {
-              // Merge with pre-seeded 19 songs to preserve the complete list
               const existingIds = new Set(mappedSongs.map((s: any) => s.id));
               const missingSeedSongs = CHHATH_SONGS.filter((s: any) => !existingIds.has(s.id));
               const fullPlaylist = [...mappedSongs, ...missingSeedSongs];
@@ -146,18 +259,17 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
   }, []);
 
   // Synchronize track change in YouTube Player when currentTrackIndex changes externally
+  const prevTrackIndexRef = useRef<number>(currentTrackIndex);
   useEffect(() => {
-    if (playerRef.current && typeof playerRef.current.playVideoAt === 'function') {
-      try {
-        const playerCurrentIndex = typeof playerRef.current.getPlaylistIndex === 'function' ? playerRef.current.getPlaylistIndex() : -1;
-        if (playerCurrentIndex !== currentTrackIndex && currentTrackIndex >= 0) {
-          playerRef.current.playVideoAt(currentTrackIndex);
-        }
-      } catch (e) {}
+    if (prevTrackIndexRef.current !== currentTrackIndex) {
+      prevTrackIndexRef.current = currentTrackIndex;
+      if (isPlaying) {
+        executePlayTrack(currentTrackIndex, true);
+      }
     }
-  }, [currentTrackIndex]);
+  }, [currentTrackIndex, isPlaying]);
 
-  // Helper to extract live track information from YouTube Iframe and update progress
+  // Helper to extract live track information and update progress
   const syncLiveTrackInfo = (player: any) => {
     if (!player) return;
     try {
@@ -168,13 +280,6 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
             title: data.title || '',
             author: data.author || ''
           });
-        }
-      }
-
-      if (typeof player.getPlaylistIndex === 'function') {
-        const pIdx = player.getPlaylistIndex();
-        if (typeof pIdx === 'number' && pIdx >= 0 && pIdx !== currentTrackIndexRef.current) {
-          onTrackChange(pIdx % (playlistSongsRef.current.length || 1));
         }
       }
 
@@ -191,81 +296,6 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
     }
   };
 
-  // Initialize YouTube Iframe API on-demand when playback is initiated
-  const ensureYouTubeLoaded = (autoPlayTrackIndex?: number) => {
-    const initPlayer = () => {
-      if (!window.YT || !window.YT.Player || !playerContainerRef.current) return;
-      if (!playerRef.current) {
-        playerRef.current = new window.YT.Player('yt-hidden-player', {
-          height: '200',
-          width: '200',
-          playerVars: {
-            listType: 'playlist',
-            list: playlistId,
-            autoplay: typeof autoPlayTrackIndex === 'number' ? 1 : 0,
-            controls: 1,
-            enablejsapi: 1,
-            origin: typeof window !== 'undefined' ? window.location.origin : '',
-            playsinline: 1,
-            rel: 0
-          },
-          events: {
-            onReady: (event: any) => {
-              if (isMuted) event.target.mute();
-              syncLiveTrackInfo(event.target);
-              if (typeof autoPlayTrackIndex === 'number' && autoPlayTrackIndex >= 0) {
-                try {
-                  event.target.playVideoAt(autoPlayTrackIndex);
-                } catch (e) {}
-              }
-            },
-            onStateChange: (event: any) => {
-              syncLiveTrackInfo(event.target);
-              // 1 = playing, 2 = paused, 0 = ended, 3 = buffering
-              if (event.data === 1 && !isPlayingRef.current) {
-                onPlayPauseToggle();
-              } else if (event.data === 2 && isPlayingRef.current) {
-                onPlayPauseToggle();
-              } else if (event.data === 0) {
-                handleTrackEnded();
-              }
-            }
-          }
-        });
-      } else if (typeof autoPlayTrackIndex === 'number') {
-        try {
-          if (typeof playerRef.current.playVideoAt === 'function') {
-            playerRef.current.playVideoAt(autoPlayTrackIndex);
-          }
-        } catch (e) {}
-      }
-    };
-
-    if (window.YT && window.YT.Player) {
-      initPlayer();
-    } else {
-      if (!document.getElementById('youtube-iframe-api-script')) {
-        const tag = document.createElement('script');
-        tag.id = 'youtube-iframe-api-script';
-        tag.src = 'https://www.youtube.com/iframe_api';
-        tag.async = true;
-        document.head.appendChild(tag);
-      }
-      const existingCallback = window.onYouTubeIframeAPIReady;
-      window.onYouTubeIframeAPIReady = () => {
-        if (typeof existingCallback === 'function') existingCallback();
-        initPlayer();
-      };
-    }
-  };
-
-  // If isPlaying is triggered externally, make sure YouTube player is initialized
-  useEffect(() => {
-    if (isPlaying) {
-      ensureYouTubeLoaded(currentTrackIndex);
-    }
-  }, [isPlaying, currentTrackIndex]);
-
   // Interval for updating progress and info when playing
   useEffect(() => {
     let interval: any;
@@ -274,7 +304,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
         if (playerRef.current) {
           syncLiveTrackInfo(playerRef.current);
         }
-      }, 800);
+      }, 500);
     }
 
     return () => {
@@ -300,11 +330,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
     const currentMode = repeatModeRef.current;
     if (currentMode === 'one') {
       // Repeat the exact same song
-      if (playerRef.current && typeof playerRef.current.seekTo === 'function') {
-        playerRef.current.seekTo(0, true);
-        playerRef.current.playVideo();
-      }
-      setProgress(0);
+      handleReplay();
     } else if (currentMode === 'all') {
       // Repeat whole playlist / go to next
       handleNext();
@@ -314,7 +340,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
       if (currentTrackIndexRef.current < total - 1) {
         handleNext();
       } else {
-        if (isPlaying) onPlayPauseToggle();
+        onPlayPauseToggle(false);
       }
     }
   };
@@ -328,70 +354,69 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
     });
   };
 
-  // Sync state with YouTube player with immediate direct command execution
-  const togglePlay = () => {
+  // Replay current song from 0:00
+  const handleReplay = () => {
+    setProgress(0);
     if (playerRef.current) {
       try {
-        if (isPlaying) {
-          if (typeof playerRef.current.pauseVideo === 'function') {
-            playerRef.current.pauseVideo();
-          }
-        } else {
+        if (typeof playerRef.current.seekTo === 'function') {
+          playerRef.current.seekTo(0, true);
+        }
+        if (typeof playerRef.current.playVideo === 'function') {
+          playerRef.current.playVideo();
+        }
+      } catch (e) {
+        console.warn('Replay error:', e);
+      }
+    }
+    if (!isPlaying) {
+      onPlayPauseToggle(true);
+    }
+  };
+
+  // Direct 1-press Play / Pause toggle
+  const togglePlay = () => {
+    const nextPlayState = !isPlaying;
+    if (playerRef.current) {
+      try {
+        if (nextPlayState) {
           if (typeof playerRef.current.playVideo === 'function') {
             playerRef.current.playVideo();
-          } else if (typeof playerRef.current.playVideoAt === 'function') {
-            playerRef.current.playVideoAt(currentTrackIndex);
+          } else {
+            executePlayTrack(currentTrackIndex, true);
+          }
+        } else {
+          if (typeof playerRef.current.pauseVideo === 'function') {
+            playerRef.current.pauseVideo();
           }
         }
       } catch (e) {
         console.warn('YT player toggle error:', e);
       }
+    } else {
+      executePlayTrack(currentTrackIndex, true);
     }
-    onPlayPauseToggle();
+    onPlayPauseToggle(nextPlayState);
   };
 
+  // Next track with instant responsive playback
   const handleNext = () => {
     const total = playlistSongs.length || 1;
     const nextIndex = (currentTrackIndex + 1) % total;
     onTrackChange(nextIndex);
     setProgress(0);
-    if (!isPlaying) onPlayPauseToggle();
-    if (playerRef.current) {
-      try {
-        if (typeof playerRef.current.playVideoAt === 'function') {
-          playerRef.current.playVideoAt(nextIndex);
-        } else if (typeof playerRef.current.nextVideo === 'function') {
-          playerRef.current.nextVideo();
-        }
-        if (typeof playerRef.current.playVideo === 'function') {
-          playerRef.current.playVideo();
-        }
-      } catch (e) {
-        console.warn('Next track error:', e);
-      }
-    }
+    executePlayTrack(nextIndex, true);
+    if (!isPlaying) onPlayPauseToggle(true);
   };
 
+  // Previous track with instant responsive playback
   const handlePrev = () => {
     const total = playlistSongs.length || 1;
     const prevIndex = (currentTrackIndex - 1 + total) % total;
     onTrackChange(prevIndex);
     setProgress(0);
-    if (!isPlaying) onPlayPauseToggle();
-    if (playerRef.current) {
-      try {
-        if (typeof playerRef.current.playVideoAt === 'function') {
-          playerRef.current.playVideoAt(prevIndex);
-        } else if (typeof playerRef.current.previousVideo === 'function') {
-          playerRef.current.previousVideo();
-        }
-        if (typeof playerRef.current.playVideo === 'function') {
-          playerRef.current.playVideo();
-        }
-      } catch (e) {
-        console.warn('Prev track error:', e);
-      }
-    }
+    executePlayTrack(prevIndex, true);
+    if (!isPlaying) onPlayPauseToggle(true);
   };
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -416,12 +441,8 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
   const handleSelectTrack = (idx: number) => {
     onTrackChange(idx);
     setProgress(0);
-    if (playerRef.current && typeof playerRef.current.playVideoAt === 'function') {
-      try {
-        playerRef.current.playVideoAt(idx);
-      } catch (e) {}
-    }
-    if (!isPlaying) onPlayPauseToggle();
+    executePlayTrack(idx, true);
+    if (!isPlaying) onPlayPauseToggle(true);
   };
 
   return (
@@ -573,17 +594,17 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Hidden YouTube Iframe for Background Playback - placed offscreen to prevent mobile browser throttling */}
+      {/* Hidden YouTube Iframe for Background Playback - placed safely inside DOM viewport to prevent mobile power-saving throttling */}
       <div
         ref={playerContainerRef}
-        className="fixed -left-[9999px] -top-[9999px] w-[200px] h-[200px] pointer-events-none opacity-0 overflow-hidden"
+        className="fixed bottom-0 right-0 w-[2px] h-[2px] opacity-[0.01] pointer-events-none overflow-hidden z-[-1]"
         aria-hidden="true"
       >
         <div id="yt-hidden-player" />
       </div>
 
       {/* Main Glassmorphism Player Bar */}
-      <div className="glass-player rounded-2xl md:rounded-3xl p-3 md:p-4 border border-[#F28C28]/40 shadow-2xl relative overflow-hidden backdrop-blur-2xl">
+      <div className="glass-player rounded-2xl md:rounded-3xl p-2.5 sm:p-3 md:p-4 border border-[#F28C28]/40 shadow-2xl relative overflow-hidden backdrop-blur-2xl">
         {/* Glow backdrop based on play state */}
         <div
           className={`absolute -right-20 -top-20 w-48 h-48 rounded-full blur-3xl pointer-events-none transition-opacity duration-700 ${
@@ -594,7 +615,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
         {/* Top Mini Progress Bar (Seekable) */}
         <div
           onClick={handleSeek}
-          className="group relative w-full h-1.5 md:h-2 bg-black/60 rounded-full overflow-hidden cursor-pointer mb-3"
+          className="group relative w-full h-1.5 md:h-2 bg-black/60 rounded-full overflow-hidden cursor-pointer mb-2.5 sm:mb-3"
           title="Seek playback"
         >
           <div
@@ -608,18 +629,18 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
         </div>
 
         {/* Player Controls Grid */}
-        <div className="flex items-center justify-between gap-3 md:gap-6">
+        <div className="flex items-center justify-between gap-2 sm:gap-3 md:gap-6">
           {/* Left: Track Info & Rotating Vinyl */}
-          <div className="flex items-center gap-3 min-w-0 flex-1">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             {/* Spinning Golden Chakra / Disc */}
             <div className="relative shrink-0">
               <motion.div
                 animate={isPlaying ? { rotate: 360 } : { rotate: 0 }}
                 transition={{ duration: 8, repeat: isPlaying ? Infinity : 0, ease: 'linear' }}
-                className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-[#4a1f0a] via-[#9B3D12] to-[#F28C28] border-2 border-[#F28C28] shadow-md flex items-center justify-center text-[#FFF5E1] font-bold cursor-pointer"
+                className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-[#4a1f0a] via-[#9B3D12] to-[#F28C28] border-2 border-[#F28C28] shadow-md flex items-center justify-center text-[#FFF5E1] font-bold cursor-pointer active:scale-90 transition-transform"
                 onClick={togglePlay}
               >
-                <Disc className="w-6 h-6 md:w-7 md:h-7 text-[#FFF5E1]" />
+                <Disc className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 text-[#FFF5E1]" />
               </motion.div>
               {isPlaying && (
                 <span className="absolute -bottom-1 -right-1 flex h-3 w-3">
@@ -631,15 +652,15 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
 
             {/* Title, Artist, Lyrics Highlight */}
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-xs md:text-sm font-devanagari font-bold text-[#FFF5E1] truncate tracking-wide">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="text-xs sm:text-sm font-devanagari font-bold text-[#FFF5E1] truncate tracking-wide">
                   {liveTrackData?.title || currentSong.title}
                 </span>
-                <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-black/50 text-[#F28C28] border border-[#F28C28]/30 text-[10px] font-bold shrink-0">
+                <span className="hidden md:inline-block px-2 py-0.5 rounded-full bg-black/50 text-[#F28C28] border border-[#F28C28]/30 text-[10px] font-bold shrink-0">
                   {currentSong.tag || 'छठ महापर्व'}
                 </span>
               </div>
-              <p className="text-[11px] md:text-xs text-[#FFF5E1]/70 truncate font-sans">
+              <p className="text-[10px] sm:text-[11px] md:text-xs text-[#FFF5E1]/70 truncate font-sans">
                 {liveTrackData?.author || currentSong.artist}
               </p>
               {/* Lyrics Snippet on larger screens */}
@@ -652,19 +673,19 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
           </div>
 
           {/* Center: Audio Reactive Visualizer & Playback Controls */}
-          <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2.5 shrink-0">
             {/* Audio Wave Visualizer Bars */}
-            <div className="hidden sm:flex items-end gap-0.5 h-6 px-2">
-              {[...Array(7)].map((_, i) => (
+            <div className="hidden lg:flex items-end gap-0.5 h-6 px-1.5">
+              {[...Array(6)].map((_, i) => (
                 <motion.div
                   key={i}
                   animate={
                     isPlaying
-                      ? { height: [4, 18 + (i % 3) * 6, 8, 22, 6] }
+                      ? { height: [4, 16 + (i % 3) * 5, 6, 20, 4] }
                       : { height: 4 }
                   }
                   transition={{
-                    duration: 0.8 + (i % 4) * 0.2,
+                    duration: 0.8 + (i % 3) * 0.2,
                     repeat: isPlaying ? Infinity : 0,
                     ease: 'easeInOut'
                   }}
@@ -673,11 +694,21 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
               ))}
             </div>
 
-            {/* Repeat Mode Button */}
+            {/* Replay / Restart Current Track from 0:00 */}
+            <button
+              id="music-replay-btn"
+              onClick={handleReplay}
+              className="p-2 sm:p-2.5 rounded-full text-[#FFF5E1]/70 hover:text-[#FFF5E1] hover:bg-black/30 active:scale-90 active:bg-[#F28C28]/20 transition-all cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
+              title={isHindi ? 'वर्तमान गीत शुरू से बजाएं (Replay from start)' : 'Replay from 0:00'}
+            >
+              <RotateCcw className="w-4 h-4 md:w-4.5 md:h-4.5" />
+            </button>
+
+            {/* Repeat Mode Button (Repeat 1 / Repeat All / Off) */}
             <button
               id="music-repeat-btn"
               onClick={cycleRepeatMode}
-              className={`p-2 rounded-full transition-all cursor-pointer relative ${
+              className={`p-2 sm:p-2.5 rounded-full transition-all cursor-pointer relative min-w-[38px] min-h-[38px] flex items-center justify-center active:scale-90 ${
                 repeatMode === 'one'
                   ? 'bg-[#E34234]/30 text-[#E34234] border border-[#E34234]'
                   : repeatMode === 'all'
@@ -693,9 +724,9 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
               }
             >
               {repeatMode === 'one' ? (
-                <Repeat1 className="w-4 h-4 md:w-5 md:h-5 text-[#E34234]" />
+                <Repeat1 className="w-4 h-4 md:w-4.5 md:h-4.5 text-[#E34234]" />
               ) : (
-                <Repeat className="w-4 h-4 md:w-5 md:h-5" />
+                <Repeat className="w-4 h-4 md:w-4.5 md:h-4.5" />
               )}
             </button>
 
@@ -703,23 +734,23 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
             <button
               id="music-prev-btn"
               onClick={handlePrev}
-              className="p-2 rounded-full text-[#FFF5E1] hover:text-[#F28C28] hover:bg-black/30 transition-all cursor-pointer"
-              title="Previous Track"
+              className="p-2 sm:p-2.5 rounded-full text-[#FFF5E1] hover:text-[#F28C28] hover:bg-black/30 active:scale-90 active:bg-[#F28C28]/20 transition-all cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
+              title={isHindi ? 'पिछला गीत (Previous Track)' : 'Previous Track'}
             >
-              <SkipBack className="w-4 h-4 md:w-5 md:h-5" />
+              <SkipBack className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
             </button>
 
-            {/* Play/Pause Main Button */}
+            {/* Play/Pause Main Button - Large 1-Tap Touch Target */}
             <button
               id="music-play-pause-btn"
               onClick={togglePlay}
-              className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-tr from-[#F28C28] via-[#FFD700] to-[#9B3D12] text-[#2D1B0D] flex items-center justify-center shadow-lg shadow-black/60 hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-[#FFF5E1]/70"
-              title={isPlaying ? 'Pause' : 'Play Sacred Melodies'}
+              className="w-11 h-11 sm:w-12 sm:h-12 md:w-13 md:h-13 rounded-full bg-gradient-to-tr from-[#F28C28] via-[#FFD700] to-[#9B3D12] text-[#2D1B0D] flex items-center justify-center shadow-lg shadow-black/60 hover:scale-105 active:scale-90 transition-all cursor-pointer border-2 border-[#FFF5E1]/80 shrink-0"
+              title={isPlaying ? (isHindi ? 'रोकें (Pause)' : 'Pause') : (isHindi ? 'चलाएं (Play Sacred Melodies)' : 'Play')}
             >
               {isPlaying ? (
-                <Pause className="w-5 h-5 md:w-6 md:h-6 fill-current" />
+                <Pause className="w-5 h-5 sm:w-6 sm:h-6 fill-current" />
               ) : (
-                <Play className="w-5 h-5 md:w-6 md:h-6 fill-current translate-x-0.5" />
+                <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current translate-x-0.5" />
               )}
             </button>
 
@@ -727,19 +758,19 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
             <button
               id="music-next-btn"
               onClick={handleNext}
-              className="p-2 rounded-full text-[#FFF5E1] hover:text-[#F28C28] hover:bg-black/30 transition-all cursor-pointer"
-              title="Next Track"
+              className="p-2 sm:p-2.5 rounded-full text-[#FFF5E1] hover:text-[#F28C28] hover:bg-black/30 active:scale-90 active:bg-[#F28C28]/20 transition-all cursor-pointer min-w-[38px] min-h-[38px] flex items-center justify-center"
+              title={isHindi ? 'अगला गीत (Next Track)' : 'Next Track'}
             >
-              <SkipForward className="w-4 h-4 md:w-5 md:h-5" />
+              <SkipForward className="w-4 h-4 sm:w-5 sm:h-5 fill-current" />
             </button>
           </div>
 
-          {/* Right: Playlist Toggle & YouTube Video Toggle */}
-          <div className="flex items-center gap-1.5 md:gap-2 shrink-0 font-sans">
+          {/* Right: Playlist Toggle */}
+          <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0 font-sans">
             <button
               id="music-playlist-toggle-btn"
               onClick={() => setShowPlaylist(!showPlaylist)}
-              className={`p-2 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`p-2 sm:p-2.5 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 active:scale-90 min-h-[38px] ${
                 showPlaylist
                   ? 'bg-[#F28C28]/30 border-[#F28C28] text-[#FFF5E1]'
                   : 'bg-black/40 border-[#F28C28]/30 text-[#F28C28] hover:bg-black/60'
@@ -747,7 +778,7 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
               title="View all Chhath songs & playlist"
             >
               <ListMusic className="w-4 h-4" />
-              <span className="text-xs font-bold hidden md:inline">{isHindi ? 'गीत माला' : 'Sacred Playlist'}</span>
+              <span className="text-xs font-bold hidden sm:inline">{isHindi ? 'गीत माला' : 'Playlist'}</span>
               {showPlaylist ? (
                 <ChevronDown className="w-3 h-3" />
               ) : (
