@@ -817,24 +817,6 @@ Ugi hey dinanath`,
     "festivalPhase": "all"
   },
   {
-    "id": "MyidNZdmxKQ",
-    "title": "Piya More Banale Khevaiya [Full Song] Kosi Ke Deeyana- Chhath Geet",
-    "singer": "T-Series Regional",
-    "artist": "T-Series Regional",
-    "era": "Chhath Mahaparv Folk",
-    "duration": "6 लाख व्यू",
-    "youtubeId": "MyidNZdmxKQ",
-    "lyricsHighlight": "Piya More Banale Khevaiya [Full Song] Kosi Ke Deeyana- Chhath Geet",
-    "lyricsSnippetHindi": "Piya More Banale Khevaiya [Full Song] Kosi Ke Deeyana- Chhath Geet",
-    "lyricsSnippetEnglish": "Sacred folk hymn honoring Chhathi Maiya and Lord Surya.",
-    "meaning": "छठ महापर्व की महिमा, सूर्यदेव व छठी मइया के प्रति अगाध श्रद्धा और लोक आस्था का पावन लोकगीत।",
-    "tag": "लाइव प्लेलिस्ट गीत",
-    "category": "bhojpuri_folk",
-    "culturalContext": "छठ महापर्व के पावन चार दिनों के अनुष्ठान व गंगा घाट की आध्यात्मिक ऊर्जा का लोकगीत।",
-    "whenSung": "छठ पूजा के पावन अनुष्ठान, अर्घ्य व घाट यात्रा के समय",
-    "festivalPhase": "all"
-  },
-  {
     "id": "y7hrM7PouQM",
     "title": "SHARDA SINHA |🙏शारदा सिन्हा🙏 | Kelwa Ke Paat Par  with Lyrics | Kelva Ke Paat Par🙏🙏 | Lyrical Video",
     "singer": "T-Series Bhakti Sagar",
@@ -2710,4 +2692,8 @@ export const CULTURAL_ARTIFACTS: CulturalArtifact[] = [
     badge: 'Ancient Tradition'
   }
 ];
+
+export const EXCLUDED_SONG_IDS = new Set<string>([
+  'MyidNZdmxKQ' // Piya More Banale Khevaiya [Full Song] Kosi Ke Deeyana- Chhath Geet
+]);
 

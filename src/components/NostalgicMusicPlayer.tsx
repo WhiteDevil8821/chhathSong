@@ -19,7 +19,7 @@ import {
   Radio
 } from 'lucide-react';
 import { ChhathSong } from '../types';
-import { CHHATH_SONGS } from '../data/chhathData';
+import { CHHATH_SONGS, EXCLUDED_SONG_IDS } from '../data/chhathData';
 import { useLanguage } from '../context/LanguageContext';
 
 declare global {
@@ -201,9 +201,16 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
       if (res.ok && contentType.includes('application/json')) {
         const data = await res.json();
         if (data && Array.isArray(data.songs) && data.songs.length > 0) {
-          setPlaylistSongs(data.songs);
+          const filteredSongs = data.songs.filter(
+            (s: any) =>
+              !EXCLUDED_SONG_IDS.has(s.id) &&
+              !EXCLUDED_SONG_IDS.has(s.videoId) &&
+              !EXCLUDED_SONG_IDS.has(s.youtubeId) &&
+              !s.title?.toLowerCase().includes('piya more banale khevaiya')
+          );
+          setPlaylistSongs(filteredSongs);
           setLastSyncedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-          if (onSongsLoaded) onSongsLoaded(data.songs);
+          if (onSongsLoaded) onSongsLoaded(filteredSongs);
           success = true;
         }
       }
@@ -233,12 +240,24 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
                 tag: 'लाइव प्लेलिस्ट गीत',
                 duration: 'Chhath Folk'
               };
-            }).filter((s: any) => s.id && s.title);
+            }).filter(
+              (s: any) =>
+                s.id &&
+                s.title &&
+                !EXCLUDED_SONG_IDS.has(s.id) &&
+                !EXCLUDED_SONG_IDS.has(s.videoId) &&
+                !s.title?.toLowerCase().includes('piya more banale khevaiya')
+            );
 
             if (mappedSongs.length > 0) {
               const existingIds = new Set(mappedSongs.map((s: any) => s.id));
               const missingSeedSongs = CHHATH_SONGS.filter((s: any) => !existingIds.has(s.id));
-              const fullPlaylist = [...mappedSongs, ...missingSeedSongs];
+              const fullPlaylist = [...mappedSongs, ...missingSeedSongs].filter(
+                (s: any) =>
+                  !EXCLUDED_SONG_IDS.has(s.id) &&
+                  !EXCLUDED_SONG_IDS.has(s.videoId) &&
+                  !s.title?.toLowerCase().includes('piya more banale khevaiya')
+              );
               setPlaylistSongs(fullPlaylist);
               setLastSyncedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
               if (onSongsLoaded) onSongsLoaded(fullPlaylist);

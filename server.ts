@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import compression from 'compression';
 import { createServer as createViteServer } from 'vite';
-import { CHHATH_SONGS } from './src/data/chhathData';
+import { CHHATH_SONGS, EXCLUDED_SONG_IDS } from './src/data/chhathData';
 import { getSongSlug, findSongBySlug } from './src/utils/songSlug';
 import {
   renderHomepageHtml,
@@ -85,7 +85,7 @@ async function startServer() {
         const rawAuthor = entry.match(/<author>[\s\S]*?<name>(.*?)<\/name>/)?.[1] || 'छठ महापर्व लोकगायक';
         const artist = decodeXml(rawAuthor);
 
-        if (videoId && title) {
+        if (videoId && title && !EXCLUDED_SONG_IDS.has(videoId)) {
           songs.push({
             id: videoId,
             videoId,
@@ -151,7 +151,7 @@ async function startServer() {
           const title = v.title?.runs?.[0]?.text || v.title?.simpleText || '';
           const author = v.shortBylineText?.runs?.[0]?.text || '';
           const duration = v.lengthText?.simpleText || 'Chhath Folk';
-          if (videoId && title && !seenIds.has(videoId)) {
+          if (videoId && title && !seenIds.has(videoId) && !EXCLUDED_SONG_IDS.has(videoId)) {
             seenIds.add(videoId);
             songs.push({
               id: videoId,
@@ -191,7 +191,7 @@ async function startServer() {
             if (idMatch) videoId = idMatch[1];
           }
 
-          if (title && videoId && !seenIds.has(videoId)) {
+          if (title && videoId && !seenIds.has(videoId) && !EXCLUDED_SONG_IDS.has(videoId)) {
             seenIds.add(videoId);
             songs.push({
               id: videoId,
