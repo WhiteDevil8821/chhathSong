@@ -46,7 +46,7 @@ import { LiveDevoteesCounter } from './components/LiveDevoteesCounter';
 import { UpiSupportModal } from './components/UpiSupportModal';
 import { soundSynth } from './utils/soundSynthesizer';
 import { useLanguage } from './context/LanguageContext';
-import { CHHATH_SONGS } from './data/chhathData';
+import { CHHATH_SONGS, EXCLUDED_SONG_IDS } from './data/chhathData';
 import { ChhathSong } from './types';
 import { getSongSlug, getSongPath, findSongBySlug } from './utils/songSlug';
 import { Analytics } from '@vercel/analytics/react';
@@ -236,7 +236,18 @@ export default function App() {
       };
     });
 
-    setAllSongs(merged);
+    const seenIds = new Set(merged.map(s => s.id || s.youtubeId));
+    const baseUnseen = CHHATH_SONGS.filter(
+      s =>
+        !seenIds.has(s.id) &&
+        !seenIds.has(s.youtubeId || '') &&
+        !EXCLUDED_SONG_IDS.has(s.id) &&
+        !EXCLUDED_SONG_IDS.has(s.youtubeId || '') &&
+        !s.title?.toLowerCase().includes('piya more banale khevaiya')
+    );
+    const completeMerged = [...merged, ...baseUnseen];
+
+    setAllSongs(completeMerged);
   };
 
   const handlePlayPauseToggle = (forceState?: boolean) => {
@@ -736,9 +747,29 @@ export default function App() {
             {/* 6. Comprehensive Chhath 2026 Guide & Vidhi Hub */}
             <div id="chhath-guide-section">
               <ChhathGuide2026
-                onExploreSongs={() => navigateTo('/songs')}
+                onExploreSongs={() => {
+                  const el = document.getElementById('all-chhath-songs-directory');
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                  } else {
+                    navigateTo('/songs');
+                  }
+                }}
               />
             </div>
+
+            {/* 7. Comprehensive Chhath Geet Collection (All 106 Songs) */}
+            <section id="all-chhath-songs-directory" aria-label="All Chhath Songs Directory">
+              <SongDirectory
+                songs={allSongs}
+                currentSong={currentSong}
+                isPlaying={isPlaying}
+                onPlaySong={handlePlaySongFromDirectory}
+                onOpenSongDetail={handleOpenSongDetail}
+                onNavigateToSong={(s) => navigateTo(getSongPath(s))}
+                onBackToHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              />
+            </section>
 
             {/* 8. Emotional Nostalgia, Train Journey & Community Unity */}
             <section aria-label="Bihari Diaspora Memories">

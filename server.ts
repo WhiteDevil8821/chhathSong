@@ -448,14 +448,29 @@ async function startServer() {
     }
 
     try {
-      // 1. Try HTML page extraction first (fetches all 19 songs)
+      // Base curated songs (excluding any excluded songs)
+      const baseSongs = CHHATH_SONGS.filter(
+        (s) =>
+          !EXCLUDED_SONG_IDS.has(s.id) &&
+          !EXCLUDED_SONG_IDS.has(s.youtubeId || '') &&
+          !s.title?.toLowerCase().includes('piya more banale khevaiya')
+      );
+
+      // 1. Try HTML page extraction first
       const pageSongs = await fetchYouTubeWebPage(playlistId);
       if (pageSongs && pageSongs.length > 0) {
+        // Merge pageSongs with baseSongs ensuring all 106 songs are preserved
+        const seenIds = new Set(pageSongs.map((s) => s.id || s.videoId));
+        const mergedSongs = [
+          ...pageSongs,
+          ...baseSongs.filter((s) => !seenIds.has(s.id) && !seenIds.has(s.youtubeId || ''))
+        ];
+
         const payload = {
           source: 'youtube-web',
           playlistId,
-          count: pageSongs.length,
-          songs: pageSongs
+          count: mergedSongs.length,
+          songs: mergedSongs
         };
         playlistCache[playlistId] = { timestamp: now, data: payload };
         res.setHeader('Cache-Control', 'public, max-age=30');
@@ -465,28 +480,43 @@ async function startServer() {
       // 2. Fallback to XML RSS feed if web page extraction fails
       const feedSongs = await fetchYouTubeFeed(playlistId);
       if (feedSongs && feedSongs.length > 0) {
+        const seenIds = new Set(feedSongs.map((s) => s.id || s.videoId));
+        const mergedSongs = [
+          ...feedSongs,
+          ...baseSongs.filter((s) => !seenIds.has(s.id) && !seenIds.has(s.youtubeId || ''))
+        ];
+
         const payload = {
           source: 'youtube-feed',
           playlistId,
-          count: feedSongs.length,
-          songs: feedSongs
+          count: mergedSongs.length,
+          songs: mergedSongs
         };
         playlistCache[playlistId] = { timestamp: now, data: payload };
         res.setHeader('Cache-Control', 'public, max-age=30');
         return res.json(payload);
       }
 
-      return res.json({
-        source: 'empty',
+      // 3. Fallback to full base curated collection (never empty, all 106 songs)
+      const payload = {
+        source: 'curated-cache',
         playlistId,
-        count: 0,
-        songs: []
-      });
+        count: baseSongs.length,
+        songs: baseSongs
+      };
+      return res.json(payload);
     } catch (e: any) {
-      res.status(500).json({
-        error: 'Failed to fetch playlist',
-        message: e?.message || String(e),
-        songs: []
+      const baseSongs = CHHATH_SONGS.filter(
+        (s) =>
+          !EXCLUDED_SONG_IDS.has(s.id) &&
+          !EXCLUDED_SONG_IDS.has(s.youtubeId || '') &&
+          !s.title?.toLowerCase().includes('piya more banale khevaiya')
+      );
+      res.json({
+        source: 'fallback',
+        playlistId,
+        count: baseSongs.length,
+        songs: baseSongs
       });
     }
   });

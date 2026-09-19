@@ -201,16 +201,46 @@ export const NostalgicMusicPlayer: React.FC<NostalgicMusicPlayerProps> = ({
       if (res.ok && contentType.includes('application/json')) {
         const data = await res.json();
         if (data && Array.isArray(data.songs) && data.songs.length > 0) {
-          const filteredSongs = data.songs.filter(
-            (s: any) =>
+          const seedSongMap = new Map(CHHATH_SONGS.map((s) => [s.id, s]));
+          const baseSongs = CHHATH_SONGS.filter(
+            (s) =>
               !EXCLUDED_SONG_IDS.has(s.id) &&
-              !EXCLUDED_SONG_IDS.has(s.videoId) &&
-              !EXCLUDED_SONG_IDS.has(s.youtubeId) &&
+              !EXCLUDED_SONG_IDS.has(s.youtubeId || '') &&
               !s.title?.toLowerCase().includes('piya more banale khevaiya')
           );
-          setPlaylistSongs(filteredSongs);
+
+          const filteredSongs = data.songs
+            .filter(
+              (s: any) =>
+                !EXCLUDED_SONG_IDS.has(s.id) &&
+                !EXCLUDED_SONG_IDS.has(s.videoId) &&
+                !EXCLUDED_SONG_IDS.has(s.youtubeId) &&
+                !s.title?.toLowerCase().includes('piya more banale khevaiya')
+            )
+            .map((s: any) => {
+              const seed = seedSongMap.get(s.id) || seedSongMap.get(s.videoId) || seedSongMap.get(s.youtubeId);
+              if (seed) {
+                return {
+                  ...s,
+                  ...seed,
+                  lyrics: seed.lyrics || s.lyrics,
+                  lyricsHighlight: seed.lyricsHighlight || s.lyricsHighlight,
+                  lyricsSnippetHindi: seed.lyricsSnippetHindi || s.lyricsSnippetHindi,
+                  meaning: seed.meaning || s.meaning,
+                  culturalContext: seed.culturalContext || s.culturalContext
+                };
+              }
+              return s;
+            });
+
+          // Always ensure all 106 curated songs are retained!
+          const liveIds = new Set(filteredSongs.map((s: any) => s.id || s.videoId || s.youtubeId));
+          const missingBase = baseSongs.filter((s) => !liveIds.has(s.id) && !liveIds.has(s.youtubeId));
+          const completePlaylist = [...filteredSongs, ...missingBase];
+
+          setPlaylistSongs(completePlaylist);
           setLastSyncedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-          if (onSongsLoaded) onSongsLoaded(filteredSongs);
+          if (onSongsLoaded) onSongsLoaded(completePlaylist);
           success = true;
         }
       }
