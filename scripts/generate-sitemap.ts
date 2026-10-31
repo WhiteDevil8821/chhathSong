@@ -5,6 +5,8 @@ import { getSongSlug } from '../src/utils/songSlug';
 
 export function generateSitemapXml(): string {
   const canonicalBaseUrl = 'https://www.chhathsong.in';
+  const today = new Date().toISOString().split('T')[0];
+
   const publicRoutes = [
     { path: '/', priority: '1.0', changefreq: 'daily' },
     { path: '/songs', priority: '0.9', changefreq: 'daily' },
@@ -18,7 +20,7 @@ export function generateSitemapXml(): string {
   const xmlUrls = publicRoutes
     .map(
       (route) =>
-        `  <url>\n    <loc>${canonicalBaseUrl}${route.path}</loc>\n    <changefreq>${route.changefreq}</changefreq>\n    <priority>${route.priority}</priority>\n  </url>`
+        `  <url>\n    <loc>${canonicalBaseUrl}${route.path}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${route.changefreq}</changefreq>\n    <priority>${route.priority}</priority>\n  </url>`
     )
     .join('\n');
 
@@ -37,4 +39,4 @@ if (fs.existsSync(distDir)) {
   fs.writeFileSync(path.join(distDir, 'sitemap.xml'), sitemapContent, 'utf-8');
 }
 
-console.log(`Successfully generated sitemap with ${CHHATH_SONGS.length + 2} total URLs.`);
+console.log(`Successfully generated sitemap with ${CHHATH_SONGS.length + 2} total URLs and lastmod timestamps.`);

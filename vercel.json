@@ -3,15 +3,7 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/songs/:slug*",
-      "destination": "/songs/:slug*"
-    },
-    {
-      "source": "/songs",
-      "destination": "/songs"
-    },
-    {
-      "source": "/(.*)",
+      "source": "/((?!assets/|favicon|site\\.webmanifest|robots\\.txt|sitemap\\.xml|llms\\.txt|ads\\.txt|api/).*)",
       "destination": "/index.html"
     }
   ],
@@ -34,7 +26,7 @@
       ]
     },
     {
-      "source": "/(sitemap.xml|robots.txt|llms.txt)",
+      "source": "/(sitemap.xml|robots.txt|llms.txt|ads.txt)",
       "headers": [
         {
           "key": "Cache-Control",

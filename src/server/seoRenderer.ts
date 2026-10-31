@@ -1,6 +1,6 @@
 import { CHHATH_SONGS } from '../data/chhathData';
 import { ChhathSong } from '../types';
-import { getSongSlug, getSongCanonicalUrl, findSongBySlug } from '../utils/songSlug';
+import { getSongSlug, getSongCanonicalUrl } from '../utils/songSlug';
 
 const CANONICAL_DOMAIN = 'https://www.chhathsong.in';
 
@@ -17,7 +17,7 @@ function escapeHtml(str: string): string {
 }
 
 /**
- * Replaces or injects head tags (title, description, canonical, OG, Twitter, JSON-LD) into the HTML template.
+ * Replaces or injects head tags (title, description, keywords, canonical, OG, Twitter, JSON-LD) into the HTML template.
  */
 function injectHeadMetadata(
   templateHtml: string,
@@ -25,6 +25,7 @@ function injectHeadMetadata(
     title: string;
     description: string;
     canonicalUrl: string;
+    keywords?: string;
     ogImage?: string;
     ogType?: string;
     jsonLd?: object[];
@@ -45,7 +46,17 @@ function injectHeadMetadata(
   const escapedDesc = escapeHtml(options.description);
   html = html.replace(/<meta name="description" content=".*?" \/>/i, `<meta name="description" content="${escapedDesc}" />`);
 
-  // 4. Replace or inject canonical link
+  // 4. Replace or inject meta name="keywords"
+  if (options.keywords) {
+    const escapedKw = escapeHtml(options.keywords);
+    if (/<meta\s+name=["']keywords["'][^>]*?>/i.test(html)) {
+      html = html.replace(/<meta\s+name=["']keywords["'][^>]*?>/i, `<meta name="keywords" content="${escapedKw}" />`);
+    } else {
+      html = html.replace('</head>', `  <meta name="keywords" content="${escapedKw}" />\n  </head>`);
+    }
+  }
+
+  // 5. Replace or inject canonical link
   const canonicalRegex = /<link\s+[^>]*?rel=["']canonical["'][^>]*?>/i;
   if (canonicalRegex.test(html)) {
     html = html.replace(canonicalRegex, `<link rel="canonical" href="${options.canonicalUrl}" />`);
@@ -53,7 +64,7 @@ function injectHeadMetadata(
     html = html.replace('</head>', `  <link rel="canonical" href="${options.canonicalUrl}" />\n  </head>`);
   }
 
-  // 5. Replace OpenGraph & Twitter tags
+  // 6. Replace OpenGraph & Twitter tags
   html = html.replace(/<meta\s+[^>]*?property=["']og:title["'][^>]*?>/i, `<meta property="og:title" content="${escapedTitle}" />`);
   html = html.replace(/<meta\s+[^>]*?property=["']og:description["'][^>]*?>/i, `<meta property="og:description" content="${escapedDesc}" />`);
   html = html.replace(/<meta\s+[^>]*?property=["']og:url["'][^>]*?>/i, `<meta property="og:url" content="${options.canonicalUrl}" />`);
@@ -70,7 +81,7 @@ function injectHeadMetadata(
     html = html.replace(/<meta\s+[^>]*?name=["']twitter:image["'][^>]*?>/i, `<meta name="twitter:image" content="${options.ogImage}" />`);
   }
 
-  // 6. Replace JSON-LD schema
+  // 7. Replace JSON-LD schema
   if (options.jsonLd && options.jsonLd.length > 0) {
     const jsonLdString = JSON.stringify(options.jsonLd.length === 1 ? options.jsonLd[0] : options.jsonLd);
     const scriptReplacement = `<script type="application/ld+json">\n${jsonLdString}\n    </script>`;
@@ -84,19 +95,29 @@ function injectHeadMetadata(
  * Generates crawl-ready pre-rendered HTML for the Homepage (/).
  */
 export function renderHomepageHtml(baseHtml: string): string {
-  const title = 'छठ पूजा 2026: अमर छठ गीत व सम्पूर्ण विधि | ChhathSong.in';
+  const title = 'Chhath Song 2026: 106+ अमर छठ गीत, शारदा सिन्हा Lyrics & सम्पूर्ण विधि | ChhathSong.in';
   const description =
-    'छठ पूजा 2026 के पावन अवसर पर सुनें 107+ अमर छठ गीत, शारदा सिन्हा के लोकगीत, सम्पूर्ण बोल (Lyrics), नहाय-खाय, खरना व अर्घ्य का शुभ मुहूर्त।';
+    'सुनें 106+ अमर Chhath Songs (छठ गीत), शारदा सिन्हा, पवन सिंह, अनुराधा पौडवाल व खेसारी लाल के पारंपरिक छठ भजन, सम्पूर्ण बोल (Lyrics), अर्घ्य मुहूर्त 2026 व पावन विधि | ChhathSong.in';
   const canonicalUrl = `${CANONICAL_DOMAIN}/`;
+  const keywords =
+    'chhath song, chhath songs, chhathsong, chhathsong.in, छठ गीत, छठ पूजा गीत, chhath geet, sharda sinha chhath geet, pawan singh chhath song, anuradha paudwal chhath geet, khesari lal chhath song, kelwa ke paat par, ho deenanath, kaanch hi baans ke bahangiya, ug ho surujdev, bihar chhath puja 2026, arghya timings, chhath puja song mp3 lyrics, marbo re sugwa dhanukh se';
 
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'ChhathSong.in',
-    alternateName: ['छठ पूजा 2026', 'Chhath: The Pride of Bihar', 'Chhath Mahaparv Songs'],
+    alternateName: ['Chhath Song', 'छठ गीत', 'Chhath Songs Collection', 'Chhath: The Pride of Bihar'],
     url: canonicalUrl,
     description: description,
     inLanguage: ['hi', 'en'],
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${CANONICAL_DOMAIN}/songs?q={search_term_string}`
+      },
+      'query-input': 'required name=search_term_string'
+    },
     author: {
       '@type': 'Person',
       name: 'Ankit Kumar',
@@ -110,22 +131,92 @@ export function renderHomepageHtml(baseHtml: string): string {
     name: 'ChhathSong.in',
     url: canonicalUrl,
     logo: `${CANONICAL_DOMAIN}/favicon.svg`,
-    description: 'लोक आस्था का महापर्व छठ एवं पारंपरिक छठ गीत संग्रह'
+    description: 'लोक आस्था का महापर्व छठ एवं 106+ पारंपरिक छठ गीत व बोल (Lyrics) का संपूर्ण डिजिटल संग्रह।'
   };
 
-  const topSongs = CHHATH_SONGS.slice(0, 12);
+  const playlistSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'MusicPlaylist',
+    name: 'Chhath Puja 2026 Sacred Folk Songs Playlist',
+    numTracks: CHHATH_SONGS.length,
+    url: `${CANONICAL_DOMAIN}/songs`,
+    description: 'Complete curated collection of 106 sacred Chhath Mahaparv folk songs, bhajans, and hymns.',
+    track: CHHATH_SONGS.slice(0, 30).map((s, idx) => ({
+      '@type': 'MusicRecording',
+      name: s.title,
+      url: `${CANONICAL_DOMAIN}/songs/${getSongSlug(s)}`,
+      byArtist: {
+        '@type': 'MusicGroup',
+        name: s.singer || s.artist || 'पारंपरिक छठ लोकगायक'
+      },
+      position: idx + 1
+    }))
+  };
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'छठ पूजा के सबसे प्रसिद्ध और पारंपरिक छठ गीत (Chhath Songs) कौन से हैं?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'छठ महापर्व के सबसे लोकप्रिय पारंपरिक गीतों में "केलवा के पात पर उगेलन सुरुज मल", "काँच ही बाँस के बहँगिया", "हो दीनानाथ", "ऊ जे केरवा जे फरेला खबद से (मारबो रे सुगवा धनुष से)", "उगा हे सुरुजदेव", और "पहिले पहिल हम कईनी छठ मइया" सम्मिलित हैं। ये सभी गीत ChhathSong.in पर संपूर्ण बोल और भावार्थ सहित उपलब्ध हैं।'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'स्वर कोकिला पद्म भूषण शारदा सिन्हा के प्रसिद्ध छठ गीत कौन-कौन से हैं?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'पद्म भूषण शारदा सिन्हा जी के अमर छठ गीतों में "हो दीनानाथ", "केलवा के पात पर", "पहिले पहिल छठी मइया", "दुखवा मिटाईं छठी मइया", "नदिया के तीरे तीरे", "कार्तिक मास इजोरिया", और "बरतिन के अंगना में" प्रमुख हैं, जिनके बिना छठ महापर्व का अनुष्ठान अधूरा माना जाता है।'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'ChhathSong.in पर क्या-क्या सुविधाएँ उपलब्ध हैं?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'ChhathSong.in पर 106+ अमर छठ गीतों का संपूर्ण संग्रह, शारदा सिन्हा, पवन सिंह, अनुराधा पौडवाल व खेसारी लाल के भजन, देवनागरी एवं अंग्रेजी में संपूर्ण बोल (Lyrics), भावार्थ, सजीव ऑडियो प्लेयर, छठ 2026 का शुभ मुहूर्त (नहाय-खाय, खरना, संध्या व उषा अर्घ्य) और 3D वर्चुअल अर्घ्य अनुभव पूर्णतः निःशुल्क उपलब्ध है।'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'छठ पूजा 2026 के चारों दिन कौन-कौन से गीत गाए जाते हैं?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'प्रथम दिन नहाय-खाय पर गंगा स्नान व शुद्धता के गीत; द्वितीय दिन खरना पर गुड़ की खीर व मौन पूजन के गीत; तृतीय दिन संध्या अर्घ्य पर दउरा-बहंगी उठाने, फल सजाने व अस्ताचलगामी सूर्य को अर्घ्य देने के गीत; और चतुर्थ दिन उषा अर्घ्य पर "उग हो सुरुजदेव भइले भिनुसारवा" जैसे उदीयमान सूर्य की वंदना के गीत गाए जाते हैं।'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'छठ पूजा 2026 में संध्या और उषा अर्घ्य की तिथि और मुहूर्त क्या है?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'छठ पूजा 2026 में नहाय-खाय शुक्रवार 13 नवंबर, खरना शनिवार 14 नवंबर, संध्या अर्घ्य रविवार 15 नवंबर (सूर्यास्त अर्घ्य समय लगभग 05:01 PM), तथा उषा अर्घ्य व पारण सोमवार 16 नवंबर 2026 (सूर्योदय अर्घ्य समय लगभग 06:12 AM) को संपन्न होगा।'
+        }
+      }
+    ]
+  };
+
+  const topSongs = CHHATH_SONGS.slice(0, 18);
   const featuredSongsHtml = topSongs
     .map((song) => {
       const slug = getSongSlug(song);
       return `
-        <li class="song-card" style="margin-bottom: 12px; padding: 12px; border: 1px solid rgba(212,175,55,0.3); border-radius: 12px;">
-          <a href="/songs/${slug}" style="color: #FFF5E1; text-decoration: none; font-weight: bold; font-size: 1.1rem; display: block;">
+        <li class="song-card" style="margin-bottom: 12px; padding: 14px; background: rgba(24,15,8,0.7); border: 1px solid rgba(212,175,55,0.3); border-radius: 14px;">
+          <a href="/songs/${slug}" style="color: #FFF5E1; text-decoration: none; font-weight: bold; font-size: 1.05rem; display: block; line-height: 1.4;">
             ${escapeHtml(song.title)}
           </a>
-          <div style="color: #D4AF37; font-size: 0.85rem; margin-top: 4px;">
-            स्वर: ${escapeHtml(song.singer || song.artist || 'पारंपरिक')} • श्रेणी: ${escapeHtml(song.category || 'छठ महापर्व')}
+          <div style="color: #D4AF37; font-size: 0.85rem; margin-top: 6px;">
+            स्वर: <strong>${escapeHtml(song.singer || song.artist || 'पारंपरिक')}</strong> • श्रेणी: ${escapeHtml(song.category || 'छठ महापर्व')}
           </div>
-          ${song.meaning ? `<p style="color: rgba(255,245,225,0.75); font-size: 0.85rem; margin-top: 4px;">${escapeHtml(song.meaning.substring(0, 100))}...</p>` : ''}
+          ${song.lyricsHighlight ? `<p style="color: #FFE5B4; font-size: 0.82rem; font-style: italic; margin-top: 6px;">"${escapeHtml(song.lyricsHighlight)}"</p>` : ''}
+          ${song.meaning ? `<p style="color: rgba(255,245,225,0.8); font-size: 0.85rem; margin-top: 4px; line-height: 1.4;">${escapeHtml(song.meaning.substring(0, 110))}...</p>` : ''}
+          <a href="/songs/${slug}" style="display: inline-block; margin-top: 6px; color: #D4AF37; font-size: 0.8rem; font-weight: bold; text-decoration: underline;">
+            गीत के बोल (Lyrics) व भावार्थ देखें &rarr;
+          </a>
         </li>`;
     })
     .join('');
@@ -137,33 +228,57 @@ export function renderHomepageHtml(baseHtml: string): string {
           मिथिला • मगध • अंग • भोजपुरी माटी
         </p>
         <h1 style="font-size: 2.5rem; color: #FFF5E1; margin: 10px 0; font-family: 'Rozha One', Georgia, serif;">
-          लोक आस्था का <span style="color: #D4AF37;">महापर्व छठ</span>
+          लोक आस्था का <span style="color: #D4AF37;">महापर्व छठ</span> (Chhath Song 2026)
         </h1>
-        <h2 style="font-size: 1.2rem; color: #FFE5B4; font-weight: 500; margin-bottom: 12px;">
-          अमर छठ गीत, पावन घाट, सजीव अर्घ्य व बिहार की सांस्कृतिक धरोहर
+        <h2 style="font-size: 1.25rem; color: #FFE5B4; font-weight: 500; margin-bottom: 12px;">
+          106+ अमर छठ गीत, शारदा सिन्हा के लोकगीत, सम्पूर्ण बोल (Lyrics) व विधि
         </h2>
-        <p style="max-width: 650px; margin: 0 auto; color: rgba(255,245,225,0.9); font-size: 0.95rem; line-height: 1.6;">
-          सूर्यदेव और प्रकृति की उपासना का एकमात्र पावन महापर्व, जहाँ अस्ताचलगामी और उदीयमान दोनों सूर्यों को संपूर्ण श्रद्धा से अर्घ्य अर्पित किया जाता है।
+        <p style="max-width: 750px; margin: 0 auto; color: rgba(255,245,225,0.9); font-size: 0.95rem; line-height: 1.6;">
+          सूर्यदेव और प्रकृति की उपासना का एकमात्र पावन महापर्व, जहाँ अस्ताचलगामी और उदीयमान दोनों सूर्यों को संपूर्ण श्रद्धा से अर्घ्य अर्पित किया जाता है। सुनें स्वर कोकिला शारदा सिन्हा, पवन सिंह, अनुराधा पौडवाल, और खेसारी लाल यादव के कालजयी छठ भजन।
         </p>
       </header>
 
-      <section style="margin-bottom: 30px; padding: 20px; background: rgba(24,15,8,0.85); border: 1px solid rgba(212,175,55,0.3); border-radius: 20px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: gap;">
+      <section style="margin-bottom: 30px; padding: 22px; background: rgba(24,15,8,0.85); border: 1px solid rgba(212,175,55,0.3); border-radius: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
           <h2 style="font-size: 1.5rem; color: #D4AF37; margin: 0;">लोकप्रिय पावन छठ गीत (${CHHATH_SONGS.length} कुल संग्रह)</h2>
-          <a href="/songs" style="color: #180F08; background: #D4AF37; padding: 8px 16px; border-radius: 20px; font-weight: bold; text-decoration: none; font-size: 0.9rem;">
-            संपूर्ण १०७+ गीत संग्रह देखें &rarr;
+          <a href="/songs" style="color: #180F08; background: #D4AF37; padding: 8px 18px; border-radius: 20px; font-weight: bold; text-decoration: none; font-size: 0.9rem;">
+            संपूर्ण 106+ गीत संग्रह देखें &rarr;
           </a>
         </div>
-        <ul style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+        <ul style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px;">
           ${featuredSongsHtml}
         </ul>
       </section>
 
-      <section style="padding: 20px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;">
-        <h3 style="color: #D4AF37; font-size: 1.2rem; margin-top: 0;">महापर्व छठ के चार पावन दिवस</h3>
-        <p style="color: rgba(255,245,225,0.85); font-size: 0.9rem; line-height: 1.6;">
-          प्रथम दिवस: <strong>नहाय-खाय</strong> (कद्दू-भात का सात्विक प्रसाद) • द्वितीय दिवस: <strong>खरना</strong> (गुड़ की खीर व निर्जला व्रत आरंभ) • तृतीय दिवस: <strong>संध्या अर्घ्य</strong> (अस्ताचलगामी सूर्य को प्रथम अर्घ्य) • चतुर्थ दिवस: <strong>उषा अर्घ्य व पारण</strong> (उदीयमान सूर्य को अर्घ्य व व्रत संपन्न)।
+      <section style="margin-bottom: 30px; padding: 22px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;">
+        <h3 style="color: #D4AF37; font-size: 1.3rem; margin-top: 0;">महापर्व छठ के चार पावन दिवस एवं शुभ मुहूर्त 2026</h3>
+        <p style="color: rgba(255,245,225,0.9); font-size: 0.95rem; line-height: 1.6;">
+          प्रथम दिवस: <strong>नहाय-खाय</strong> (13 नवंबर 2026 - कद्दू-भात का सात्विक प्रसाद) • द्वितीय दिवस: <strong>खरना</strong> (14 नवंबर 2026 - गुड़ की खीर व 36 घंटे का निर्जला व्रत आरंभ) • तृतीय दिवस: <strong>संध्या अर्घ्य</strong> (15 नवंबर 2026 - सूर्यास्त 05:01 PM पर प्रथम अर्घ्य) • चतुर्थ दिवस: <strong>उषा अर्घ्य व पारण</strong> (16 नवंबर 2026 - सूर्योदय 06:12 AM पर अर्घ्य व व्रत संपन्न)।
         </p>
+      </section>
+
+      <section style="padding: 22px; background: rgba(24,15,8,0.7); border: 1px solid rgba(212,175,55,0.25); border-radius: 20px;">
+        <h3 style="color: #D4AF37; font-size: 1.3rem; margin-top: 0; margin-bottom: 14px;">अक्सर पूछे जाने वाले प्रश्न (Frequently Asked Questions)</h3>
+        <div style="space-y: 12px;">
+          <div style="margin-bottom: 12px;">
+            <h4 style="color: #FFE5B4; margin: 0 0 4px; font-size: 1rem;">1. छठ पूजा के सबसे प्रसिद्ध पारंपरिक छठ गीत कौन से हैं?</h4>
+            <p style="color: rgba(255,245,225,0.85); font-size: 0.9rem; margin: 0; line-height: 1.5;">
+              "केलवा के पात पर उगेलन सुरुज मल", "काँच ही बाँस के बहँगिया", "हो दीनानाथ", "ऊ जे केरवा जे फरेला खबद से", और "उगा हे सुरुजदेव" छठ के सबसे प्रसिद्ध पारंपरिक लोकगीत हैं।
+            </p>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <h4 style="color: #FFE5B4; margin: 0 0 4px; font-size: 1rem;">2. शारदा सिन्हा के प्रसिद्ध छठ गीत कौन-कौन से हैं?</h4>
+            <p style="color: rgba(255,245,225,0.85); font-size: 0.9rem; margin: 0; line-height: 1.5;">
+              पद्म भूषण शारदा सिन्हा जी के "हो दीनानाथ", "केलवा के पात पर", "पहिले पहिल छठी मइया", "दुखवा मिटाईं छठी मइया", "नदिया के तीरे तीरे", और "कार्तिक मास इजोरिया" अमर छठ भजन हैं।
+            </p>
+          </div>
+          <div>
+            <h4 style="color: #FFE5B4; margin: 0 0 4px; font-size: 1rem;">3. ChhathSong.in पर कौन-कौन से गाने और सुविधाएं उपलब्ध हैं?</h4>
+            <p style="color: rgba(255,245,225,0.85); font-size: 0.9rem; margin: 0; line-height: 1.5;">
+              ChhathSong.in पर 106+ अमर छठ गीतों का संपूर्ण संग्रह, संपूर्ण बोल (Lyrics), भावार्थ, सजीव संगीत प्लेयर और शुभ अर्घ्य मुहूर्त उपलब्ध है।
+            </p>
+          </div>
+        </div>
       </section>
     </main>
   `;
@@ -172,12 +287,14 @@ export function renderHomepageHtml(baseHtml: string): string {
     title,
     description,
     canonicalUrl,
-    jsonLd: [websiteSchema, orgSchema]
+    keywords,
+    jsonLd: [websiteSchema, orgSchema, playlistSchema, faqSchema]
   });
 
+  // Inject pre-rendered semantic HTML directly inside #root for immediate crawlability
   return htmlWithHead.replace(
     /<div\s+id=["']root["']>([\s\S]*?)<\/div>/i,
-    `<div id="root"></div>\n    <noscript>${preRenderedBody}</noscript>`
+    `<div id="root">${preRenderedBody}</div>`
   );
 }
 
@@ -185,10 +302,12 @@ export function renderHomepageHtml(baseHtml: string): string {
  * Generates crawl-ready pre-rendered HTML for the Songs Directory (/songs).
  */
 export function renderSongsDirectoryHtml(baseHtml: string): string {
-  const title = '107+ अमर छठ गीत संग्रह, बोल व भावार्थ | ChhathSong.in';
+  const title = '106+ Chhath Songs (छठ गीत) Lyrics, Singer & MP3 Collection | ChhathSong.in';
   const description =
-    'शारदा सिन्हा, अनुराधा पौडवाल व लोकगायकों के 107+ पारंपरिक छठ गीतों का संपूर्ण संग्रह, बोल (Lyrics) व भावार्थ सुनें।';
+    'पद्म भूषण शारदा सिन्हा, अनुराधा पौडवाल, पवन सिंह व खेसारी लाल के 106+ पारंपरिक छठ गीतों का संपूर्ण संग्रह, बोल (Lyrics), गायक व भावार्थ | ChhathSong.in';
   const canonicalUrl = `${CANONICAL_DOMAIN}/songs`;
+  const keywords =
+    'chhath songs, chhath geet lyrics, all chhath songs list, 106 chhath geet, sharda sinha songs, pawan singh chhath geet, anuradha paudwal chhath, devi chhath song, kalpana patowary chhath, chhath song mp3 download lyrics, bihar folk songs';
 
   const songItemsSchema = CHHATH_SONGS.map((song, idx) => ({
     '@type': 'ListItem',
@@ -200,7 +319,7 @@ export function renderSongsDirectoryHtml(baseHtml: string): string {
   const collectionSchema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: 'Chhath Mahaparv Sacred Folk Songs Collection',
+    name: '106+ Chhath Mahaparv Sacred Folk Songs Collection',
     description: description,
     url: canonicalUrl,
     mainEntity: {
@@ -232,9 +351,9 @@ export function renderSongsDirectoryHtml(baseHtml: string): string {
   const allSongsHtml = CHHATH_SONGS.map((song, idx) => {
     const slug = getSongSlug(song);
     return `
-      <article style="padding: 14px; background: rgba(24,15,8,0.9); border: 1px solid rgba(212,175,55,0.25); border-radius: 14px;">
+      <article style="padding: 16px; background: rgba(24,15,8,0.9); border: 1px solid rgba(212,175,55,0.25); border-radius: 14px;">
         <span style="font-size: 0.75rem; color: #D4AF37; font-weight: bold; font-family: monospace;">#${idx + 1}</span>
-        <h2 style="font-size: 1.15rem; margin: 4px 0 6px; color: #FFF5E1;">
+        <h2 style="font-size: 1.15rem; margin: 4px 0 6px; color: #FFF5E1; line-height: 1.35;">
           <a href="/songs/${slug}" style="color: #FFF5E1; text-decoration: none;">
             ${escapeHtml(song.title)}
           </a>
@@ -242,9 +361,10 @@ export function renderSongsDirectoryHtml(baseHtml: string): string {
         <div style="font-size: 0.85rem; color: #FFE5B4; margin-bottom: 6px;">
           स्वर: <strong>${escapeHtml(song.singer || song.artist || 'पारंपरिक लोकगायक')}</strong>
         </div>
-        ${song.lyricsHighlight ? `<p style="font-size: 0.8rem; font-style: italic; color: rgba(255,245,225,0.7); margin: 4px 0;">"${escapeHtml(song.lyricsHighlight)}"</p>` : ''}
-        <a href="/songs/${slug}" style="display: inline-block; margin-top: 6px; color: #D4AF37; font-size: 0.85rem; font-weight: bold; text-decoration: underline;">
-          गीत व संपूर्ण भावार्थ देखें &rarr;
+        ${song.lyricsHighlight ? `<p style="font-size: 0.8rem; font-style: italic; color: #FFE5B4; margin: 4px 0;">"${escapeHtml(song.lyricsHighlight)}"</p>` : ''}
+        ${song.meaning ? `<p style="font-size: 0.82rem; color: rgba(255,245,225,0.75); margin: 4px 0; line-height: 1.4;">${escapeHtml(song.meaning.substring(0, 100))}...</p>` : ''}
+        <a href="/songs/${slug}" style="display: inline-block; margin-top: 8px; color: #D4AF37; font-size: 0.85rem; font-weight: bold; text-decoration: underline;">
+          गीत के संपूर्ण बोल (Lyrics) व भावार्थ देखें &rarr;
         </a>
       </article>`;
   }).join('');
@@ -252,15 +372,15 @@ export function renderSongsDirectoryHtml(baseHtml: string): string {
   const preRenderedBody = `
     <main id="app-container" style="max-width: 1200px; margin: 0 auto; padding: 20px; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #FFF5E1;">
       <nav aria-label="Breadcrumb" style="font-size: 0.85rem; color: rgba(255,245,225,0.7); margin-bottom: 20px;">
-        <a href="/" style="color: #D4AF37; text-decoration: none;">मुख्य पृष्ठ (Home)</a> &gt; <span>छठ गीत संग्रह (${CHHATH_SONGS.length})</span>
+        <a href="/" style="color: #D4AF37; text-decoration: none;">मुख्य पृष्ठ (Home)</a> &gt; <span>छठ गीत संग्रह (${CHHATH_SONGS.length} Chhath Songs)</span>
       </nav>
 
       <header style="margin-bottom: 24px;">
         <h1 style="font-size: 2.2rem; color: #FFF5E1; margin: 0 0 8px; font-family: 'Rozha One', Georgia, serif;">
-          पारंपरिक छठ गीत, भजन व संपूर्ण भावार्थ
+          पारंपरिक छठ गीत संग्रह (106+ Chhath Songs & Lyrics)
         </h1>
-        <p style="color: rgba(255,245,225,0.85); font-size: 0.95rem; max-width: 800px; margin: 0;">
-          पद्म भूषण शारदा सिन्हा, अनुराधा पौडवाल एवं लोक गायकों के अमर स्वर में रचे-बसे ${CHHATH_SONGS.length} पावन छठ गीतों का संपूर्ण संग्रह, बोल और आध्यात्मिक अर्थ।
+        <p style="color: rgba(255,245,225,0.85); font-size: 0.95rem; max-width: 850px; margin: 0; line-height: 1.6;">
+          पद्म भूषण शारदा सिन्हा, अनुराधा पौडवाल, पवन सिंह, खेसारी लाल यादव, देवी, और कल्पना पटवारी के अमर स्वर में रचे-बसे 106 पावन छठ गीतों का संपूर्ण संग्रह, बोल (Lyrics) और आध्यात्मिक अर्थ।
         </p>
       </header>
 
@@ -274,12 +394,13 @@ export function renderSongsDirectoryHtml(baseHtml: string): string {
     title,
     description,
     canonicalUrl,
+    keywords,
     jsonLd: [breadcrumbsSchema, collectionSchema]
   });
 
   return htmlWithHead.replace(
     /<div\s+id=["']root["']>([\s\S]*?)<\/div>/i,
-    `<div id="root"></div>\n    <noscript>${preRenderedBody}</noscript>`
+    `<div id="root">${preRenderedBody}</div>`
   );
 }
 
@@ -293,7 +414,7 @@ export function renderSongPageHtml(song: ChhathSong, baseHtml: string): string {
 
   const title = song.lyrics
     ? `${song.title} Lyrics – Chhath Song | ChhathSong.in`
-    : `${song.title} – Chhath Song, Singer & Meaning | ChhathSong.in`;
+    : `${song.title} – Chhath Song Lyrics, Singer & Meaning | ChhathSong.in`;
 
   const rawDescription = song.lyrics
     ? `${song.title} - सम्पूर्ण बोल (Lyrics), स्वर: ${singerName}। ${song.meaning || 'छठ महापर्व की महिमा व लोक आस्था का पावन लोकगीत।'}`
@@ -303,6 +424,8 @@ export function renderSongPageHtml(song: ChhathSong, baseHtml: string): string {
 
   const description = rawDescription.length > 155 ? `${rawDescription.substring(0, 152)}...` : rawDescription;
   const ogImage = song.youtubeId ? `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg` : `${CANONICAL_DOMAIN}/chhath-share-banner.svg`;
+
+  const keywords = `${song.title}, ${singerName} Chhath Song, ${song.title} lyrics, छठ गीत, ${singerName} छठ गीत, Chhath Geet 2026, Chhath Songs, ChhathSong.in, Bihar Chhath Puja, Surya Dev Arghya, Chhathi Maiya Bhajan`;
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -355,6 +478,37 @@ export function renderSongPageHtml(song: ChhathSong, baseHtml: string): string {
     };
   }
 
+  const songFaqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: `‘${song.title}’ छठ गीत के मुख्य गायक कौन हैं?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: `इस पावन छठ गीत को ${singerName} द्वारा भावपूर्ण स्वर में प्रस्तुत किया गया है।`
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'यह छठ गीत महापर्व के किस अनुष्ठान या अवसर पर गाया जाता है?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: song.whenSung || 'यह पावन छठ गीत छठ पूजा के अर्घ्य, घाट यात्रा व सूर्यदेव की आराधना के समय गाया जाता है।'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'इस पावन छठ गीत का आध्यात्मिक भावार्थ क्या है?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: song.meaning || 'यह छठ गीत सूर्यदेव व छठी मइया के प्रति अगाध श्रद्धा, परिवार की खुशहाली और लोक आस्था का पवित्र प्रतीक है।'
+        }
+      }
+    ]
+  };
+
   // Related songs links
   const related = CHHATH_SONGS.filter(s => s.id !== song.id && (s.singer === song.singer || s.category === song.category)).slice(0, 4);
   const relatedHtml = related
@@ -392,7 +546,7 @@ export function renderSongPageHtml(song: ChhathSong, baseHtml: string): string {
         ` : ''}
 
         <section style="margin-top: 20px;">
-          <h2 style="font-size: 1.3rem; color: #D4AF37; margin-bottom: 8px;">आध्यात्मिक भावार्थ एवं महिमा</h2>
+          <h2 style="font-size: 1.3rem; color: #D4AF37; margin-bottom: 8px;">आध्यात्मिक भावार्थ एवं महिमा (Meaning)</h2>
           <p style="color: rgba(255,245,225,0.9); line-height: 1.6; font-size: 0.95rem;">
             ${escapeHtml(song.meaning || 'छठ महापर्व का यह पावन लोकगीत सूर्यदेव और छठी मईया की असीम अनुकंपा का गुणगान करता है।')}
           </p>
@@ -416,13 +570,29 @@ export function renderSongPageHtml(song: ChhathSong, baseHtml: string): string {
           </section>
         ` : `
           <section style="margin-top: 20px; padding: 14px; background: rgba(0,0,0,0.25); border-radius: 12px;">
-            <h2 style="font-size: 1.1rem; color: #D4AF37; margin: 0 0 6px;">छठ गीत के बोल (Lyrics)</h2>
+            <h2 style="font-size: 1.1rem; color: #D4AF37; margin: 0 0 6px;">छठ गीत के बोल एवं छंद (Lyrics)</h2>
             ${song.lyricsSnippetHindi ? `<p style="font-size: 0.95rem; color: #FFE5B4; margin: 0 0 6px;">${escapeHtml(song.lyricsSnippetHindi)}</p>` : ''}
             <p style="font-size: 0.85rem; color: rgba(255,245,225,0.75); margin: 0;">
-              इस पावन छठ गीत के संपूर्ण बोल एवं छंद इसी स्थाई पृष्ठ (<code>/songs/${slug}</code>) पर उपलब्ध रहेंगे।
+              स्वर: ${escapeHtml(singerName)} • यह पावन छठ गीत छठ महापर्व के अर्घ्य अनुष्ठान में अत्यंत श्रद्धा से गाया जाता है।
             </p>
           </section>
         `}
+
+        <section style="margin-top: 24px; padding: 16px; background: rgba(0,0,0,0.3); border-radius: 16px;">
+          <h3 style="font-size: 1.1rem; color: #D4AF37; margin-top: 0; margin-bottom: 10px;">गीत से जुड़े प्रश्न एवं उत्तर (FAQs)</h3>
+          <div style="margin-bottom: 10px;">
+            <strong style="color: #FFE5B4; font-size: 0.9rem;">प्र: ‘${escapeHtml(song.title)}’ के गायक कौन हैं?</strong>
+            <p style="color: rgba(255,245,225,0.85); font-size: 0.88rem; margin: 2px 0 0;">उ: इस पावन छठ गीत को ${escapeHtml(singerName)} ने गाया है।</p>
+          </div>
+          <div style="margin-bottom: 10px;">
+            <strong style="color: #FFE5B4; font-size: 0.9rem;">प्र: यह गीत छठ पूजा में कब गाया जाता है?</strong>
+            <p style="color: rgba(255,245,225,0.85); font-size: 0.88rem; margin: 2px 0 0;">उ: ${escapeHtml(song.whenSung || 'छठ पूजा के अर्घ्य व घाट पूजन के समय।')}</p>
+          </div>
+          <div>
+            <strong style="color: #FFE5B4; font-size: 0.9rem;">प्र: इस गीत का मुख्य भावार्थ क्या है?</strong>
+            <p style="color: rgba(255,245,225,0.85); font-size: 0.88rem; margin: 2px 0 0;">उ: ${escapeHtml(song.meaning || 'छठ मइया व सूर्यदेव की महिमा और लोक आस्था।')}</p>
+          </div>
+        </section>
       </article>
 
       <section style="background: rgba(24,15,8,0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px;">
@@ -443,14 +613,15 @@ export function renderSongPageHtml(song: ChhathSong, baseHtml: string): string {
     title,
     description,
     canonicalUrl,
+    keywords,
     ogImage,
     ogType: 'music.song',
-    jsonLd: [breadcrumbSchema, musicSchema]
+    jsonLd: [breadcrumbSchema, musicSchema, songFaqSchema]
   });
 
   return htmlWithHead.replace(
     /<div\s+id=["']root["']>([\s\S]*?)<\/div>/i,
-    `<div id="root"></div>\n    <noscript>${preRenderedBody}</noscript>`
+    `<div id="root">${preRenderedBody}</div>`
   );
 }
 
@@ -459,7 +630,7 @@ export function renderSongPageHtml(song: ChhathSong, baseHtml: string): string {
  */
 export function renderNotFoundHtml(slug: string, baseHtml: string): string {
   const title = '404 — छठ गीत नहीं मिला (Page Not Found) | ChhathSong.in';
-  const description = 'आप जिस छठ गीत के लिंक पर आए हैं, वह मौजूद नहीं है। कृपया संपूर्ण 107+ छठ गीत संग्रह में खोजें।';
+  const description = 'आप जिस छठ गीत के लिंक पर आए हैं, वह मौजूद नहीं है। कृपया संपूर्ण 106+ छठ गीत संग्रह में खोजें।';
   const canonicalUrl = `${CANONICAL_DOMAIN}/songs`;
 
   const preRenderedBody = `
@@ -492,6 +663,6 @@ export function renderNotFoundHtml(slug: string, baseHtml: string): string {
 
   return htmlWithHead.replace(
     /<div\s+id=["']root["']>([\s\S]*?)<\/div>/i,
-    `<div id="root"></div>\n    <noscript>${preRenderedBody}</noscript>`
+    `<div id="root">${preRenderedBody}</div>`
   );
 }

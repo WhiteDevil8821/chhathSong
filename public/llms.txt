@@ -5,7 +5,7 @@
 > Main Festival: Chhath Puja (Kartik Shukla Shashthi)
 
 ## Overview
-ChhathSong.in is an authentic cultural and devotional web portal dedicated to Chhath Puja — the ancient Vedic festival of Sun and nature worship. The platform hosts a comprehensive archive of 107+ sacred Chhath Geet, authentic ritual timings, cultural guides, and devotional hymns.
+ChhathSong.in is an authentic cultural and devotional web portal dedicated to Chhath Puja — the ancient Vedic festival of Sun and nature worship. The platform hosts a comprehensive archive of 106+ sacred Chhath Geet, authentic ritual timings, cultural guides, and devotional hymns.
 
 ## Key Sections & Canonical URLs
 - **Home / Festival Portal**: `https://www.chhathsong.in/`

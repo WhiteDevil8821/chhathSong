@@ -213,6 +213,37 @@ export const SongPage: React.FC<SongPageProps> = ({
       };
     }
 
+    const songFaqSchema = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: `‘${song.title}’ छठ गीत के मुख्य गायक कौन हैं?`,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: `इस पावन छठ गीत को ${singerName} द्वारा भावपूर्ण स्वर में प्रस्तुत किया गया है।`
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'यह छठ गीत महापर्व के किस अनुष्ठान या अवसर पर गाया जाता है?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: song.whenSung || 'यह पावन छठ गीत छठ पूजा के अर्घ्य, घाट यात्रा व सूर्यदेव की आराधना के समय गाया जाता है।'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'इस पावन छठ गीत का आध्यात्मिक भावार्थ क्या है?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: song.meaning || 'यह छठ गीत सूर्यदेव व छठी मइया के प्रति अगाध श्रद्धा, परिवार की खुशहाली और लोक आस्था का पवित्र प्रतीक है।'
+          }
+        }
+      ]
+    };
+
     let scriptTag = document.getElementById('song-jsonld-schema') as HTMLScriptElement | null;
     if (!scriptTag) {
       scriptTag = document.createElement('script');
@@ -220,7 +251,7 @@ export const SongPage: React.FC<SongPageProps> = ({
       scriptTag.type = 'application/ld+json';
       document.head.appendChild(scriptTag);
     }
-    scriptTag.textContent = JSON.stringify([breadcrumbSchema, musicSchema]);
+    scriptTag.textContent = JSON.stringify([breadcrumbSchema, musicSchema, songFaqSchema]);
 
     // Reset embed video state on song change
     setShowEmbedVideo(false);

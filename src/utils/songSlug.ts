@@ -34,7 +34,7 @@ export function getSongSlug(song: Pick<ChhathSong, 'id' | 'title'>): string {
  * Returns the canonical path for a song (/songs/<slug>).
  */
 export function getSongPath(song: Pick<ChhathSong, 'id' | 'title'>): string {
-  return `/songs/${encodeURIComponent(getSongSlug(song))}`;
+  return `/songs/${getSongSlug(song)}`;
 }
 
 /**

@@ -40,21 +40,24 @@ export function runPrerender() {
   const notFoundHtml = renderNotFoundHtml('not-found', baseHtml);
   fs.writeFileSync(path.join(distDir, '404.html'), notFoundHtml, 'utf-8');
 
-  // 4. Individual Song Pages (/songs/<slug> and /songs/<slug>/index.html)
+  // 4. Individual Song Pages (/songs/<slug>.html and encoded filename fallback)
   let count = 0;
   for (const song of CHHATH_SONGS) {
     const slug = getSongSlug(song);
     const songHtml = renderSongPageHtml(song, baseHtml);
 
-    // Write /dist/songs/<slug>.html
+    // Primary cleanUrls static file: /dist/songs/<slug>.html
     fs.writeFileSync(path.join(distDir, 'songs', `${slug}.html`), songHtml, 'utf-8');
 
-    // Also write /dist/songs/<slug>/index.html for directory-style trailing-slash support
-    const individualSongDir = path.join(distDir, 'songs', slug);
-    if (!fs.existsSync(individualSongDir)) {
-      fs.mkdirSync(individualSongDir, { recursive: true });
+    // Also write percent-encoded filename for CDNs if length is safe for ext4 (< 200 bytes)
+    const encodedSlug = encodeURIComponent(slug);
+    if (encodedSlug !== slug && encodedSlug.length < 200) {
+      try {
+        fs.writeFileSync(path.join(distDir, 'songs', `${encodedSlug}.html`), songHtml, 'utf-8');
+      } catch (err) {
+        // Safe fallback
+      }
     }
-    fs.writeFileSync(path.join(individualSongDir, 'index.html'), songHtml, 'utf-8');
     count++;
   }
 
