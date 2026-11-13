@@ -525,11 +525,12 @@ async function startServer() {
   // Dynamically includes root homepage, /songs directory, and all 107 individual song pages
   app.get('/sitemap.xml', (req, res) => {
     const canonicalBaseUrl = 'https://www.chhathsong.in';
+    const today = new Date().toISOString().split('T')[0];
     const publicRoutes: { path: string; priority: string; changefreq: string }[] = [
       { path: '/', priority: '1.0', changefreq: 'daily' },
       { path: '/songs', priority: '0.9', changefreq: 'daily' },
       ...CHHATH_SONGS.map((song) => ({
-        path: `/songs/${getSongSlug(song)}`,
+        path: `/songs/${encodeURIComponent(getSongSlug(song))}`,
         priority: '0.8',
         changefreq: 'weekly'
       }))
@@ -538,7 +539,7 @@ async function startServer() {
     const xmlUrls = publicRoutes
       .map(
         (route) =>
-          `  <url>\n    <loc>${canonicalBaseUrl}${route.path}</loc>\n    <changefreq>${route.changefreq}</changefreq>\n    <priority>${route.priority}</priority>\n  </url>`
+          `  <url>\n    <loc>${canonicalBaseUrl}${route.path}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${route.changefreq}</changefreq>\n    <priority>${route.priority}</priority>\n  </url>`
       )
       .join('\n');
 
@@ -590,6 +591,14 @@ async function startServer() {
       const rawSlug = cleanPath.substring(7);
       const song = findSongBySlug(rawSlug);
       if (song) {
+        const canonicalSlug = getSongSlug(song);
+        let decodedRaw = rawSlug;
+        try {
+          decodedRaw = decodeURIComponent(rawSlug);
+        } catch {}
+        if (decodedRaw !== canonicalSlug) {
+          return res.redirect(301, `/songs/${encodeURIComponent(canonicalSlug)}`);
+        }
         const html = renderSongPageHtml(song, rawHtml);
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
@@ -603,11 +612,11 @@ async function startServer() {
       }
     }
 
-    // Default fallback
-    const html = renderHomepageHtml(rawHtml);
+    // Explicit 404 for unknown top-level paths (avoid Soft 404s)
+    const html = renderNotFoundHtml(cleanPath, rawHtml);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
-    return res.status(200).send(html);
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return res.status(404).send(html);
   }
 
   // Vite Middleware / Static Serving with High Performance Cache Headers
@@ -639,6 +648,8 @@ async function startServer() {
 
     app.use(
       express.static(distPath, {
+        index: false,
+        redirect: false,
         maxAge: '1y',
         immutable: true,
         setHeaders: (res, filePath) => {

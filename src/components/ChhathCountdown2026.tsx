@@ -1,26 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Calendar, Clock, Sun, Sunrise, Sunset, Sparkles, CheckCircle2, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, Sun, Sunrise, Sunset, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { SACRED_DAYS } from '../data/chhathData';
 import { ChhathCountdownStatus, SacredDay } from '../types';
+import { FESTIVAL_BOUNDARIES_IST_MS, formatISTClock } from '../utils/chhathDaySchedule';
 
-// Helper to convert current system time to Asia/Kolkata (IST: UTC + 5:30)
-function getKolkataTime(): Date {
-  const now = new Date();
-  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-  const kolkataOffsetMs = 5.5 * 3600000;
-  return new Date(utc + kolkataOffsetMs);
-}
-
-// 2026 Festival Schedule in IST
-// 13 Nov 2026 00:00:00 IST -> 16 Nov 2026 23:59:59 IST
 const FESTIVAL_DATES_IST = {
-  nahayKhayStart: new Date(Date.UTC(2026, 10, 12, 18, 30, 0)), // 2026-11-13 00:00:00 IST
-  kharnaStart: new Date(Date.UTC(2026, 10, 13, 18, 30, 0)),    // 2026-11-14 00:00:00 IST
-  sandhyaStart: new Date(Date.UTC(2026, 10, 14, 18, 30, 0)),   // 2026-11-15 00:00:00 IST
-  ushaStart: new Date(Date.UTC(2026, 10, 15, 18, 30, 0)),      // 2026-11-16 00:00:00 IST
-  festivalEnd: new Date(Date.UTC(2026, 10, 16, 18, 30, 0))     // 2026-11-17 00:00:00 IST
+  nahayKhayStart: new Date(FESTIVAL_BOUNDARIES_IST_MS.nahayKhayStart),
+  kharnaStart: new Date(FESTIVAL_BOUNDARIES_IST_MS.kharnaStart),
+  sandhyaStart: new Date(FESTIVAL_BOUNDARIES_IST_MS.sandhyaStart),
+  ushaStart: new Date(FESTIVAL_BOUNDARIES_IST_MS.ushaStart),
+  festivalEnd: new Date(FESTIVAL_BOUNDARIES_IST_MS.festivalEnd)
 };
 
 export const ChhathCountdown2026: React.FC<{ onSelectDay?: (dayNumber: number) => void }> = ({ onSelectDay }) => {
@@ -44,15 +35,7 @@ export const ChhathCountdown2026: React.FC<{ onSelectDay?: (dayNumber: number) =
   useEffect(() => {
     const updateCountdown = () => {
       const now = new Date();
-      const istTime = getKolkataTime();
-      
-      const timeStrIST = istTime.toLocaleTimeString('en-IN', {
-        timeZone: 'Asia/Kolkata',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: true
-      });
+      const timeStrIST = formatISTClock(now.getTime(), true);
 
       const target = FESTIVAL_DATES_IST.nahayKhayStart;
       const diffMs = target.getTime() - now.getTime();

@@ -13,6 +13,7 @@ import {
   ExternalLink,
   MessageSquare
 } from 'lucide-react';
+import { getChhathDailyGreetingState } from '../utils/chhathDaySchedule';
 
 // Custom SVG Icons for Social Platforms
 const InstagramIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
@@ -119,7 +120,8 @@ export const InfoModals: React.FC<InfoModalsProps> = ({
     }
   };
 
-  const shareText = `🪔 लोक आस्था के महापर्व छठ की हार्दिक शुभकामनाएँ! \n\nछठ महापर्व के पावन घाट, अमर लोकगीत, और सांस्कृतिक विरासत का अनुभव करें:\n${typeof window !== 'undefined' ? window.location.href : ''}`;
+  const dailyGreeting = getChhathDailyGreetingState();
+  const shareText = dailyGreeting.shareGreetingText;
 
   if (!activeModal) return null;
 

@@ -1,31 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import {
   Music,
   Play,
   Pause,
   Sparkles,
-  ArrowRight,
-  Disc3,
   Calendar,
   Clock,
-  BookOpen,
-  Compass,
   Sun,
-  Droplets
+  Sunrise,
+  Sunset,
+  Share2,
+  Check
 } from 'lucide-react';
 import { ChhathSong } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 import { getSongSlug } from '../utils/songSlug';
-
-// 2026 Festival Schedule in IST
-const FESTIVAL_DATES_IST = {
-  nahayKhayStart: new Date(Date.UTC(2026, 10, 12, 18, 30, 0)), // 2026-11-13 00:00:00 IST
-  kharnaStart: new Date(Date.UTC(2026, 10, 13, 18, 30, 0)),    // 2026-11-14 00:00:00 IST
-  sandhyaStart: new Date(Date.UTC(2026, 10, 14, 18, 30, 0)),   // 2026-11-15 00:00:00 IST
-  ushaStart: new Date(Date.UTC(2026, 10, 15, 18, 30, 0)),      // 2026-11-16 00:00:00 IST
-  festivalEnd: new Date(Date.UTC(2026, 10, 16, 18, 30, 0))     // 2026-11-17 00:00:00 IST
-};
+import { useChhathDailyGreeting } from '../hooks/useChhathDailyGreeting';
 
 interface ChhathHeroSectionProps {
   songs: ChhathSong[];
@@ -34,6 +25,7 @@ interface ChhathHeroSectionProps {
   onPlaySong: (song: ChhathSong) => void;
   onNavigateTo: (path: string) => void;
   onOpenSongDetail?: (song: ChhathSong) => void;
+  onShareGreeting?: () => void;
 }
 
 export const ChhathHeroSection: React.FC<ChhathHeroSectionProps> = ({
@@ -41,62 +33,12 @@ export const ChhathHeroSection: React.FC<ChhathHeroSectionProps> = ({
   currentSong,
   isPlaying = false,
   onPlaySong,
-  onNavigateTo
+  onNavigateTo,
+  onShareGreeting
 }) => {
   const { isHindi } = useLanguage();
-
-  // Current live time for top-left header display
-  const [currentTimeStr, setCurrentTimeStr] = useState('');
-
-  // Live countdown state for Chhath 2026
-  const [countdown, setCountdown] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-    phaseText: isHindi ? 'कार्तिक छठ २०२६ (नहाय-खाय)' : 'Chhath 2026 (Nahay-Khay)'
-  });
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-
-      // Format time
-      const timeFormatted = now.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
-      setCurrentTimeStr(timeFormatted);
-
-      // Countdown calculation
-      const target = FESTIVAL_DATES_IST.nahayKhayStart;
-      const diffMs = target.getTime() - now.getTime();
-
-      if (diffMs > 0) {
-        const totalSeconds = Math.floor(diffMs / 1000);
-        setCountdown({
-          days: Math.floor(totalSeconds / 86400),
-          hours: Math.floor((totalSeconds % 86400) / 3600),
-          minutes: Math.floor((totalSeconds % 3600) / 60),
-          seconds: totalSeconds % 60,
-          phaseText: isHindi ? 'कार्तिक छठ महापर्व २०२६' : 'Kartik Chhath Mahaparv 2026'
-        });
-      } else {
-        setCountdown({
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-          phaseText: isHindi ? 'महापर्व छठ २०२६ प्रारंभ' : 'Chhath 2026 Underway'
-        });
-      }
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, [isHindi]);
+  const greeting = useChhathDailyGreeting();
+  const [copiedGreeting, setCopiedGreeting] = useState(false);
 
   // Curated Popular Songs (Top 8 iconic songs for instant discovery below hero)
   const popularSongs = songs.slice(0, 8);
@@ -110,6 +52,29 @@ export const ChhathHeroSection: React.FC<ChhathHeroSectionProps> = ({
     }
   };
 
+  const handleCopyTodayGreeting = () => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(greeting.shareGreetingText);
+      setCopiedGreeting(true);
+      setTimeout(() => setCopiedGreeting(false), 2500);
+    }
+  };
+
+  const renderGreetingIcon = () => {
+    switch (greeting.dayNumber) {
+      case 1:
+        return <Sun className="w-5 h-5 text-[#FFD54F] shrink-0" />;
+      case 2:
+        return <Sparkles className="w-5 h-5 text-[#F28C28] shrink-0" />;
+      case 3:
+        return <Sunset className="w-5 h-5 text-[#FF8A65] shrink-0" />;
+      case 4:
+        return <Sunrise className="w-5 h-5 text-[#FFE082] shrink-0" />;
+      default:
+        return <Sun className="w-5 h-5 text-[#FFD54F] shrink-0" />;
+    }
+  };
+
   return (
     <div className="w-full">
       {/* ========================================================================= */}
@@ -118,7 +83,7 @@ export const ChhathHeroSection: React.FC<ChhathHeroSectionProps> = ({
       <section
         id="chhath-hero"
         aria-label="Chhath Puja Panoramic Ghat View"
-        className="relative w-full min-h-[420px] sm:min-h-[460px] md:min-h-[500px] lg:min-h-[540px] xl:min-h-[580px] overflow-hidden border-b-2 border-[#E5A93C]/50 shadow-2xl flex flex-col justify-between p-3 sm:p-5 md:p-6 lg:p-8 select-none"
+        className="relative w-full min-h-[480px] sm:min-h-[520px] md:min-h-[560px] lg:min-h-[600px] overflow-hidden border-b-2 border-[#E5A93C]/50 shadow-2xl flex flex-col justify-between p-3 sm:p-5 md:p-6 lg:p-8 select-none gap-4"
       >
         {/* Full-bleed Responsive Ganga Ghat Hero Image */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -127,116 +92,191 @@ export const ChhathHeroSection: React.FC<ChhathHeroSectionProps> = ({
             alt="Chhath Puja Holy Ghat"
             className="w-full h-full object-cover object-center sm:object-[center_35%] transition-transform duration-1000 scale-[1.01]"
             onError={(e) => {
-              // Fallback to SVG if PNG fails to load
               (e.currentTarget as HTMLImageElement).src = '/images/chhath-ghat-panoramic-hero.svg';
             }}
           />
         </div>
 
         {/* Subtle Vignette & Scrim Overlays to guarantee crisp text legibility while preserving full artwork visibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-black/85 pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.65)_100%)] pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/35 to-black/88 pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_25%,rgba(0,0,0,0.72)_100%)] pointer-events-none" />
 
         {/* ===================================================================== */}
-        {/* TOP BAR OVERLAY: Live Time, Auspicious Badges & Quick Links           */}
+        {/* TOP BAR OVERLAY: Live IST Clock & Quick Navigation                    */}
         {/* ===================================================================== */}
         <div className="relative z-10 w-full max-w-7xl mx-auto flex items-center justify-between gap-3 text-xs sm:text-sm">
-          {/* Top Left: Clock & Regional Heritage */}
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-[#E5A93C]/50 text-[#FFF5E1] text-[11px] sm:text-xs font-mono font-bold shadow-md">
-              <Clock className="w-3.5 h-3.5 text-[#FFD54F]" />
-              <span>{currentTimeStr || '1:56 PM'}</span>
+          {/* Top Left: Live IST Clock & Date */}
+          <div className="flex items-center gap-2.5 text-[11px] sm:text-xs text-[#FFF5E1] bg-black/65 backdrop-blur-md border border-[#E5A93C]/45 px-3.5 py-1.5 rounded-xl shadow-md">
+            <Clock className="w-3.5 h-3.5 text-[#FFD54F] shrink-0" />
+            <span className="font-mono font-bold tabular-nums whitespace-nowrap">
+              {greeting.istTimeFormatted}
             </span>
-
-            <span className="hidden sm:inline-flex items-center gap-1 px-3 py-1 rounded-full bg-black/55 backdrop-blur-md border border-[#E5A93C]/40 text-[#FFE5B4] text-[11px] font-semibold shadow-sm">
-              <Sparkles className="w-3 h-3 text-[#FFD54F]" />
-              <span>{isHindi ? 'मिथिला • मगध • अंग • भोजपुर' : 'Bhojpuri • Maithili • Magahi'}</span>
+            <span className="hidden sm:inline text-[#E5A93C]/70" aria-hidden="true">·</span>
+            <span className="hidden sm:inline text-[#FFE5B4] font-medium whitespace-nowrap">
+              {greeting.istDateFormatted}
             </span>
           </div>
 
-          {/* Top Right: Songs Archive Link & Devotional Tag */}
-          <div className="flex items-center gap-2">
+          {/* Top Right: Songs Archive Link & Guide Anchor */}
+          <div className="flex items-center gap-2 shrink-0">
             <a
               href="/songs"
               onClick={(e) => {
                 e.preventDefault();
                 onNavigateTo('/songs');
               }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-black/70 hover:bg-[#E5A93C] backdrop-blur-md border-2 border-[#E5A93C] text-[#FFE5B4] hover:text-[#1A0A03] text-[11px] sm:text-xs font-black transition-all shadow-md cursor-pointer group"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-black/70 hover:bg-[#E5A93C] backdrop-blur-md border border-[#E5A93C] text-[#FFE5B4] hover:text-[#1A0A03] text-[11px] sm:text-xs font-bold transition-colors shadow-md cursor-pointer group whitespace-nowrap shrink-0"
             >
               <Music className="w-3.5 h-3.5 text-[#FFD54F] group-hover:text-[#1A0A03] transition-colors" />
               <span>{isHindi ? `${songs.length} अमर छठ गीत` : `${songs.length} Chhath Songs`}</span>
-              <span className="text-[10px] text-[#FFD54F] group-hover:text-[#1A0A03] group-hover:translate-x-0.5 transition-all">↗</span>
+              <span className="text-[10px] text-[#FFD54F] group-hover:text-[#1A0A03] transition-colors">↗</span>
             </a>
 
             <button
+              type="button"
               onClick={() => scrollToSection('chhath-guide-section')}
-              className="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/55 hover:bg-black/80 backdrop-blur-md border border-[#E5A93C]/40 text-[#FFF5E1] text-[11px] font-semibold transition-all cursor-pointer"
+              className="hidden md:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-black/60 hover:bg-black/85 backdrop-blur-md border border-[#E5A93C]/45 text-[#FFF5E1] text-[11px] sm:text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0"
             >
               <Sun className="w-3.5 h-3.5 text-[#FFD54F]" />
-              <span>{isHindi ? 'छठ पूजा २०२६' : 'Chhath 2026'}</span>
+              <span>{isHindi ? 'छठ पूजा २०२६ विधि' : 'Chhath 2026 Guide'}</span>
             </button>
           </div>
         </div>
 
         {/* ===================================================================== */}
-        {/* CENTER TOP: MAJESTIC "जय छठी मैया" DEVANAGARI CALLIGRAPHIC TITLE       */}
+        {/* CENTER STAGE: MAJESTIC TITLE + TODAY'S GREETING OF THE DAY (IST SYNC) */}
         {/* ===================================================================== */}
-        <div className="relative z-10 text-center my-auto py-3 sm:py-5 space-y-2 max-w-3xl mx-auto">
-          {/* Luminous Devotional Calligraphy Heading */}
+        <div className="relative z-10 text-center my-auto py-2 sm:py-4 space-y-4 sm:space-y-5 max-w-4xl mx-auto w-full">
           <motion.div
-            initial={{ opacity: 0, y: -15 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
             className="space-y-1.5"
           >
-            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-black tracking-wide text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)] filter [text-shadow:_0_2px_25px_rgba(254,240,138,0.7),_0_4px_35px_rgba(0,0,0,0.95)]">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-black tracking-wide text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)] [text-shadow:_0_2px_25px_rgba(254,240,138,0.65),_0_4px_35px_rgba(0,0,0,0.95)] [text-wrap:balance]">
               जय छठी मैया
             </h1>
 
-            {/* Small Refined Devotional Subtitle */}
             <p className="text-xs sm:text-sm md:text-base font-serif font-semibold text-[#FFE5B4] tracking-wide max-w-xl mx-auto drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)] px-4">
               {isHindi
                 ? 'लोक आस्था का महापर्व • अमर छठ गीत, पावन गंगा घाट व सजीव अर्घ्य'
                 : 'The Eternal Sun Worship • Sacred Ganga Ghat Hymns & Arghya Darshan'}
             </p>
           </motion.div>
+
+          {/* Today's Daily Greeting Spotlight Card (Automatically updates at 00:00 AM IST) */}
+          <motion.div
+            key={greeting.phase}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            aria-live="polite"
+            className="mx-auto max-w-2xl rounded-2xl bg-[#160A04]/88 backdrop-blur-xl border border-[#E5A93C]/70 p-4 sm:p-5 md:p-6 shadow-[0_12px_40px_rgba(0,0,0,0.85)] text-left sm:text-center space-y-2.5"
+          >
+            {/* Unboxed Metadata Header with typographic separators */}
+            <div className="flex flex-wrap items-center sm:justify-center gap-x-2 gap-y-1 text-[11px] sm:text-xs font-semibold text-[#FFD54F]">
+              <span className="inline-flex items-center gap-1.5">
+                {renderGreetingIcon()}
+                <span>{isHindi ? greeting.dayTagHi : greeting.dayTagEn}</span>
+              </span>
+              <span className="text-[#E5A93C]/60" aria-hidden="true">·</span>
+              <span className="text-[#FFE5B4]/90">
+                {isHindi ? greeting.dateDisplayHi : greeting.dateDisplayEn}
+              </span>
+            </div>
+
+            {/* Greeting Headline */}
+            <h2 className="text-lg sm:text-2xl md:text-[26px] font-serif font-bold text-[#FFF5E1] leading-snug [text-wrap:balance]">
+              {isHindi ? greeting.greetingTitleHi : greeting.greetingTitleEn}
+            </h2>
+
+            {/* Greeting Warm Message */}
+            <p className="text-xs sm:text-sm text-[#FFF5E1]/90 leading-relaxed max-w-xl sm:mx-auto font-normal">
+              {isHindi ? greeting.greetingSubtextHi : greeting.greetingSubtextEn}
+            </p>
+
+            {/* Daily Ritual Focus + Quick Action Row */}
+            <div className="pt-2 border-t border-[#E5A93C]/25 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs">
+              <span className="text-[#FFE082] font-medium text-left">
+                {isHindi ? greeting.ritualFocusHi : greeting.ritualFocusEn}
+              </span>
+
+              <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                <button
+                  type="button"
+                  onClick={handleCopyTodayGreeting}
+                  className="px-3 py-1.5 rounded-lg bg-black/50 hover:bg-black/80 border border-[#E5A93C]/45 text-[#FFE5B4] font-semibold flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0"
+                >
+                  {copiedGreeting ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-emerald-300">{isHindi ? 'कॉपी हुआ' : 'Copied'}</span>
+                    </>
+                  ) : (
+                    <span>{isHindi ? 'संदेश कॉपी करें' : 'Copy Wish'}</span>
+                  )}
+                </button>
+
+                {onShareGreeting && (
+                  <button
+                    type="button"
+                    onClick={onShareGreeting}
+                    className="px-3.5 py-1.5 rounded-lg bg-[#D4AF37] hover:bg-[#FFE082] text-[#180F08] font-bold flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0"
+                  >
+                    <Share2 className="w-3.5 h-3.5" />
+                    <span>{isHindi ? 'शुभकामना भेजें' : 'Share Greeting'}</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* ===================================================================== */}
-        {/* BOTTOM FLOATING CONTROLS: CENTERED LIVE COUNTDOWN CAPSULE             */}
+        {/* BOTTOM STATUS BAR: ACTIVE DAY & NEXT 00:00 AM IST TRANSITION TIMER    */}
         {/* ===================================================================== */}
-        <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-xl mx-auto pb-1">
-          {/* Centered Live 2026 Countdown Capsule */}
-          <div className="px-5 sm:px-7 py-2.5 sm:py-3 rounded-2xl sm:rounded-full bg-[#180A04]/90 backdrop-blur-xl border-2 border-[#E5A93C] shadow-[0_8px_32px_rgba(0,0,0,0.85),0_0_20px_rgba(229,169,60,0.35)] flex items-center justify-center gap-3 text-xs sm:text-sm">
-            <div className="flex items-center gap-2 sm:gap-2.5 text-[#FFD54F]">
-              <Calendar className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#FFD54F] shrink-0" />
-              <span className="font-serif font-black text-white sm:text-sm tracking-wide hidden xs:inline">
-                {isHindi ? 'छठ पूजा २०२६' : 'Chhath 2026'} :
+        <div className="relative z-10 flex flex-col items-center justify-center w-full max-w-2xl mx-auto pb-1">
+          <div className="px-4 sm:px-6 py-2.5 rounded-2xl bg-[#180A04]/90 backdrop-blur-xl border border-[#E5A93C]/80 shadow-[0_8px_32px_rgba(0,0,0,0.85)] flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-xs sm:text-sm">
+            <div className="flex items-center gap-2 text-[#FFD54F]">
+              <Calendar className="w-4 h-4 text-[#FFD54F] shrink-0" />
+              <span className="font-serif font-bold text-white tracking-wide whitespace-nowrap">
+                {isHindi ? greeting.nextTransitionLabelHi : greeting.nextTransitionLabelEn}
               </span>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-3 font-mono font-black text-xs sm:text-base">
-              <span className="flex items-baseline gap-1">
-                <strong className="text-[#FFD54F] text-sm sm:text-lg">{countdown.days}</strong>
-                <span className="text-[10px] sm:text-xs font-semibold text-white/80">{isHindi ? 'दिन' : 'd'}</span>
-              </span>
-              <span className="text-[#E5A93C]/50">•</span>
-              <span className="flex items-baseline gap-1">
-                <strong className="text-[#FFD54F] text-sm sm:text-lg">{countdown.hours}</strong>
-                <span className="text-[10px] sm:text-xs font-semibold text-white/80">{isHindi ? 'घंटे' : 'h'}</span>
-              </span>
-              <span className="text-[#E5A93C]/50">•</span>
-              <span className="flex items-baseline gap-1">
-                <strong className="text-[#FFD54F] text-sm sm:text-lg">{countdown.minutes}</strong>
-                <span className="text-[10px] sm:text-xs font-semibold text-white/80">{isHindi ? 'मिनट' : 'm'}</span>
-              </span>
-              <span className="text-[#E5A93C]/50">•</span>
-              <span className="flex items-baseline gap-1">
-                <strong className="text-[#FFE57F] text-sm sm:text-lg animate-pulse">{countdown.seconds}</strong>
-                <span className="text-[10px] sm:text-xs font-semibold text-white/80">{isHindi ? 'सेकंड' : 's'}</span>
-              </span>
-            </div>
+            {greeting.phase !== 'concluded' && (
+              <div className="flex items-center gap-2 sm:gap-2.5 font-mono font-bold tabular-nums text-xs sm:text-sm">
+                {greeting.countdown.days > 0 && (
+                  <>
+                    <span className="flex items-baseline gap-1">
+                      <strong className="text-[#FFD54F] text-sm sm:text-base">{greeting.countdown.days}</strong>
+                      <span className="text-[10px] sm:text-xs font-semibold text-white/80">{isHindi ? 'दिन' : 'd'}</span>
+                    </span>
+                    <span className="text-[#E5A93C]/50" aria-hidden="true">·</span>
+                  </>
+                )}
+                <span className="flex items-baseline gap-1">
+                  <strong className="text-[#FFD54F] text-sm sm:text-base">
+                    {String(greeting.countdown.hours).padStart(2, '0')}
+                  </strong>
+                  <span className="text-[10px] sm:text-xs font-semibold text-white/80">{isHindi ? 'घंटे' : 'h'}</span>
+                </span>
+                <span className="text-[#E5A93C]/50" aria-hidden="true">·</span>
+                <span className="flex items-baseline gap-1">
+                  <strong className="text-[#FFD54F] text-sm sm:text-base">
+                    {String(greeting.countdown.minutes).padStart(2, '0')}
+                  </strong>
+                  <span className="text-[10px] sm:text-xs font-semibold text-white/80">{isHindi ? 'मिनट' : 'm'}</span>
+                </span>
+                <span className="text-[#E5A93C]/50" aria-hidden="true">·</span>
+                <span className="flex items-baseline gap-1">
+                  <strong className="text-[#FFE57F] text-sm sm:text-base">
+                    {String(greeting.countdown.seconds).padStart(2, '0')}
+                  </strong>
+                  <span className="text-[10px] sm:text-xs font-semibold text-white/80">{isHindi ? 'सेकंड' : 's'}</span>
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </section>

@@ -11,7 +11,7 @@ export function generateSitemapXml(): string {
     { path: '/', priority: '1.0', changefreq: 'daily' },
     { path: '/songs', priority: '0.9', changefreq: 'daily' },
     ...CHHATH_SONGS.map((song) => ({
-      path: `/songs/${getSongSlug(song)}`,
+      path: `/songs/${encodeURIComponent(getSongSlug(song))}`,
       priority: '0.8',
       changefreq: 'weekly'
     }))

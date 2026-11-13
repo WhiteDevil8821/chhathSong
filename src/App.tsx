@@ -43,6 +43,7 @@ import { SongPage } from './components/SongPage';
 import { SongNotFoundPage } from './components/SongNotFoundPage';
 import { ActiveModal } from './components/InfoModals';
 import { LiveDevoteesCounter } from './components/LiveDevoteesCounter';
+import { DailyGreetingBar } from './components/DailyGreetingBar';
 import { UpiSupportModal } from './components/UpiSupportModal';
 import { soundSynth } from './utils/soundSynthesizer';
 import { useLanguage } from './context/LanguageContext';
@@ -717,11 +718,15 @@ export default function App() {
             onPlaySong={handlePlaySongFromDirectory}
             onNavigateTo={navigateTo}
             onOpenSongDetail={handleOpenSongDetail}
+            onShareGreeting={() => setActiveModal('share')}
           />
         </div>
       )}
 
       <main className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 md:px-8 pt-3 sm:pt-4 md:pt-6 space-y-8 sm:space-y-10 md:space-y-14">
+        {route.type !== 'home' && (
+          <DailyGreetingBar onOpenShareModal={() => setActiveModal('share')} />
+        )}
         {route.type === 'home' ? (
           <>
             {/* 2. Rotating Nostalgic Quotes & Sacred Verses */}
@@ -747,31 +752,11 @@ export default function App() {
             {/* 6. Comprehensive Chhath 2026 Guide & Vidhi Hub */}
             <div id="chhath-guide-section">
               <ChhathGuide2026
-                onExploreSongs={() => {
-                  const el = document.getElementById('all-chhath-songs-directory');
-                  if (el) {
-                    el.scrollIntoView({ behavior: 'smooth' });
-                  } else {
-                    navigateTo('/songs');
-                  }
-                }}
+                onExploreSongs={() => navigateTo('/songs')}
               />
             </div>
 
-            {/* 7. Comprehensive Chhath Geet Collection (All 106 Songs) */}
-            <section id="all-chhath-songs-directory" aria-label="All Chhath Songs Directory">
-              <SongDirectory
-                songs={allSongs}
-                currentSong={currentSong}
-                isPlaying={isPlaying}
-                onPlaySong={handlePlaySongFromDirectory}
-                onOpenSongDetail={handleOpenSongDetail}
-                onNavigateToSong={(s) => navigateTo(getSongPath(s))}
-                onBackToHome={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              />
-            </section>
-
-            {/* 8. Emotional Nostalgia, Train Journey & Community Unity */}
+            {/* 7. Emotional Nostalgia, Train Journey & Community Unity */}
             <section aria-label="Bihari Diaspora Memories">
               <NostalgicMemoriesBoard />
             </section>

@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, Utensils, Heart, Sun, Sunrise, Sunset, Waves } from 'lucide-react';
 import { SACRED_DAYS } from '../data/chhathData';
 import { SacredDay } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { useChhathDailyGreeting } from '../hooks/useChhathDailyGreeting';
 
 export const FourDaysTimeline: React.FC = () => {
   const { isHindi } = useLanguage();
-  const [selectedDayNumber, setSelectedDayNumber] = useState<number>(1);
+  const greeting = useChhathDailyGreeting();
+  const [hasManualSelection, setHasManualSelection] = useState(false);
+  const [selectedDayNumber, setSelectedDayNumber] = useState<number>(() => greeting.dayNumber ?? 1);
+
+  useEffect(() => {
+    if (!hasManualSelection && greeting.dayNumber) {
+      setSelectedDayNumber(greeting.dayNumber);
+    }
+  }, [greeting.dayNumber, hasManualSelection]);
+
   const activeDay: SacredDay = SACRED_DAYS.find(d => d.dayNumber === selectedDayNumber) || SACRED_DAYS[0];
 
   const getDayIcon = (type: string) => {
@@ -50,26 +60,37 @@ export const FourDaysTimeline: React.FC = () => {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         {SACRED_DAYS.map((day) => {
           const isSelected = day.dayNumber === selectedDayNumber;
+          const isToday = greeting.dayNumber === day.dayNumber;
           return (
             <button
               key={day.dayNumber}
-              onClick={() => setSelectedDayNumber(day.dayNumber)}
-              className={`p-4 rounded-2xl text-left transition-all duration-300 border-l-4 cursor-pointer relative overflow-hidden font-sans ${
+              onClick={() => {
+                setHasManualSelection(true);
+                setSelectedDayNumber(day.dayNumber);
+              }}
+              className={`p-4 rounded-2xl text-left transition-all duration-300 border cursor-pointer relative overflow-hidden font-sans ${
                 isSelected
-                  ? 'bg-black/60 border-l-[#D4AF37] border-y border-r border-[#D4AF37]/45 shadow-xl shadow-black/60 scale-[1.02]'
-                  : 'bg-black/30 border-l-[#8A3B14] border-y border-r border-[#D4AF37]/15 hover:border-[#D4AF37]/35 hover:bg-black/40 text-[#FFF5E1]/80'
+                  ? 'bg-black/65 border-[#D4AF37] shadow-xl shadow-black/60 scale-[1.02]'
+                  : 'bg-black/30 border-[#D4AF37]/20 hover:border-[#D4AF37]/40 hover:bg-black/45 text-[#FFF5E1]/80'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <span
-                  className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
-                    isSelected
-                      ? 'bg-[#D4AF37] text-[#180F08]'
-                      : 'bg-black/60 text-[#D4AF37]'
-                  }`}
-                >
-                  {isHindi ? `दिवस ${day.dayNumber}` : `Day ${day.dayNumber}`}
-                </span>
+                <div className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider">
+                  <span
+                    className={`px-2 py-0.5 rounded uppercase ${
+                      isSelected
+                        ? 'bg-[#D4AF37] text-[#180F08]'
+                        : 'bg-black/60 text-[#D4AF37]'
+                    }`}
+                  >
+                    {isHindi ? `दिवस ${day.dayNumber}` : `Day ${day.dayNumber}`}
+                  </span>
+                  {isToday && (
+                    <span className="text-[#FFD54F] font-semibold">
+                      · {isHindi ? 'आज' : 'Today'}
+                    </span>
+                  )}
+                </div>
                 {getDayIcon(day.iconType)}
               </div>
 

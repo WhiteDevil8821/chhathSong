@@ -41,7 +41,7 @@ export function getSongPath(song: Pick<ChhathSong, 'id' | 'title'>): string {
  * Returns the absolute canonical URL for a song.
  */
 export function getSongCanonicalUrl(song: Pick<ChhathSong, 'id' | 'title'>): string {
-  return `https://www.chhathsong.in/songs/${getSongSlug(song)}`;
+  return `https://www.chhathsong.in/songs/${encodeURIComponent(getSongSlug(song))}`;
 }
 
 // Build precomputed lookups for instant, O(1) slug and ID resolution

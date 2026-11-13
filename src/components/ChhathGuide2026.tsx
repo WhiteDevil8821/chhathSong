@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, BookOpen, Sparkles, Sun, Sunrise, Sunset, Utensils, Heart, CheckCircle2, ChevronDown, ChevronUp, Music, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { SACRED_DAYS } from '../data/chhathData';
+import { useChhathDailyGreeting } from '../hooks/useChhathDailyGreeting';
 
 interface ChhathGuide2026Props {
   onExploreSongs?: () => void;
@@ -11,6 +12,7 @@ interface ChhathGuide2026Props {
 
 export const ChhathGuide2026: React.FC<ChhathGuide2026Props> = ({ onExploreSongs, onSelectDay }) => {
   const { isHindi } = useLanguage();
+  const greeting = useChhathDailyGreeting();
   const [activeTab, setActiveTab] = useState<'schedule' | 'vidhi' | 'samagri' | 'philosophy' | 'sharda_tribute'>('schedule');
 
   return (
@@ -72,15 +74,28 @@ export const ChhathGuide2026: React.FC<ChhathGuide2026Props> = ({ onExploreSongs
             className="space-y-6"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {SACRED_DAYS.map((day) => (
+              {SACRED_DAYS.map((day) => {
+                const isToday = greeting.dayNumber === day.dayNumber;
+                return (
                 <div
                   key={day.dayNumber}
-                  className="p-5 rounded-2xl bg-black/45 border border-[#D4AF37]/25 space-y-3 relative overflow-hidden"
+                  className={`p-5 rounded-2xl border space-y-3 relative overflow-hidden ${
+                    isToday
+                      ? 'bg-[#2A1508]/75 border-[#D4AF37] shadow-lg'
+                      : 'bg-black/45 border-[#D4AF37]/25'
+                  }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="px-3 py-0.5 rounded-full bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/35 text-xs font-bold uppercase">
-                      {isHindi ? `दिवस ${day.dayNumber}` : `Day ${day.dayNumber}`}
-                    </span>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 text-xs font-bold">
+                      <span className={`px-2.5 py-0.5 rounded uppercase ${isToday ? 'bg-[#D4AF37] text-[#180F08]' : 'bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/35'}`}>
+                        {isHindi ? `दिवस ${day.dayNumber}` : `Day ${day.dayNumber}`}
+                      </span>
+                      {isToday && (
+                        <span className="text-[#FFD54F] font-semibold">
+                          · {isHindi ? 'आज का दिवस' : 'Today'}
+                        </span>
+                      )}
+                    </div>
                     <span className="text-xs font-semibold text-[#FFF5E1]/80 font-mono">
                       {isHindi ? day.date2026 : day.gregorianDate2026}
                     </span>
@@ -106,7 +121,8 @@ export const ChhathGuide2026: React.FC<ChhathGuide2026Props> = ({ onExploreSongs
                     </div>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Note on Muhurat */}

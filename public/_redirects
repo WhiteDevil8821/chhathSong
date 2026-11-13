@@ -1,4 +1,3 @@
-# Static clean routing & SPA fallback
+# Static clean routing
 /songs          /songs.html         200
 /songs/*        /songs/:splat.html  200
-/*              /index.html         200

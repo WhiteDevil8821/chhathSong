@@ -28,6 +28,7 @@ function injectHeadMetadata(
     keywords?: string;
     ogImage?: string;
     ogType?: string;
+    robots?: string;
     jsonLd?: object[];
   }
 ): string {
@@ -56,12 +57,24 @@ function injectHeadMetadata(
     }
   }
 
-  // 5. Replace or inject canonical link
+  // 5. Replace or inject canonical link (or remove if empty)
   const canonicalRegex = /<link\s+[^>]*?rel=["']canonical["'][^>]*?>/i;
-  if (canonicalRegex.test(html)) {
-    html = html.replace(canonicalRegex, `<link rel="canonical" href="${options.canonicalUrl}" />`);
+  if (options.canonicalUrl) {
+    if (canonicalRegex.test(html)) {
+      html = html.replace(canonicalRegex, `<link rel="canonical" href="${options.canonicalUrl}" />`);
+    } else {
+      html = html.replace('</head>', `  <link rel="canonical" href="${options.canonicalUrl}" />\n  </head>`);
+    }
   } else {
-    html = html.replace('</head>', `  <link rel="canonical" href="${options.canonicalUrl}" />\n  </head>`);
+    html = html.replace(canonicalRegex, '');
+  }
+
+  // 5b. Override robots meta if specified (e.g., noindex on 404)
+  if (options.robots) {
+    html = html.replace(
+      /<meta\s+name=["']robots["'][^>]*?>/i,
+      `<meta name="robots" content="${escapeHtml(options.robots)}" />`
+    );
   }
 
   // 6. Replace OpenGraph & Twitter tags
@@ -141,10 +154,10 @@ export function renderHomepageHtml(baseHtml: string): string {
     numTracks: CHHATH_SONGS.length,
     url: `${CANONICAL_DOMAIN}/songs`,
     description: 'Complete curated collection of 106 sacred Chhath Mahaparv folk songs, bhajans, and hymns.',
-    track: CHHATH_SONGS.slice(0, 30).map((s, idx) => ({
+    track: CHHATH_SONGS.slice(0, 12).map((s, idx) => ({
       '@type': 'MusicRecording',
       name: s.title,
-      url: `${CANONICAL_DOMAIN}/songs/${getSongSlug(s)}`,
+      url: getSongCanonicalUrl(s),
       byArtist: {
         '@type': 'MusicGroup',
         name: s.singer || s.artist || 'पारंपरिक छठ लोकगायक'
@@ -200,7 +213,7 @@ export function renderHomepageHtml(baseHtml: string): string {
     ]
   };
 
-  const topSongs = CHHATH_SONGS.slice(0, 18);
+  const topSongs = CHHATH_SONGS.slice(0, 8);
   const featuredSongsHtml = topSongs
     .map((song) => {
       const slug = getSongSlug(song);
@@ -312,7 +325,7 @@ export function renderSongsDirectoryHtml(baseHtml: string): string {
   const songItemsSchema = CHHATH_SONGS.map((song, idx) => ({
     '@type': 'ListItem',
     position: idx + 1,
-    url: `${CANONICAL_DOMAIN}/songs/${getSongSlug(song)}`,
+    url: getSongCanonicalUrl(song),
     name: song.title
   }));
 
@@ -658,7 +671,8 @@ export function renderNotFoundHtml(slug: string, baseHtml: string): string {
   let htmlWithHead = injectHeadMetadata(baseHtml, {
     title,
     description,
-    canonicalUrl
+    canonicalUrl: '',
+    robots: 'noindex, follow'
   });
 
   return htmlWithHead.replace(

@@ -40,21 +40,28 @@ export function runPrerender() {
   const notFoundHtml = renderNotFoundHtml('not-found', baseHtml);
   fs.writeFileSync(path.join(distDir, '404.html'), notFoundHtml, 'utf-8');
 
-  // 4. Individual Song Pages (/songs/<slug>.html and encoded filename fallback)
+  // 4. Individual Song Pages (/songs/<slug>.html and /songs/<slug>/index.html)
   let count = 0;
   for (const song of CHHATH_SONGS) {
     const slug = getSongSlug(song);
     const songHtml = renderSongPageHtml(song, baseHtml);
 
     // Primary cleanUrls static file: /dist/songs/<slug>.html
-    fs.writeFileSync(path.join(distDir, 'songs', `${slug}.html`), songHtml, 'utf-8');
+    fs.writeFileSync(path.join(songsDir, `${slug}.html`), songHtml, 'utf-8');
 
-    // Also write percent-encoded filename for CDNs if length is safe for ext4 (< 200 bytes)
+    // Directory index fallback: /dist/songs/<slug>/index.html (reliable across all CDNs)
+    const slugSubDir = path.join(songsDir, slug);
+    if (!fs.existsSync(slugSubDir)) {
+      fs.mkdirSync(slugSubDir, { recursive: true });
+    }
+    fs.writeFileSync(path.join(slugSubDir, 'index.html'), songHtml, 'utf-8');
+
+    // Also write percent-encoded filename when safe for ext4 (< 240 bytes)
     const encodedSlug = encodeURIComponent(slug);
-    if (encodedSlug !== slug && encodedSlug.length < 200) {
+    if (encodedSlug !== slug && Buffer.byteLength(`${encodedSlug}.html`, 'utf8') < 240) {
       try {
-        fs.writeFileSync(path.join(distDir, 'songs', `${encodedSlug}.html`), songHtml, 'utf-8');
-      } catch (err) {
+        fs.writeFileSync(path.join(songsDir, `${encodedSlug}.html`), songHtml, 'utf-8');
+      } catch {
         // Safe fallback
       }
     }
