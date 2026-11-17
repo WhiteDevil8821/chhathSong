@@ -2074,9 +2074,9 @@ export const SACRED_DAYS: SacredDay[] = [
     "dayNumber": 1,
     "hindiName": "नहाय-खाय (Nahay Khay)",
     "englishName": "Sacred Purification & Kaddu Bhaat",
-    "tithi": "कार्तिक शुक्ल चतुर्थी (Kartik Shukla Chaturthi)",
-    "date2026": "13 नवंबर 2026",
-    "gregorianDate2026": "Friday, 13 November 2026",
+    "tithi": "चैत्र शुक्ल चतुर्थी (Chaitra Shukla Chaturthi)",
+    "date2026": "10 अप्रैल 2027",
+    "gregorianDate2026": "Saturday, 10 April 2027",
     "ritualSummary": "The festival begins with a holy bath in the river Ganga or fresh water. The home is deeply sanctified and washed. The first satvik meal of Kaddu-Bhaat is cooked in fresh bronze/brass vessels.",
     "prasads": [
       "कद्दू-भात (Bottle Gourd Rice)",
@@ -2096,11 +2096,11 @@ export const SACRED_DAYS: SacredDay[] = [
   },
   {
     "dayNumber": 2,
-    "hindiName": "खरना / लोहंडा (Kharna)",
+    "hindiName": "लोहंडा और खरना (Kharna)",
     "englishName": "The Sanctified Fast & Rasiya-Roti",
-    "tithi": "कार्तिक शुक्ल पंचमी (Kartik Shukla Panchami)",
-    "date2026": "14 नवंबर 2026",
-    "gregorianDate2026": "Saturday, 14 November 2026",
+    "tithi": "चैत्र शुक्ल पंचमी (Chaitra Shukla Panchami)",
+    "date2026": "11 अप्रैल 2027",
+    "gregorianDate2026": "Sunday, 11 April 2027",
     "ritualSummary": "Vratins observe a day-long waterless fast. In the quiet evening, Rasiya (jaggery kheer in milk) and whole-wheat rotis are cooked on a traditional clay chulha using dried mango wood.",
     "prasads": [
       "गुड़ की रसिया (Jaggery Kheer in Milk)",
@@ -2122,9 +2122,9 @@ export const SACRED_DAYS: SacredDay[] = [
     "dayNumber": 3,
     "hindiName": "संध्या अर्घ्य (Sandhya Arghya)",
     "englishName": "Dusk Offering to the Setting Sun",
-    "tithi": "कार्तिक शुक्ल षष्ठी (Kartik Shukla Shashthi)",
-    "date2026": "15 नवंबर 2026",
-    "gregorianDate2026": "Sunday, 15 November 2026",
+    "tithi": "चैत्र शुक्ल षष्ठी (Chaitra Shukla Shashthi)",
+    "date2026": "12 अप्रैल 2027",
+    "gregorianDate2026": "Monday, 12 April 2027",
     "ritualSummary": "Families carry bamboo Dauras laden with Thekua and fruits on their heads to the illuminated riverbank. Vratins stand waist-deep in water to offer Arghya to the setting sun.",
     "prasads": [
       "ठेकुआ (Pure Ghee Thekua)",
@@ -2140,16 +2140,16 @@ export const SACRED_DAYS: SacredDay[] = [
       "दउरा सिर पर उठाकर घाट यात्रा (Daura March)",
       "अस्ताचलगामी सूर्य को अर्घ्य (Sunset Arghya)"
     ],
-    "arghyaTimeHint": "सूर्यास्त समय: लगभग 05:01 PM IST (संध्या अर्घ्य मुहूर्त)"
+    "arghyaTimeHint": "सूर्यास्त समय: संध्या अर्घ्य मुहूर्त (सोमवार, 12 अप्रैल 2027)"
   },
   {
     "dayNumber": 4,
-    "hindiName": "उषा अर्घ्य व पारण (Usha Arghya)",
+    "hindiName": "उषा अर्घ्य और पारण (Usha Arghya)",
     "englishName": "Dawn Salutation & Breaking of the Fast",
-    "tithi": "कार्तिक शुक्ल सप्तमी (Kartik Shukla Saptami)",
-    "date2026": "16 नवंबर 2026",
-    "gregorianDate2026": "Monday, 16 November 2026",
-    "ritualSummary": "Before dawn, the ghat fills again in chilly mist. Devotees await the first golden ray of Surya Dev to offer the final Arghya of raw cow milk and holy Ganga water, followed by Paran.",
+    "tithi": "चैत्र शुक्ल सप्तमी (Chaitra Shukla Saptami)",
+    "date2026": "13 अप्रैल 2027",
+    "gregorianDate2026": "Tuesday, 13 April 2027",
+    "ritualSummary": "Before dawn, the ghat fills again in serene morning light. Devotees await the first golden ray of Surya Dev to offer the final Arghya of raw cow milk and holy Ganga water, followed by Paran.",
     "prasads": [
       "कच्चा दूध (Raw Milk Arghya)",
       "गंगाजल (Ganga Water)",
@@ -2157,14 +2157,14 @@ export const SACRED_DAYS: SacredDay[] = [
       "अदरक व गुड़ (Ginger & Jaggery)"
     ],
     "significance": "Welcoming the new day, health, longevity, and joy. The Vratin breaks the 36-hour fast with ginger, jaggery, and water, and blesses everyone by touching feet.",
-    "memories": "The joyous eruption of conch shells (Shankhnaad) and firecrackers as the golden sun peeks over the river horizon; smearing orange vermilion and collecting prasad.",
+    "memories": "The joyous eruption of conch shells (Shankhnaad) as the golden sun peeks over the river horizon; smearing orange vermilion and collecting prasad.",
     "iconType": "sunrise",
     "associatedRituals": [
       "भोरवे में पावन नदी स्नान (Pre-dawn Dip)",
       "उदीयमान सूर्य को दुग्ध अर्घ्य (Dawn Milk Arghya)",
       "पारण एवं आशीर्वाद (Breaking Fast & Blessings)"
     ],
-    "arghyaTimeHint": "सूर्योदय समय: लगभग 06:12 AM IST (उषा अर्घ्य मुहूर्त)"
+    "arghyaTimeHint": "सूर्योदय समय: उषा अर्घ्य व पारण (मंगलवार, 13 अप्रैल 2027)"
   }
 ];
 

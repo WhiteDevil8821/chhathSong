@@ -138,7 +138,7 @@ export const ChhathHeroSection: React.FC<ChhathHeroSectionProps> = ({
               className="hidden md:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-black/60 hover:bg-black/85 backdrop-blur-md border border-[#E5A93C]/45 text-[#FFF5E1] text-[11px] sm:text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0"
             >
               <Sun className="w-3.5 h-3.5 text-[#FFD54F]" />
-              <span>{isHindi ? 'छठ पूजा २०२६ विधि' : 'Chhath 2026 Guide'}</span>
+              <span>{isHindi ? 'चैती छठ २०२७ विधि' : 'Chaiti Chhath 2027'}</span>
             </button>
           </div>
         </div>

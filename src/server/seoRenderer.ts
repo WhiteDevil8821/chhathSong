@@ -108,12 +108,12 @@ function injectHeadMetadata(
  * Generates crawl-ready pre-rendered HTML for the Homepage (/).
  */
 export function renderHomepageHtml(baseHtml: string): string {
-  const title = 'Chhath Song 2026: 106+ अमर छठ गीत, शारदा सिन्हा Lyrics & सम्पूर्ण विधि | ChhathSong.in';
+  const title = 'Chhath Song 2027 (चैती छठ): 107+ अमर छठ गीत, शारदा सिन्हा Lyrics & सम्पूर्ण विधि | ChhathSong.in';
   const description =
-    'सुनें 106+ अमर Chhath Songs (छठ गीत), शारदा सिन्हा, पवन सिंह, अनुराधा पौडवाल व खेसारी लाल के पारंपरिक छठ भजन, सम्पूर्ण बोल (Lyrics), अर्घ्य मुहूर्त 2026 व पावन विधि | ChhathSong.in';
+    'सुनें 107+ अमर Chhath Songs (छठ गीत), शारदा सिन्हा, पवन सिंह, अनुराधा पौडवाल व खेसारी लाल के पारंपरिक छठ भजन, सम्पूर्ण बोल (Lyrics), चैती छठ 2027 तिथियाँ (10-13 अप्रैल) व पावन विधि | ChhathSong.in';
   const canonicalUrl = `${CANONICAL_DOMAIN}/`;
   const keywords =
-    'chhath song, chhath songs, chhathsong, chhathsong.in, छठ गीत, छठ पूजा गीत, chhath geet, sharda sinha chhath geet, pawan singh chhath song, anuradha paudwal chhath geet, khesari lal chhath song, kelwa ke paat par, ho deenanath, kaanch hi baans ke bahangiya, ug ho surujdev, bihar chhath puja 2026, arghya timings, chhath puja song mp3 lyrics, marbo re sugwa dhanukh se';
+    'chhath song, chhath songs, chhathsong, chhathsong.in, chaiti chhath 2027, चैती छठ 2027, छठ गीत, छठ पूजा गीत, chhath geet, sharda sinha chhath geet, pawan singh chhath song, anuradha paudwal chhath geet, khesari lal chhath song, kelwa ke paat par, ho deenanath, kaanch hi baans ke bahangiya, ug ho surujdev, bihar chhath puja 2027, arghya timings, chhath puja song mp3 lyrics, marbo re sugwa dhanukh se';
 
   const websiteSchema = {
     '@context': 'https://schema.org',
@@ -150,10 +150,10 @@ export function renderHomepageHtml(baseHtml: string): string {
   const playlistSchema = {
     '@context': 'https://schema.org',
     '@type': 'MusicPlaylist',
-    name: 'Chhath Puja 2026 Sacred Folk Songs Playlist',
+    name: 'Chaiti Chhath 2027 Sacred Folk Songs Playlist',
     numTracks: CHHATH_SONGS.length,
     url: `${CANONICAL_DOMAIN}/songs`,
-    description: 'Complete curated collection of 106 sacred Chhath Mahaparv folk songs, bhajans, and hymns.',
+    description: 'Complete curated collection of 107+ sacred Chhath Mahaparv folk songs, bhajans, and hymns.',
     track: CHHATH_SONGS.slice(0, 12).map((s, idx) => ({
       '@type': 'MusicRecording',
       name: s.title,
@@ -191,23 +191,23 @@ export function renderHomepageHtml(baseHtml: string): string {
         name: 'ChhathSong.in पर क्या-क्या सुविधाएँ उपलब्ध हैं?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'ChhathSong.in पर 106+ अमर छठ गीतों का संपूर्ण संग्रह, शारदा सिन्हा, पवन सिंह, अनुराधा पौडवाल व खेसारी लाल के भजन, देवनागरी एवं अंग्रेजी में संपूर्ण बोल (Lyrics), भावार्थ, सजीव ऑडियो प्लेयर, छठ 2026 का शुभ मुहूर्त (नहाय-खाय, खरना, संध्या व उषा अर्घ्य) और 3D वर्चुअल अर्घ्य अनुभव पूर्णतः निःशुल्क उपलब्ध है।'
+          text: 'ChhathSong.in पर 107+ अमर छठ गीतों का संपूर्ण संग्रह, शारदा सिन्हा, पवन सिंह, अनुराधा पौडवाल व खेसारी लाल के भजन, देवनागरी एवं अंग्रेजी में संपूर्ण बोल (Lyrics), भावार्थ, सजीव ऑडियो प्लेयर, चैती छठ 2027 का शुभ पंचांग (नहाय-खाय, लोहंडा व खरना, संध्या व उषा अर्घ्य) और 3D वर्चुअल अर्घ्य अनुभव पूर्णतः निःशुल्क उपलब्ध है।'
         }
       },
       {
         '@type': 'Question',
-        name: 'छठ पूजा 2026 के चारों दिन कौन-कौन से गीत गाए जाते हैं?',
+        name: 'चैती छठ पूजा 2027 के चारों दिन कौन-कौन से गीत गाए जाते हैं?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'प्रथम दिन नहाय-खाय पर गंगा स्नान व शुद्धता के गीत; द्वितीय दिन खरना पर गुड़ की खीर व मौन पूजन के गीत; तृतीय दिन संध्या अर्घ्य पर दउरा-बहंगी उठाने, फल सजाने व अस्ताचलगामी सूर्य को अर्घ्य देने के गीत; और चतुर्थ दिन उषा अर्घ्य पर "उग हो सुरुजदेव भइले भिनुसारवा" जैसे उदीयमान सूर्य की वंदना के गीत गाए जाते हैं।'
+          text: 'प्रथम दिन नहाय-खाय पर गंगा स्नान व शुद्धता के गीत; द्वितीय दिन लोहंडा और खरना पर गुड़ की खीर व मौन पूजन के गीत; तृतीय दिन संध्या अर्घ्य पर दउरा-बहंगी उठाने, फल सजाने व अस्ताचलगामी सूर्य को अर्घ्य देने के गीत; और चतुर्थ दिन उषा अर्घ्य पर "उग हो सुरुजदेव भइले भिनुसारवा" जैसे उदीयमान सूर्य की वंदना के गीत गाए जाते हैं।'
         }
       },
       {
         '@type': 'Question',
-        name: 'छठ पूजा 2026 में संध्या और उषा अर्घ्य की तिथि और मुहूर्त क्या है?',
+        name: 'चैती छठ 2027 में नहाय-खाय, खरना, संध्या अर्घ्य और उषा अर्घ्य की तिथियां क्या हैं?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'छठ पूजा 2026 में नहाय-खाय शुक्रवार 13 नवंबर, खरना शनिवार 14 नवंबर, संध्या अर्घ्य रविवार 15 नवंबर (सूर्यास्त अर्घ्य समय लगभग 05:01 PM), तथा उषा अर्घ्य व पारण सोमवार 16 नवंबर 2026 (सूर्योदय अर्घ्य समय लगभग 06:12 AM) को संपन्न होगा।'
+          text: 'चैती छठ 2027 में नहाय-खाय (चतुर्थी) शनिवार 10 अप्रैल 2027, लोहंडा और खरना (पंचमी) रविवार 11 अप्रैल 2027, संध्या अर्घ्य (षष्ठी - डूबते सूर्य को अर्घ्य) सोमवार 12 अप्रैल 2027, तथा उषा अर्घ्य और पारण (सप्तमी - उगते सूर्य को अर्घ्य और व्रत समाप्त) मंगलवार 13 अप्रैल 2027 को संपन्न होगा।'
         }
       }
     ]
@@ -241,10 +241,10 @@ export function renderHomepageHtml(baseHtml: string): string {
           मिथिला • मगध • अंग • भोजपुरी माटी
         </p>
         <h1 style="font-size: 2.5rem; color: #FFF5E1; margin: 10px 0; font-family: 'Rozha One', Georgia, serif;">
-          लोक आस्था का <span style="color: #D4AF37;">महापर्व छठ</span> (Chhath Song 2026)
+          लोक आस्था का <span style="color: #D4AF37;">महापर्व चैती छठ</span> (Chhath Song 2027)
         </h1>
         <h2 style="font-size: 1.25rem; color: #FFE5B4; font-weight: 500; margin-bottom: 12px;">
-          106+ अमर छठ गीत, शारदा सिन्हा के लोकगीत, सम्पूर्ण बोल (Lyrics) व विधि
+          107+ अमर छठ गीत, शारदा सिन्हा के लोकगीत, सम्पूर्ण बोल (Lyrics) व विधि
         </h2>
         <p style="max-width: 750px; margin: 0 auto; color: rgba(255,245,225,0.9); font-size: 0.95rem; line-height: 1.6;">
           सूर्यदेव और प्रकृति की उपासना का एकमात्र पावन महापर्व, जहाँ अस्ताचलगामी और उदीयमान दोनों सूर्यों को संपूर्ण श्रद्धा से अर्घ्य अर्पित किया जाता है। सुनें स्वर कोकिला शारदा सिन्हा, पवन सिंह, अनुराधा पौडवाल, और खेसारी लाल यादव के कालजयी छठ भजन।
@@ -255,7 +255,7 @@ export function renderHomepageHtml(baseHtml: string): string {
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
           <h2 style="font-size: 1.5rem; color: #D4AF37; margin: 0;">लोकप्रिय पावन छठ गीत (${CHHATH_SONGS.length} कुल संग्रह)</h2>
           <a href="/songs" style="color: #180F08; background: #D4AF37; padding: 8px 18px; border-radius: 20px; font-weight: bold; text-decoration: none; font-size: 0.9rem;">
-            संपूर्ण 106+ गीत संग्रह देखें &rarr;
+            संपूर्ण 107+ गीत संग्रह देखें &rarr;
           </a>
         </div>
         <ul style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px;">
@@ -264,9 +264,9 @@ export function renderHomepageHtml(baseHtml: string): string {
       </section>
 
       <section style="margin-bottom: 30px; padding: 22px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;">
-        <h3 style="color: #D4AF37; font-size: 1.3rem; margin-top: 0;">महापर्व छठ के चार पावन दिवस एवं शुभ मुहूर्त 2026</h3>
+        <h3 style="color: #D4AF37; font-size: 1.3rem; margin-top: 0;">चैती छठ महापर्व के चार पावन दिवस एवं तिथियां 2027 (10–13 अप्रैल)</h3>
         <p style="color: rgba(255,245,225,0.9); font-size: 0.95rem; line-height: 1.6;">
-          प्रथम दिवस: <strong>नहाय-खाय</strong> (13 नवंबर 2026 - कद्दू-भात का सात्विक प्रसाद) • द्वितीय दिवस: <strong>खरना</strong> (14 नवंबर 2026 - गुड़ की खीर व 36 घंटे का निर्जला व्रत आरंभ) • तृतीय दिवस: <strong>संध्या अर्घ्य</strong> (15 नवंबर 2026 - सूर्यास्त 05:01 PM पर प्रथम अर्घ्य) • चतुर्थ दिवस: <strong>उषा अर्घ्य व पारण</strong> (16 नवंबर 2026 - सूर्योदय 06:12 AM पर अर्घ्य व व्रत संपन्न)।
+          प्रथम दिवस: <strong>नहाय-खाय (चतुर्थी)</strong> (शनिवार, 10 अप्रैल 2027 - कद्दू-भात का सात्विक प्रसाद) • द्वितीय दिवस: <strong>लोहंडा और खरना (पंचमी)</strong> (रविवार, 11 अप्रैल 2027 - गुड़ की खीर व 36 घंटे का निर्जला व्रत आरंभ) • तृतीय दिवस: <strong>संध्या अर्घ्य (षष्ठी)</strong> (सोमवार, 12 अप्रैल 2027 - डूबते सूर्य को प्रथम अर्घ्य) • चतुर्थ दिवस: <strong>उषा अर्घ्य और पारण (सप्तमी)</strong> (मंगलवार, 13 अप्रैल 2027 - उगते सूर्य को अर्घ्य और व्रत समाप्त)।
         </p>
       </section>
 
@@ -438,7 +438,7 @@ export function renderSongPageHtml(song: ChhathSong, baseHtml: string): string {
   const description = rawDescription.length > 155 ? `${rawDescription.substring(0, 152)}...` : rawDescription;
   const ogImage = song.youtubeId ? `https://img.youtube.com/vi/${song.youtubeId}/hqdefault.jpg` : `${CANONICAL_DOMAIN}/chhath-share-banner.svg`;
 
-  const keywords = `${song.title}, ${singerName} Chhath Song, ${song.title} lyrics, छठ गीत, ${singerName} छठ गीत, Chhath Geet 2026, Chhath Songs, ChhathSong.in, Bihar Chhath Puja, Surya Dev Arghya, Chhathi Maiya Bhajan`;
+  const keywords = `${song.title}, ${singerName} Chhath Song, ${song.title} lyrics, छठ गीत, ${singerName} छठ गीत, Chhath Geet 2027, Chaiti Chhath 2027, Chhath Songs, ChhathSong.in, Bihar Chhath Puja, Surya Dev Arghya, Chhathi Maiya Bhajan`;
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',

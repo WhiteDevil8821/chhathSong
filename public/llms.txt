@@ -2,15 +2,15 @@
 
 > Official Web Portal: https://www.chhathsong.in/
 > Cultural Heritage: Bihar, Mithila, Magadh, Anga, and Purvanchal
-> Main Festival: Chhath Puja (Kartik Shukla Shashthi)
+> Main Festival: Chhath Puja (Chaiti Chhath — Chaitra Shukla Shashthi & Kartik Shukla Shashthi)
 
 ## Overview
-ChhathSong.in is an authentic cultural and devotional web portal dedicated to Chhath Puja — the ancient Vedic festival of Sun and nature worship. The platform hosts a comprehensive archive of 106+ sacred Chhath Geet, authentic ritual timings, cultural guides, and devotional hymns.
+ChhathSong.in is an authentic cultural and devotional web portal dedicated to Chhath Puja — the ancient Vedic festival of Sun and nature worship. The platform hosts a comprehensive archive of 107+ sacred Chhath Geet, authentic ritual timings, cultural guides, and devotional hymns.
 
 ## Key Sections & Canonical URLs
 - **Home / Festival Portal**: `https://www.chhathsong.in/`
-  - Four-Day Ritual Guide: Nahay-Khay, Kharna, Sandhya Arghya (Sunset), and Usha Arghya (Sunrise).
-  - Authentic 2026 Arghya Timings and astronomical calendar.
+  - Four-Day Ritual Guide: Nahay-Khay, Lohanda & Kharna, Sandhya Arghya (Sunset), and Usha Arghya (Sunrise).
+  - Authentic Chaiti Chhath 2027 Schedule (10–13 April 2027) and astronomical calendar.
   - Interactive Digital Arghya offering with sacred mantras.
   - Cultural artifacts: Daura, Soop, Thekua, Sugarcane (Ikh), and sacred Ganga Ghat traditions.
   - Live Devotees collective presence counter and community reflections.

@@ -26,8 +26,8 @@ export const ChhathCountdown2026: React.FC<{ onSelectDay?: (dayNumber: number) =
     minutes: 0,
     seconds: 0,
     formattedTimeIST: '',
-    nextEventTitle: 'कार्तिक छठ पूजा २०२६ (Kartik Chhath 2026)',
-    nextEventDate: '13-16 November 2026'
+    nextEventTitle: 'चैती छठ पूजा २०२७ (Chaiti Chhath 2027)',
+    nextEventDate: '10-13 April 2027'
   });
 
   const [activeTabDay, setActiveTabDay] = useState<number>(1);
@@ -58,8 +58,8 @@ export const ChhathCountdown2026: React.FC<{ onSelectDay?: (dayNumber: number) =
           minutes,
           seconds,
           formattedTimeIST: timeStrIST,
-          nextEventTitle: 'कार्तिक छठ पूजा २०२६ (Nahay Khay)',
-          nextEventDate: '13 November 2026'
+          nextEventTitle: 'चैती छठ पूजा २०२७ (Nahay-Khay)',
+          nextEventDate: '10 April 2027'
         });
       } else if (now >= FESTIVAL_DATES_IST.nahayKhayStart && now < FESTIVAL_DATES_IST.kharnaStart) {
         // Day 1: Nahay Khay
@@ -68,15 +68,15 @@ export const ChhathCountdown2026: React.FC<{ onSelectDay?: (dayNumber: number) =
         setCountdown({
           status: 'nahay_khay',
           currentDayNameHindi: 'आज प्रथम दिवस: नहाय-खाय',
-          currentDayNameEnglish: 'Today: Day 1 - Nahay Khay',
+          currentDayNameEnglish: 'Today: Day 1 - Nahay-Khay',
           currentDayNumber: 1,
           days: 0,
           hours: Math.floor((totalSeconds % 86400) / 3600),
           minutes: Math.floor((totalSeconds % 3600) / 60),
           seconds: totalSeconds % 60,
           formattedTimeIST: timeStrIST,
-          nextEventTitle: 'कल: खरना / लोहंडा (Kharna)',
-          nextEventDate: '14 November 2026'
+          nextEventTitle: 'कल: लोहंडा और खरना (Lohanda & Kharna)',
+          nextEventDate: '11 April 2027'
         });
         setActiveTabDay(1);
       } else if (now >= FESTIVAL_DATES_IST.kharnaStart && now < FESTIVAL_DATES_IST.sandhyaStart) {
@@ -85,8 +85,8 @@ export const ChhathCountdown2026: React.FC<{ onSelectDay?: (dayNumber: number) =
         const totalSeconds = Math.floor(diffToEnd / 1000);
         setCountdown({
           status: 'kharna',
-          currentDayNameHindi: 'आज द्वितीय दिवस: खरना (लोहंडा)',
-          currentDayNameEnglish: 'Today: Day 2 - Kharna (Lohanda)',
+          currentDayNameHindi: 'आज द्वितीय दिवस: लोहंडा और खरना',
+          currentDayNameEnglish: 'Today: Day 2 - Lohanda & Kharna',
           currentDayNumber: 2,
           days: 0,
           hours: Math.floor((totalSeconds % 86400) / 3600),
@@ -94,7 +94,7 @@ export const ChhathCountdown2026: React.FC<{ onSelectDay?: (dayNumber: number) =
           seconds: totalSeconds % 60,
           formattedTimeIST: timeStrIST,
           nextEventTitle: 'कल: पहला अर्घ्य - संध्या अर्घ्य',
-          nextEventDate: '15 November 2026'
+          nextEventDate: '12 April 2027'
         });
         setActiveTabDay(2);
       } else if (now >= FESTIVAL_DATES_IST.sandhyaStart && now < FESTIVAL_DATES_IST.ushaStart) {
@@ -111,8 +111,8 @@ export const ChhathCountdown2026: React.FC<{ onSelectDay?: (dayNumber: number) =
           minutes: Math.floor((totalSeconds % 3600) / 60),
           seconds: totalSeconds % 60,
           formattedTimeIST: timeStrIST,
-          nextEventTitle: 'कल भोर: उषा अर्घ्य व पारण',
-          nextEventDate: '16 November 2026'
+          nextEventTitle: 'कल भोर: उषा अर्घ्य और पारण',
+          nextEventDate: '13 April 2027'
         });
         setActiveTabDay(3);
       } else if (now >= FESTIVAL_DATES_IST.ushaStart && now < FESTIVAL_DATES_IST.festivalEnd) {
@@ -121,7 +121,7 @@ export const ChhathCountdown2026: React.FC<{ onSelectDay?: (dayNumber: number) =
         const totalSeconds = Math.floor(diffToEnd / 1000);
         setCountdown({
           status: 'usha_arghya',
-          currentDayNameHindi: 'आज चतुर्थ दिवस: उषा अर्घ्य व पारण (महापर्व संपन्न)',
+          currentDayNameHindi: 'आज चतुर्थ दिवस: उषा अर्घ्य और पारण (महापर्व संपन्न)',
           currentDayNameEnglish: 'Today: Day 4 - Usha Arghya & Paran (Dawn Offering)',
           currentDayNumber: 4,
           days: 0,
@@ -130,23 +130,23 @@ export const ChhathCountdown2026: React.FC<{ onSelectDay?: (dayNumber: number) =
           seconds: totalSeconds % 60,
           formattedTimeIST: timeStrIST,
           nextEventTitle: 'पारण एवं प्रसाद वितरण',
-          nextEventDate: '16 November 2026'
+          nextEventDate: '13 April 2027'
         });
         setActiveTabDay(4);
       } else {
         // Concluded
         setCountdown({
           status: 'concluded',
-          currentDayNameHindi: 'छठ पूजा 2026 संपन्न • जय छठी मईया',
-          currentDayNameEnglish: 'Chhath Puja 2026 Concluded • Jai Chhathi Maiya',
+          currentDayNameHindi: 'चैती छठ पूजा 2027 संपन्न • जय छठी मईया',
+          currentDayNameEnglish: 'Chaiti Chhath Puja 2027 Concluded • Jai Chhathi Maiya',
           currentDayNumber: 4,
           days: 0,
           hours: 0,
           minutes: 0,
           seconds: 0,
           formattedTimeIST: timeStrIST,
-          nextEventTitle: 'आगामी छठ पर्व 2027 (Kartik Chhath 2027)',
-          nextEventDate: '04 - 07 November 2027'
+          nextEventTitle: 'आगामी कार्तिक छठ पर्व 2027 (Kartik Chhath 2027)',
+          nextEventDate: '03 - 06 November 2027'
         });
       }
     };
@@ -184,11 +184,11 @@ export const ChhathCountdown2026: React.FC<{ onSelectDay?: (dayNumber: number) =
         <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 border border-[#D4AF37]/40 text-[#D4AF37] text-[10px] sm:text-xs font-bold uppercase tracking-wider shrink-0">
             <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#D4AF37]" />
-            <span>{isHindi ? 'कार्तिक छठ २०२६' : 'Kartik Chhath 2026'}</span>
+            <span>{isHindi ? 'चैती छठ २०२७' : 'Chaiti Chhath 2027'}</span>
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5" />
           </div>
           <span className="text-[11px] sm:text-xs font-semibold text-[#FFF5E1]/80 truncate hidden sm:inline">
-            {isHindi ? '१३ से १६ नवंबर २०२६' : '13 to 16 November 2026'}
+            {isHindi ? '१० से १३ अप्रैल २०२७' : '10 to 13 April 2027'}
           </span>
         </div>
 

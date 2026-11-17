@@ -148,8 +148,8 @@ export default function App() {
   useEffect(() => {
     if (route.type === 'home') {
       document.title = isHindi
-        ? `छठ पूजा 2026: अमर छठ गीत व सम्पूर्ण विधि | ChhathSong.in`
-        : `Chhath Puja 2026: 107+ Sacred Songs & Rituals | ChhathSong.in`;
+        ? `चैती छठ 2027: अमर छठ गीत व सम्पूर्ण विधि | ChhathSong.in`
+        : `Chaiti Chhath 2027: 107+ Sacred Songs & Rituals | ChhathSong.in`;
       updateCanonicalUrl('https://www.chhathsong.in/');
     } else if (route.type === 'songs') {
       document.title = isHindi

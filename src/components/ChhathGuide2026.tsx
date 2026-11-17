@@ -22,24 +22,24 @@ export const ChhathGuide2026: React.FC<ChhathGuide2026Props> = ({ onExploreSongs
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/50 border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-bold uppercase tracking-widest mb-1.5">
             <BookOpen className="w-3.5 h-3.5 text-[#D4AF37]" />
-            <span>{isHindi ? 'छठ महापर्व २०२६ संपूर्ण ज्ञानकोष' : 'Chhath Puja 2026 Official Guide & Knowledge Hub'}</span>
+            <span>{isHindi ? 'चैती छठ महापर्व २०२७ संपूर्ण ज्ञानकोष' : 'Chaiti Chhath 2027 Official Guide & Knowledge Hub'}</span>
           </div>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold text-[#FFF5E1]">
-            {isHindi ? 'छठ पूजा २०२६: विधि, मुहूर्त, सामग्री व आध्यात्मिक दर्शन' : 'Chhath Puja 2026: Complete Rituals, Muhurat & Traditions'}
+            {isHindi ? 'चैती छठ पूजा २०२७: विधि, मुहूर्त, सामग्री व आध्यात्मिक दर्शन' : 'Chaiti Chhath 2027: Complete Rituals, Schedule & Traditions'}
           </h2>
         </div>
 
         <p className="text-xs md:text-sm text-[#FFF5E1]/70 max-w-md">
           {isHindi
-            ? '१३ से १६ नवंबर २०२६ तक चलने वाले महापर्व की प्रामाणिक पंचांग तिथि, अर्घ्य समय, पूजन सामग्री और दार्शनिक महत्व।'
-            : 'Authentic festival schedule, Arghya sunset/sunrise timings, sacred samagri checklist, and the Vedic philosophy of Sun worship.'}
+            ? '१० से १३ अप्रैल २०२७ तक चलने वाले चैती छठ महापर्व की प्रामाणिक पंचांग तिथि, अर्घ्य नियम, पूजन सामग्री और दार्शनिक महत्व।'
+            : 'Authentic festival schedule (10–13 April 2027), Arghya rituals, sacred samagri checklist, and the Vedic philosophy of Sun worship.'}
         </p>
       </div>
 
       {/* Navigation Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-white/5">
         {[
-          { id: 'schedule', labelHi: '२०२६ पंचांग व मुहूर्त', labelEn: '2026 Schedule & Muhurat' },
+          { id: 'schedule', labelHi: '२०२७ पंचांग व तिथियां', labelEn: '2027 Schedule & Dates' },
           { id: 'vidhi', labelHi: '४ दिवसीय पूजन विधि', labelEn: '4-Day Puja Vidhi' },
           { id: 'samagri', labelHi: 'पवित्र सामग्री सूची', labelEn: 'Sacred Samagri List' },
           { id: 'philosophy', labelHi: 'छठ का दर्शन व विज्ञान', labelEn: 'Spiritual Philosophy' },
@@ -339,7 +339,7 @@ export const ChhathGuide2026: React.FC<ChhathGuide2026Props> = ({ onExploreSongs
             <p>
               {isHindi
                 ? 'शारदा सिन्हा केवल एक गायिका नहीं, बल्कि छठ महापर्व की सांस्कृतिक आत्मा थीं। "काँच ही बाँस के बहंगिया", "हो दीनानाथ", और "केलवा के पात पर" जैसे उनके अमर गीतों के बिना दुनिया के किसी भी कोने में छठ की कल्पना अधूरी है।'
-                : 'Padma Bhushan Sharda Sinha was not merely a singer; she was the spiritual heartbeat of Chhath Mahaparv. Her soulful folk renditions like "Kaanch Hi Baans Ke Bahangiya" and "Ho Dinaanaath" resonate across millions of homes every Kartik.'}
+                : 'Padma Bhushan Sharda Sinha was not merely a singer; she was the spiritual heartbeat of Chhath Mahaparv. Her soulful folk renditions like "Kaanch Hi Baans Ke Bahangiya" and "Ho Dinaanaath" resonate across millions of homes every Chhath.'}
             </p>
 
             <p>
